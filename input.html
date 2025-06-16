@@ -425,8 +425,8 @@
     </div>
 
     <script>
-        // 구글 앱스 스크립트 웹앱 URL (배포 후 여기에 입력하세요)
-        const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+        // 구글 앱스 스크립트 웹앱 URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPIuu7afE5YxjF5FhXAOtClICR1wuiqTg_4r5pYYwNqu6JvtzD63qFqUQrBXcGy7-b/exec';
         const JANDI_WEBHOOK_URL = 'https://wh.jandi.com/connect-api/webhook/29522216/3d9603c3b428b386c0d640758e236cb4';
 
         function changeValue(fieldId, delta) {
@@ -503,14 +503,31 @@
             showStatus('데이터를 전송하는 중...', 'success');
 
             try {
-                // 구글 시트 업데이트 먼저 실행
+                // 1. 동별/층별 보고 데이터 전송
+                const reportResult = await submitReport({
+                    manager: manager,
+                    building: dormitory,
+                    floor: floor,
+                    overnight: overnight,
+                    checkout: checkout,
+                    moveIn: moveIn,
+                    moveOut: moveOut,
+                    newEntry: newEntry,
+                    current: current
+                });
+
+                if (!reportResult.success) {
+                    throw new Error(reportResult.error || '보고 데이터 전송 실패');
+                }
+
+                // 2. 구체적 정보를 구글 시트 D, E열에 업데이트
                 const sheetResult = await updateGoogleSheet();
                 
                 if (!sheetResult.success) {
                     throw new Error(sheetResult.error || '구글 시트 업데이트 실패');
                 }
 
-                // 잔디 웹훅으로 전송할 데이터 준비
+                // 3. 잔디 웹훅으로 전송할 데이터 준비
                 const jandiData = {
                     body: `📊 **기숙사 인원 현황 업데이트**\n\n` +
                           `👤 **담당자**: ${manager}\n` +
@@ -526,7 +543,7 @@
                     connectColor: "#4facfe"
                 };
 
-                // 잔디 웹훅 전송
+                // 4. 잔디 웹훅 전송
                 await fetch(JANDI_WEBHOOK_URL, {
                     method: 'POST',
                     headers: {
@@ -535,7 +552,7 @@
                     body: JSON.stringify(jandiData)
                 });
 
-                showStatus(`데이터가 성공적으로 전송되었습니다! (${sheetResult.updatedCount}건 업데이트)`, 'success');
+                showStatus(`데이터가 성공적으로 전송되었습니다! (상세정보 ${sheetResult.updatedCount}건 업데이트)`, 'success');
                 
                 // 폼 초기화
                 resetForm();
@@ -546,8 +563,35 @@
             }
         }
 
-        async function updateGoogleSheet() {
+        async function submitReport(reportData) {
             if (GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbyPIuu7afE5YxjF5FhXAOtClICR1wuiqTg_4r5pYYwNqu6JvtzD63qFqUQrBXcGy7-b/exec') {
+                
+                const requestData = {
+                    action: 'submitReport',
+                    reportData: reportData
+                };
+
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                return result;
+            } else {
+                throw new Error('구글 앱스 스크립트 URL이 설정되지 않았습니다.');
+            }
+        }
+
+        async function updateGoogleSheet() {
+            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
                 throw new Error('구글 앱스 스크립트 URL을 설정해주세요.');
             }
 
