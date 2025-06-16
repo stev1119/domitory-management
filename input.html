@@ -298,6 +298,10 @@
                 <h2>기본 정보 입력</h2>
                 <div class="form-grid">
                     <div class="form-group">
+                        <label for="manager">담당자 이름</label>
+                        <input type="text" id="manager" placeholder="담당자 이름을 입력하세요">
+                    </div>
+                    <div class="form-group">
                         <label for="dormitory">기숙사 동</label>
                         <select id="dormitory">
                             <option value="">동 선택</option>
@@ -422,7 +426,7 @@
 
     <script>
         // 구글 앱스 스크립트 웹앱 URL (배포 후 여기에 입력하세요)
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPIuu7afE5YxjF5FhXAOtClICR1wuiqTg_4r5pYYwNqu6JvtzD63qFqUQrBXcGy7-b/exec';
+        const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
         const JANDI_WEBHOOK_URL = 'https://wh.jandi.com/connect-api/webhook/29522216/3d9603c3b428b386c0d640758e236cb4';
 
         function changeValue(fieldId, delta) {
@@ -476,6 +480,7 @@
         }
 
         async function submitData() {
+            const manager = document.getElementById('manager').value.trim();
             const dormitory = document.getElementById('dormitory').value;
             const floor = document.getElementById('floor').value;
             const overnight = document.getElementById('overnight').value;
@@ -484,6 +489,11 @@
             const moveOut = document.getElementById('moveOut').value;
             const newEntry = document.getElementById('newEntry').value;
             const current = document.getElementById('current').value;
+
+            if (!manager) {
+                showStatus('담당자 이름을 입력해주세요.', 'error');
+                return;
+            }
 
             if (!dormitory || !floor) {
                 showStatus('기숙사 동과 층을 선택해주세요.', 'error');
@@ -503,6 +513,7 @@
                 // 잔디 웹훅으로 전송할 데이터 준비
                 const jandiData = {
                     body: `📊 **기숙사 인원 현황 업데이트**\n\n` +
+                          `👤 **담당자**: ${manager}\n` +
                           `🏢 **${dormitory}동 ${floor}층**\n` +
                           `• 외박: ${overnight}명\n` +
                           `• 퇴소: ${checkout}명\n` +
@@ -536,7 +547,7 @@
         }
 
         async function updateGoogleSheet() {
-            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+            if (GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbyPIuu7afE5YxjF5FhXAOtClICR1wuiqTg_4r5pYYwNqu6JvtzD63qFqUQrBXcGy7-b/exec') {
                 throw new Error('구글 앱스 스크립트 URL을 설정해주세요.');
             }
 
@@ -592,7 +603,7 @@
                 return;
             }
 
-            if (GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbyvy7-LFXF3NmLeLEHZ9R5GbnyjehenxAwdQukrR5dcuxG3KZtjgIMi6NOFcU8Guy2X/exec') {
+            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
                 showStatus('구글 앱스 스크립트 URL을 설정해주세요.', 'error');
                 return;
             }
@@ -631,7 +642,7 @@
         }
 
         function resetForm() {
-            // 기본 정보 초기화
+            // 기본 정보 초기화 (담당자 이름은 유지)
             document.getElementById('dormitory').value = '';
             document.getElementById('floor').value = '';
             document.getElementById('overnight').value = '0';
