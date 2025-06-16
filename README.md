@@ -1,0 +1,2 @@
+# domitory-management
+manage domi
