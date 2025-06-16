@@ -240,17 +240,32 @@
                 <div class="stat-card stat-total">
                     <div class="icon">👥</div>
                     <div class="number" id="totalCount">450</div>
-                    <div class="label">총원</div>
+                    <div class="label">총원 (시트등록)</div>
+                </div>
+                <div class="stat-card stat-total" style="border: 2px solid #28a745;">
+                    <div class="icon">📊</div>
+                    <div class="number" id="reportedTotalCount">0</div>
+                    <div class="label">총현재원 (보고합계)</div>
                 </div>
                 <div class="stat-card stat-male">
                     <div class="icon">👨</div>
                     <div class="number" id="maleCount">280</div>
                     <div class="label">남학생 (A,B,C,F동)</div>
                 </div>
+                <div class="stat-card stat-male" style="border: 2px solid #007bff;">
+                    <div class="icon">👨‍💼</div>
+                    <div class="number" id="reportedMaleCount">0</div>
+                    <div class="label">남학생 현재원</div>
+                </div>
                 <div class="stat-card stat-female">
                     <div class="icon">👩</div>
                     <div class="number" id="femaleCount">170</div>
                     <div class="label">여학생 (D,E동)</div>
+                </div>
+                <div class="stat-card stat-female" style="border: 2px solid #e83e8c;">
+                    <div class="icon">👩‍💼</div>
+                    <div class="number" id="reportedFemaleCount">0</div>
+                    <div class="label">여학생 현재원</div>
                 </div>
                 <div class="stat-card stat-overnight clickable" onclick="showDetail('overnight')">
                     <div class="icon">🌙</div>
@@ -322,7 +337,64 @@
 
         function loadData() {
             console.log('데이터 로드 시작');
-            updateStatistics();
+            document.getElementById('loadingDiv').style.display = 'block';
+            
+            // 실제 구글 시트에서 통계 데이터 가져오기
+            fetch(googleScriptUrl + '?action=getStats')
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('네트워크 오류: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(function(result) {
+                    if (result.success) {
+                        console.log('실제 통계 데이터 로드 성공:', result.stats);
+                        updateStatisticsFromServer(result.stats);
+                        studentsData = result.stats.overnightStudents.concat(
+                            result.stats.checkoutStudents,
+                            result.stats.newStudents,
+                            result.stats.moveInStudents,
+                            result.stats.moveOutStudents
+                        );
+                    } else {
+                        throw new Error(result.error || '서버 오류');
+                    }
+                })
+                .catch(function(error) {
+                    console.error('실제 데이터 로드 실패, 샘플 데이터 사용:', error);
+                    updateStatistics(); // 샘플 데이터 사용
+                })
+                .finally(function() {
+                    document.getElementById('loadingDiv').style.display = 'none';
+                });
+        }
+
+        function updateStatisticsFromServer(stats) {
+            console.log('서버 통계로 업데이트:', stats);
+            
+            // 총원 (C열 기준 - 미배정 제외)
+            document.getElementById('totalCount').textContent = stats.actualTotal || 0;
+            
+            // 총현재원 (보고된 현재원 합계)
+            document.getElementById('reportedTotalCount').textContent = stats.reportedTotal || 0;
+            
+            // 남학생/여학생 (C열 기준)
+            document.getElementById('maleCount').textContent = stats.actualMale || 0;
+            document.getElementById('femaleCount').textContent = stats.actualFemale || 0;
+            
+            // 남학생/여학생 현재원 (보고 기준)
+            document.getElementById('reportedMaleCount').textContent = stats.reportedMale || 0;
+            document.getElementById('reportedFemaleCount').textContent = stats.reportedFemale || 0;
+            
+            // 보고된 상태별 집계 데이터
+            document.getElementById('overnightCount').textContent = stats.overnight || 0;
+            document.getElementById('checkoutCount').textContent = stats.checkout || 0;
+            document.getElementById('newCount').textContent = stats.newEntry || 0;
+            document.getElementById('moveInCount').textContent = stats.moveIn || 0;
+            document.getElementById('moveOutCount').textContent = stats.moveOut || 0;
+            
+            console.log('통계 업데이트 완료');
         }
 
         function updateStatistics() {
