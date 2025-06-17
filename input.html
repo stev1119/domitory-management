@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>시대인재 기숙사 인원보고 시스템</title>
+    <title>기숙사 인원보고 시스템</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
@@ -246,7 +246,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-building"></i> 시대인대 기숙사 인원보고 시스템</h1>
+            <h1><i class="fas fa-building"></i> 기숙사 인원보고 시스템</h1>
             <p>매일 22:00 ~ 다음날 21:59까지 보고 가능</p>
             <div class="time-info">
                 <i class="fas fa-clock"></i> 현재 시간: <span id="currentTime"></span>
@@ -346,7 +346,7 @@
         const CONFIG = {
             SHEET_ID: '1cASz2h4Dd13H6vhdKAPHOFdf5BMsFjaFledqVbzpP8I',
             SHEET_NAME: 'yulee',
-            API_KEY: 'AIzaSyDl3zumUyEX_r-L8XuDn0RoaIRqiylC6xc', // ⚠️ 실제 API 키로 교체 필요
+            API_KEY: 'AIzaSyA1uY-EDvpxvxqyXTDwjNpS2ugYXQ3igtk', // API 키 설정 완료
             
             JANDI_WEBHOOK: 'https://wh.jandi.com/connect-api/webhook/29522216/3d9603c3b428b386c0d640758e236cb4',
             
@@ -770,7 +770,7 @@
             e.preventDefault();
             
             // API 키 확인
-            if (CONFIG.API_KEY === 'AIzaSyDl3zumUyEX_r-L8XuDn0RoaIRqiylC6xc') {
+            if (CONFIG.API_KEY === 'YOUR_GOOGLE_SHEETS_API_KEY') {
                 showAlert('Google Sheets API 키를 설정해주세요. 소스코드에서 CONFIG.API_KEY를 실제 API 키로 변경하세요.', 'error');
                 return;
             }
@@ -912,7 +912,7 @@
         // Jandi 메시지 생성
         function createJandiMessage(reportData) {
             const modificationText = reportData.isModification ? '[수정] ' : '';
-            let message = `${modificationText}🏠 시대인재 기숙사 인원보고\n\n`;
+            let message = `${modificationText}🏠 기숙사 인원보고\n\n`;
             message += `📅 보고시간: ${reportData.timestamp}\n`;
             message += `👤 담당자: ${reportData.manager}\n`;
             message += `🏢 위치: ${reportData.building}동 ${reportData.floor}층\n\n`;
