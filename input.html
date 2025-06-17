@@ -303,7 +303,7 @@
                     </div>
                     <div class="form-group">
                         <label for="dormitory">기숙사 동</label>
-                        <select id="dormitory">
+                        <select id="dormitory" onchange="checkDuplicateReport()">
                             <option value="">동 선택</option>
                             <option value="A">A동</option>
                             <option value="B">B동</option>
@@ -315,7 +315,7 @@
                     </div>
                     <div class="form-group">
                         <label for="floor">층</label>
-                        <select id="floor">
+                        <select id="floor" onchange="checkDuplicateReport()">
                             <option value="">층 선택</option>
                             <option value="1">1층</option>
                             <option value="2">2층</option>
@@ -323,6 +323,17 @@
                             <option value="4">4층</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="reportType">보고 유형</label>
+                        <select id="reportType">
+                            <option value="new">신규 보고</option>
+                            <option value="modify">수정 보고</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="duplicateWarning" class="status-message" style="display: none; background: #fff3cd; color: #856404; border: 1px solid #ffeaa7;">
+                    ⚠️ 이미 오늘 해당 동/층에 대한 보고가 있습니다. '수정 보고'를 선택하시거나 내일 22:00 이후에 다시 보고해주세요.
                 </div>
 
                 <div class="form-grid">
@@ -416,7 +427,7 @@
                 <div class="button-group">
                     <button class="btn btn-primary" onclick="submitData()">📤 데이터 전송</button>
                     <button class="btn btn-secondary" onclick="addDetailRow()">➕ 항목 추가</button>
-                    <button class="btn btn-danger" onclick="resetSheet()">🔄 시트 초기화</button>
+                    <button class="btn btn-danger" onclick="resetSheetWithPassword()">🔄 시트 초기화</button>
                 </div>
 
                 <div id="statusMessage" class="status-message"></div>
@@ -426,14 +437,97 @@
 
     <script>
         // 구글 앱스 스크립트 웹앱 URL
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPIuu7afE5YxjF5FhXAOtClICR1wuiqTg_4r5pYYwNqu6JvtzD63qFqUQrBXcGy7-b/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyZhDV9U-J03tl3fLY7Yb5HUQ3pCGvY5fBsYYnAnYbAnHzspe-CSU9-cduDonc3j5eJ/exec';
         const JANDI_WEBHOOK_URL = 'https://wh.jandi.com/connect-api/webhook/29522216/3d9603c3b428b386c0d640758e236cb4';
 
-        function changeValue(fieldId, delta) {
-            const field = document.getElementById(fieldId);
-            const currentValue = parseInt(field.value) || 0;
-            const newValue = Math.max(0, currentValue + delta);
-            field.value = newValue;
+        // 22시 기준 날짜 계산 함수
+        function getReportDate() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            
+            // 22시 이전이면 전날 기준
+            if (currentHour < 22) {
+                const yesterday = new Date(now);
+                yesterday.setDate(yesterday.getDate() - 1);
+                return yesterday.toDateString();
+            } else {
+                return now.toDateString();
+            }
+        }
+
+        // 중복 보고 확인 함수
+        function checkDuplicateReport() {
+            const dormitory = document.getElementById('dormitory').value;
+            const floor = document.getElementById('floor').value;
+            const warningDiv = document.getElementById('duplicateWarning');
+            
+            if (dormitory && floor) {
+                // 실제로는 서버에서 확인해야 함
+                // 여기서는 UI만 표시
+                checkExistingReport(dormitory, floor)
+                    .then(exists => {
+                        if (exists) {
+                            warningDiv.style.display = 'block';
+                            document.getElementById('reportType').value = 'modify';
+                        } else {
+                            warningDiv.style.display = 'none';
+                            document.getElementById('reportType').value = 'new';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('중복 확인 오류:', error);
+                        warningDiv.style.display = 'none';
+                    });
+            } else {
+                warningDiv.style.display = 'none';
+            }
+        }
+
+        // 기존 보고 확인
+        async function checkExistingReport(dormitory, floor) {
+            try {
+                const requestData = {
+                    action: 'checkExistingReport',
+                    dormitory: dormitory,
+                    floor: floor,
+                    reportDate: getReportDate()
+                };
+
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain',
+                    },
+                    body: JSON.stringify(requestData),
+                    mode: 'cors'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                return result.exists || false;
+
+            } catch (error) {
+                console.error('checkExistingReport 오류:', error);
+                return false;
+            }
+        }
+
+        // 비밀번호로 보호된 리셋 함수
+        function resetSheetWithPassword() {
+            const password = prompt('시트 초기화를 위한 비밀번호를 입력하세요:');
+            
+            if (password === null) {
+                return; // 사용자가 취소함
+            }
+            
+            if (password === '3825') {
+                resetSheet();
+            } else {
+                alert('비밀번호가 틀렸습니다.');
+            }
         }
 
         function addDetailRow() {
@@ -479,10 +573,18 @@
             }, 5000);
         }
 
+        function changeValue(fieldId, delta) {
+            const field = document.getElementById(fieldId);
+            const currentValue = parseInt(field.value) || 0;
+            const newValue = Math.max(0, currentValue + delta);
+            field.value = newValue;
+        }
+
         async function submitData() {
             const manager = document.getElementById('manager').value.trim();
             const dormitory = document.getElementById('dormitory').value;
             const floor = document.getElementById('floor').value;
+            const reportType = document.getElementById('reportType').value;
             const overnight = document.getElementById('overnight').value;
             const checkout = document.getElementById('checkout').value;
             const moveIn = document.getElementById('moveIn').value;
@@ -500,6 +602,19 @@
                 return;
             }
 
+            // 신규 보고인데 이미 보고가 있는 경우 확인
+            if (reportType === 'new') {
+                const exists = await checkExistingReport(dormitory, floor);
+                if (exists) {
+                    const confirm = window.confirm('이미 오늘 해당 동/층에 대한 보고가 있습니다. 수정 보고로 진행하시겠습니까?');
+                    if (confirm) {
+                        document.getElementById('reportType').value = 'modify';
+                    } else {
+                        return;
+                    }
+                }
+            }
+
             showStatus('데이터를 전송하는 중...', 'success');
 
             try {
@@ -513,7 +628,9 @@
                     moveIn: moveIn,
                     moveOut: moveOut,
                     newEntry: newEntry,
-                    current: current
+                    current: current,
+                    reportType: reportType,
+                    reportDate: getReportDate()
                 });
 
                 if (!reportResult.success) {
@@ -529,9 +646,11 @@
 
                 // 3. 잔디 웹훅으로 전송할 데이터 준비
                 const jandiData = {
-                    body: `📊 **기숙사 인원 현황 업데이트**\n\n` +
+                    body: `📊 **기숙사 인원 현황 ${reportType === 'modify' ? '수정' : '업데이트'}**\n\n` +
                           `👤 **담당자**: ${manager}\n` +
                           `🏢 **${dormitory}동 ${floor}층**\n` +
+                          `📅 **보고일**: ${getReportDate()}\n` +
+                          `🔄 **유형**: ${reportType === 'modify' ? '수정 보고' : '신규 보고'}\n\n` +
                           `• 외박: ${overnight}명\n` +
                           `• 퇴소: ${checkout}명\n` +
                           `• +이동: ${moveIn}명\n` +
@@ -540,7 +659,7 @@
                           `• 현재원: ${current}명\n\n` +
                           `📝 **상세 정보 업데이트**: ${sheetResult.updatedCount}건\n` +
                           `⏰ 업데이트 시간: ${new Date().toLocaleString('ko-KR')}`,
-                    connectColor: "#4facfe"
+                    connectColor: reportType === 'modify' ? "#ff9500" : "#4facfe"
                 };
 
                 // 4. 잔디 웹훅 전송
@@ -552,7 +671,7 @@
                     body: JSON.stringify(jandiData)
                 });
 
-                showStatus(`데이터가 성공적으로 전송되었습니다! (상세정보 ${sheetResult.updatedCount}건 업데이트)`, 'success');
+                showStatus(`데이터가 성공적으로 ${reportType === 'modify' ? '수정' : '전송'}되었습니다! (상세정보 ${sheetResult.updatedCount}건 업데이트)`, 'success');
                 
                 // 폼 초기화
                 resetForm();
@@ -564,37 +683,44 @@
         }
 
         async function submitReport(reportData) {
-            if (GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbyPIuu7afE5YxjF5FhXAOtClICR1wuiqTg_4r5pYYwNqu6JvtzD63qFqUQrBXcGy7-b/exec') {
-                
+            console.log('보고 데이터 전송 시작:', reportData);
+            
+            try {
                 const requestData = {
                     action: 'submitReport',
                     reportData: reportData
                 };
 
+                console.log('전송할 데이터:', requestData);
+
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'text/plain',
                     },
-                    body: JSON.stringify(requestData)
+                    body: JSON.stringify(requestData),
+                    mode: 'cors'
                 });
+
+                console.log('응답 상태:', response.status);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const result = await response.json();
+                console.log('서버 응답:', result);
                 return result;
-            } else {
-                throw new Error('구글 앱스 스크립트 URL이 설정되지 않았습니다.');
+
+            } catch (error) {
+                console.error('submitReport 오류:', error);
+                throw error;
             }
         }
 
         async function updateGoogleSheet() {
-            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
-                throw new Error('구글 앱스 스크립트 URL을 설정해주세요.');
-            }
-
+            console.log('구글 시트 업데이트 시작');
+            
             const tableRows = document.getElementById('detailsTable').rows;
             const details = [];
 
@@ -618,37 +744,43 @@
             }
 
             if (details.length === 0) {
+                console.log('업데이트할 상세 정보 없음');
                 return { success: true, updatedCount: 0 };
             }
 
-            const requestData = {
-                action: 'updateSheet',
-                details: details
-            };
+            try {
+                const requestData = {
+                    action: 'updateSheet',
+                    details: details
+                };
 
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestData)
-            });
+                console.log('시트 업데이트 데이터:', requestData);
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain',
+                    },
+                    body: JSON.stringify(requestData),
+                    mode: 'cors'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('시트 업데이트 응답:', result);
+                return result;
+
+            } catch (error) {
+                console.error('updateGoogleSheet 오류:', error);
+                throw error;
             }
-
-            const result = await response.json();
-            return result;
         }
 
         async function resetSheet() {
             if (!confirm('정말로 시트의 D열과 E열 데이터를 모두 삭제하시겠습니까?')) {
-                return;
-            }
-
-            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
-                showStatus('구글 앱스 스크립트 URL을 설정해주세요.', 'error');
                 return;
             }
 
@@ -659,12 +791,15 @@
                     action: 'resetSheet'
                 };
 
+                console.log('시트 초기화 요청');
+
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'text/plain',
                     },
-                    body: JSON.stringify(requestData)
+                    body: JSON.stringify(requestData),
+                    mode: 'cors'
                 });
 
                 if (!response.ok) {
@@ -680,7 +815,7 @@
                 }
 
             } catch (error) {
-                console.error('Error:', error);
+                console.error('resetSheet 오류:', error);
                 showStatus('시트 초기화 중 오류가 발생했습니다: ' + error.message, 'error');
             }
         }
