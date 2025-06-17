@@ -6,11 +6,7 @@
     <title>시대인재 기숙사 현황 대시보드</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -19,10 +15,7 @@
             padding: 20px;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1400px; margin: 0 auto; }
 
         .header {
             background: white;
@@ -33,11 +26,7 @@
             text-align: center;
         }
 
-        .header h1 {
-            color: #333;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
+        .header h1 { color: #333; font-size: 2.5rem; margin-bottom: 10px; }
 
         .header .controls {
             margin-top: 20px;
@@ -47,11 +36,7 @@
             flex-wrap: wrap;
         }
 
-        .search-container {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
+        .search-container { display: flex; gap: 10px; align-items: center; }
 
         .search-input {
             padding: 10px;
@@ -68,26 +53,14 @@
             cursor: pointer;
             font-size: 1rem;
             transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
         }
 
-        .btn-primary {
-            background: #4facfe;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #3b8bfe;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
+        .btn-primary { background: #4facfe; color: white; }
+        .btn-primary:hover { background: #3b8bfe; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-success { background: #28a745; color: white; }
 
         .stats-grid {
             display: grid;
@@ -106,29 +79,12 @@
             cursor: pointer;
         }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-card.clickable:hover { background: #f8f9fa; }
 
-        .stat-card.clickable:hover {
-            background: #f8f9fa;
-        }
-
-        .stat-card .icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-        }
-
-        .stat-card .number {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .stat-card .label {
-            color: #666;
-            font-size: 1rem;
-        }
+        .stat-card .icon { font-size: 2.5rem; margin-bottom: 15px; }
+        .stat-card .number { font-size: 2rem; font-weight: bold; margin-bottom: 5px; }
+        .stat-card .label { color: #666; font-size: 1rem; }
 
         .stat-card.total .icon { color: #4facfe; }
         .stat-card.current .icon { color: #28a745; }
@@ -166,11 +122,7 @@
             border-left: 5px solid #4facfe;
         }
 
-        .building-card h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
+        .building-card h3 { color: #333; margin-bottom: 15px; font-size: 1.2rem; }
 
         .floor-list {
             display: grid;
@@ -193,16 +145,8 @@
             background: #e3f2fd;
         }
 
-        .floor-item .floor-name {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .floor-item .floor-count {
-            color: #666;
-            font-size: 0.9rem;
-        }
+        .floor-item .floor-name { font-weight: bold; color: #333; margin-bottom: 5px; }
+        .floor-item .floor-count { color: #666; font-size: 0.9rem; }
 
         .student-card {
             background: white;
@@ -213,13 +157,8 @@
             border-left: 5px solid #4facfe;
         }
 
-        .student-card.male {
-            border-left-color: #007bff;
-        }
-
-        .student-card.female {
-            border-left-color: #e83e8c;
-        }
+        .student-card.male { border-left-color: #007bff; }
+        .student-card.female { border-left-color: #e83e8c; }
 
         .student-card .student-header {
             display: flex;
@@ -228,11 +167,7 @@
             margin-bottom: 15px;
         }
 
-        .student-card .student-name {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #333;
-        }
+        .student-card .student-name { font-size: 1.2rem; font-weight: bold; color: #333; }
 
         .student-card .student-room {
             background: #e9ecef;
@@ -254,15 +189,8 @@
             gap: 8px;
         }
 
-        .student-card .info-item i {
-            width: 16px;
-            color: #666;
-        }
-
-        .student-card .info-item span {
-            font-size: 0.9rem;
-            color: #333;
-        }
+        .student-card .info-item i { width: 16px; color: #666; }
+        .student-card .info-item span { font-size: 0.9rem; color: #333; }
 
         .status-badge {
             padding: 4px 8px;
@@ -309,10 +237,7 @@
             padding-bottom: 15px;
         }
 
-        .modal-header h3 {
-            color: #333;
-            font-size: 1.5rem;
-        }
+        .modal-header h3 { color: #333; font-size: 1.5rem; }
 
         .close {
             color: #aaa;
@@ -321,9 +246,7 @@
             cursor: pointer;
         }
 
-        .close:hover {
-            color: #333;
-        }
+        .close:hover { color: #333; }
 
         .loading {
             text-align: center;
@@ -348,10 +271,7 @@
             margin-top: 20px;
         }
 
-        .edit-form .form-group {
-            display: flex;
-            flex-direction: column;
-        }
+        .edit-form .form-group { display: flex; flex-direction: column; }
 
         .edit-form label {
             font-weight: 600;
@@ -374,31 +294,12 @@
         }
 
         @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .building-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .floor-list {
-                grid-template-columns: 1fr;
-            }
-            
-            .student-card .student-info {
-                grid-template-columns: 1fr;
-            }
-            
-            .header .controls {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .search-input {
-                width: 100%;
-                max-width: 300px;
-            }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .building-grid { grid-template-columns: 1fr; }
+            .floor-list { grid-template-columns: 1fr; }
+            .student-card .student-info { grid-template-columns: 1fr; }
+            .header .controls { flex-direction: column; align-items: center; }
+            .search-input { width: 100%; max-width: 300px; }
         }
     </style>
 </head>
@@ -419,7 +320,7 @@
                 <button class="btn btn-success" onclick="showEditModal()">
                     <i class="fas fa-edit"></i> 수동 수정
                 </button>
-                <a href="index.html" class="btn btn-primary">
+                <a href="index-standalone.html" class="btn btn-primary">
                     <i class="fas fa-plus"></i> 인원보고
                 </a>
             </div>
@@ -521,17 +422,257 @@
         </div>
     </div>
 
-    <script src="js/config.js"></script>
-    <script src="js/sheets-api.js"></script>
     <script>
+        // CONFIG 설정
+        const CONFIG = {
+            SHEET_ID: '1cASz2h4Dd13H6vhdKAPHOFdf5BMsFjaFledqVbzpP8I',
+            SHEET_NAME: 'yulee',
+            API_KEY: 'AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY', // ⚠️ 실제 API 키로 교체 필요
+            
+            MANAGERS: [
+                '김담당', '이담당', '박담당', '최담당', '정담당',
+                '강담당', '조담당', '윤담당', '장담당', '임담당',
+                '한담당', '오담당', '서담당', '신담당', '권담당',
+                '황담당', '안담당', '송담당', '전담당', '홍담당',
+                '문담당', '양담당', '백담당', '남담당'
+            ],
+            
+            BUILDINGS: ['A', 'B', 'C', 'D', 'E', 'F'],
+            FLOORS: [1, 2, 3, 4],
+            
+            GENDER_BY_BUILDING: {
+                'A': '남', 'B': '남', 'C': '남', 'F': '남',
+                'D': '여', 'E': '여'
+            },
+            
+            STATUS_TYPES: [
+                '외박', '외출', '퇴소', '이동+', '이동-', '정상', '기타'
+            ]
+        };
+
+        // SheetsAPI 클래스
+        class SheetsAPI {
+            constructor() {
+                this.baseUrl = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}`;
+                this.cache = new Map();
+                this.cacheExpiry = 5 * 60 * 1000;
+            }
+            
+            async readRange(range) {
+                const cacheKey = `read_${range}`;
+                const cached = this.cache.get(cacheKey);
+                
+                if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
+                    return cached.data;
+                }
+                
+                try {
+                    const url = `${this.baseUrl}/values/${CONFIG.SHEET_NAME}!${range}?key=${CONFIG.API_KEY}`;
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error(`시트 읽기 실패: ${response.status} - ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    const result = data.values || [];
+                    
+                    this.cache.set(cacheKey, {
+                        data: result,
+                        timestamp: Date.now()
+                    });
+                    
+                    return result;
+                } catch (error) {
+                    console.error('시트 읽기 오류:', error);
+                    throw error;
+                }
+            }
+            
+            async getAllStudents() {
+                try {
+                    const data = await this.readRange('A:N');
+                    const students = [];
+                    
+                    for (let i = 1; i < data.length; i++) {
+                        const row = data[i];
+                        if (row[1] && row[2]) {
+                            students.push({
+                                rowIndex: i + 1,
+                                roomNumber: row[1] || '',
+                                name: row[2] || '',
+                                status: row[3] || '',
+                                memo: row[4] || '',
+                                parentPhone: row[5] || '',
+                                studentPhone: row[6] || '',
+                                labSeat: row[7] || '',
+                                group: row[8] || '',
+                                teacher: row[9] || '',
+                                gender: row[11] || '',
+                                admissionDate: row[12] || '',
+                                building: row[1] ? row[1].charAt(0) : '',
+                                floor: row[1] ? row[1].charAt(1) : '',
+                                room: row[1] ? row[1].substring(1) : ''
+                            });
+                        }
+                    }
+                    
+                    return students;
+                } catch (error) {
+                    console.error('학생 데이터 가져오기 오류:', error);
+                    throw error;
+                }
+            }
+            
+            async findStudentByName(name) {
+                const students = await this.getAllStudents();
+                return students.filter(student => 
+                    student.name.includes(name) || name.includes(student.name)
+                );
+            }
+            
+            async findStudentByRoom(roomNumber) {
+                const students = await this.getAllStudents();
+                return students.filter(student => student.roomNumber === roomNumber);
+            }
+            
+            async findStudentByLabSeat(labSeat) {
+                const students = await this.getAllStudents();
+                return students.filter(student => student.labSeat === labSeat);
+            }
+            
+            async getStudentsByBuildingFloor(building, floor) {
+                const students = await this.getAllStudents();
+                return students.filter(student => 
+                    student.building === building && student.floor === floor.toString()
+                );
+            }
+            
+            async updateCell(row, col, value) {
+                const range = `${this.columnToLetter(col)}${row}`;
+                return await this.writeRange(range, [[value]]);
+            }
+            
+            async writeRange(range, values) {
+                try {
+                    const url = `${this.baseUrl}/values/${CONFIG.SHEET_NAME}!${range}?valueInputOption=RAW&key=${CONFIG.API_KEY}`;
+                    
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            values: values
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`시트 쓰기 실패: ${response.status} - ${response.statusText}`);
+                    }
+                    
+                    this.clearCache();
+                    return await response.json();
+                } catch (error) {
+                    console.error('시트 쓰기 오류:', error);
+                    throw error;
+                }
+            }
+            
+            columnToLetter(col) {
+                let letter = '';
+                while (col > 0) {
+                    col--;
+                    letter = String.fromCharCode(65 + (col % 26)) + letter;
+                    col = Math.floor(col / 26);
+                }
+                return letter;
+            }
+            
+            clearCache() {
+                this.cache.clear();
+            }
+            
+            async getStatistics() {
+                try {
+                    const students = await this.getAllStudents();
+                    
+                    const stats = {
+                        total: students.length,
+                        current: 0,
+                        maleTotal: 0,
+                        femaleTotal: 0,
+                        maleCurrent: 0,
+                        femaleCurrent: 0,
+                        statusCounts: {},
+                        buildingStats: {},
+                        floorStats: {}
+                    };
+                    
+                    students.forEach(student => {
+                        const gender = CONFIG.GENDER_BY_BUILDING[student.building] || '기타';
+                        const status = student.status || '정상';
+                        
+                        if (gender === '남') {
+                            stats.maleTotal++;
+                            if (status === '정상' || !status) {
+                                stats.maleCurrent++;
+                            }
+                        } else if (gender === '여') {
+                            stats.femaleTotal++;
+                            if (status === '정상' || !status) {
+                                stats.femaleCurrent++;
+                            }
+                        }
+                        
+                        if (status === '정상' || !status) {
+                            stats.current++;
+                        }
+                        
+                        stats.statusCounts[status] = (stats.statusCounts[status] || 0) + 1;
+                        
+                        const buildingKey = student.building;
+                        if (!stats.buildingStats[buildingKey]) {
+                            stats.buildingStats[buildingKey] = { total: 0, current: 0 };
+                        }
+                        stats.buildingStats[buildingKey].total++;
+                        if (status === '정상' || !status) {
+                            stats.buildingStats[buildingKey].current++;
+                        }
+                        
+                        const floorKey = `${student.building}${student.floor}`;
+                        if (!stats.floorStats[floorKey]) {
+                            stats.floorStats[floorKey] = { total: 0, current: 0 };
+                        }
+                        stats.floorStats[floorKey].total++;
+                        if (status === '정상' || !status) {
+                            stats.floorStats[floorKey].current++;
+                        }
+                    });
+                    
+                    return stats;
+                } catch (error) {
+                    console.error('통계 계산 오류:', error);
+                    throw error;
+                }
+            }
+        }
+
+        // 전역 변수
+        const sheetsAPI = new SheetsAPI();
         let currentData = null;
         let currentStats = null;
 
         // 페이지 로드 시 초기화
         document.addEventListener('DOMContentLoaded', function() {
+            // API 키 확인
+            if (CONFIG.API_KEY === 'YOUR_GOOGLE_SHEETS_API_KEY') {
+                alert('Google Sheets API 키를 설정해주세요. 소스코드에서 CONFIG.API_KEY를 실제 API 키로 변경하세요.');
+                return;
+            }
+            
             refreshData();
             
-            // Enter 키로 검색
             document.getElementById('searchInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     searchStudent();
@@ -545,19 +686,15 @@
             });
         });
 
-        // 데이터 새로고침
         async function refreshData() {
             try {
                 showLoading();
                 
-                // 캐시 삭제
                 sheetsAPI.clearCache();
                 
-                // 데이터 가져오기
                 currentData = await sheetsAPI.getAllStudents();
                 currentStats = await sheetsAPI.getStatistics();
                 
-                // UI 업데이트
                 updateStatsDisplay();
                 updateStatusSection();
                 updateBuildingSection();
@@ -570,7 +707,6 @@
             }
         }
 
-        // 로딩 표시
         function showLoading() {
             document.getElementById('loadingContainer').style.display = 'block';
             document.getElementById('statsContainer').style.display = 'none';
@@ -579,7 +715,6 @@
             document.getElementById('searchResults').style.display = 'none';
         }
 
-        // 로딩 숨기기
         function hideLoading() {
             document.getElementById('loadingContainer').style.display = 'none';
             document.getElementById('statsContainer').style.display = 'grid';
@@ -587,7 +722,6 @@
             document.getElementById('buildingSection').style.display = 'block';
         }
 
-        // 통계 표시 업데이트
         function updateStatsDisplay() {
             if (!currentStats) return;
             
@@ -599,7 +733,6 @@
             document.getElementById('checkoutCount').textContent = currentStats.statusCounts['퇴소'] || 0;
         }
 
-        // 상태별 섹션 업데이트
         function updateStatusSection() {
             const statusGrid = document.getElementById('statusGrid');
             statusGrid.innerHTML = '';
@@ -625,7 +758,6 @@
             });
         }
 
-        // 동별 섹션 업데이트
         function updateBuildingSection() {
             const buildingGrid = document.getElementById('buildingGrid');
             buildingGrid.innerHTML = '';
@@ -667,7 +799,6 @@
             });
         }
 
-        // 상태 아이콘 가져오기
         function getStatusIcon(status) {
             const icons = {
                 '정상': 'fas fa-user-check',
@@ -681,7 +812,6 @@
             return icons[status] || 'fas fa-user';
         }
 
-        // 학생 검색
         async function searchStudent() {
             const searchTerm = document.getElementById('searchInput').value.trim();
             if (!searchTerm) {
@@ -694,19 +824,15 @@
                 
                 let students = [];
                 
-                // 이름으로 검색
                 const nameResults = await sheetsAPI.findStudentByName(searchTerm);
                 students = students.concat(nameResults);
                 
-                // 기숙사 번호로 검색
                 const roomResults = await sheetsAPI.findStudentByRoom(searchTerm);
                 students = students.concat(roomResults);
                 
-                // 라브 좌석으로 검색
                 const labResults = await sheetsAPI.findStudentByLabSeat(searchTerm);
                 students = students.concat(labResults);
                 
-                // 중복 제거
                 students = students.filter((student, index, self) => 
                     index === self.findIndex(s => s.rowIndex === student.rowIndex)
                 );
@@ -721,7 +847,6 @@
             }
         }
 
-        // 검색 결과 표시
         function displaySearchResults(students, searchTerm) {
             const container = document.getElementById('searchResultsContainer');
             const section = document.getElementById('searchResults');
@@ -741,7 +866,6 @@
             section.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // 특정 상태의 학생들 표시
         async function showStatusStudents(status) {
             try {
                 if (!currentData) {
@@ -759,7 +883,6 @@
             }
         }
 
-        // 특정 동/층의 학생들 표시
         async function showBuildingFloorStudents(building, floor) {
             try {
                 const students = await sheetsAPI.getStudentsByBuildingFloor(building, floor);
@@ -773,7 +896,6 @@
             }
         }
 
-        // 학생 카드 생성
         function createStudentCard(student) {
             const gender = CONFIG.GENDER_BY_BUILDING[student.building] || '기타';
             const statusBadge = student.status ? 
@@ -804,31 +926,26 @@
             `;
         }
 
-        // 모달 표시
         function displayModal(title, content) {
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('modalBody').innerHTML = content;
             document.getElementById('studentModal').style.display = 'block';
         }
 
-        // 모달 닫기
         function closeModal() {
             document.getElementById('studentModal').style.display = 'none';
         }
 
-        // 수정 모달 표시
         function showEditModal() {
             document.getElementById('editModal').style.display = 'block';
             document.getElementById('editForm').style.display = 'none';
             document.getElementById('editSearchInput').value = '';
         }
 
-        // 수정 모달 닫기
         function closeEditModal() {
             document.getElementById('editModal').style.display = 'none';
         }
 
-        // 수정을 위한 검색
         async function searchForEdit() {
             const searchTerm = document.getElementById('editSearchInput').value.trim();
             if (!searchTerm) {
@@ -843,7 +960,7 @@
                     return;
                 }
                 
-                const student = students[0]; // 첫 번째 결과 사용
+                const student = students[0];
                 showEditForm(student);
                 
             } catch (error) {
@@ -852,7 +969,6 @@
             }
         }
 
-        // 수정 폼 표시
         function showEditForm(student) {
             const form = document.getElementById('editForm');
             form.innerHTML = `
@@ -887,25 +1003,22 @@
             form.style.display = 'block';
         }
 
-        // 학생 정보 저장
         async function saveStudentEdit(rowIndex) {
             try {
                 const status = document.getElementById('editStatus').value;
                 const memo = document.getElementById('editMemo').value;
-                const name = document.getElementById('editName').value;
                 
                 if (!status) {
                     alert('상태를 선택해주세요.');
                     return;
                 }
                 
-                // Google Sheets 업데이트
-                await sheetsAPI.updateCell(rowIndex, 4, status); // D열
-                await sheetsAPI.updateCell(rowIndex, 5, memo);   // E열
+                await sheetsAPI.updateCell(rowIndex, 4, status);
+                await sheetsAPI.updateCell(rowIndex, 5, memo);
                 
                 alert('학생 정보가 성공적으로 수정되었습니다.');
                 closeEditModal();
-                refreshData(); // 데이터 새로고침
+                refreshData();
                 
             } catch (error) {
                 console.error('저장 오류:', error);
@@ -913,7 +1026,6 @@
             }
         }
 
-        // 모달 외부 클릭 시 닫기
         window.onclick = function(event) {
             const modal1 = document.getElementById('studentModal');
             const modal2 = document.getElementById('editModal');
