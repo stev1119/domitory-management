@@ -13,181 +13,270 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
         }
 
-        .header {
-            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        .main-content {
+        .main-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
             padding: 40px;
-        }
-
-        .form-section {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 30px;
             margin-bottom: 30px;
-            border-left: 5px solid #4facfe;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .form-section h2 {
-            color: #333;
+        .main-header h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .main-header .subtitle {
+            font-size: 1.2rem;
+            color: #6c757d;
             margin-bottom: 20px;
-            font-size: 1.5rem;
         }
 
-        .form-row {
+        .time-display {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            display: inline-block;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #f0f0f0;
+        }
+
+        .section-header i {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-header h2 {
+            font-size: 1.6rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
         }
 
         .form-group {
-            display: flex;
-            flex-direction: column;
+            position: relative;
         }
 
         .form-group label {
+            display: block;
             font-weight: 600;
-            color: #555;
-            margin-bottom: 8px;
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 1rem;
         }
 
         .form-group select,
-        .form-group input {
-            padding: 12px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
             font-size: 1rem;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
+            background: white;
         }
 
         .form-group select:focus,
-        .form-group input:focus {
+        .form-group input[type="text"]:focus {
             outline: none;
             border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .number-input-group {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .number-input-group:hover {
+            border-color: #4facfe;
+            box-shadow: 0 5px 20px rgba(79, 172, 254, 0.1);
         }
 
         .number-input {
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            gap: 15px;
         }
 
         .number-input button {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border: none;
-            background: #4facfe;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
             border-radius: 50%;
             cursor: pointer;
             font-size: 1.2rem;
-            transition: background 0.3s;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
         }
 
         .number-input button:hover {
-            background: #3b8bfe;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        .number-input button:active {
+            transform: translateY(-1px);
         }
 
         .number-input input {
             width: 80px;
             text-align: center;
-            margin: 0;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            padding: 8px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            background: white;
+            color: #495057;
         }
 
-        .form-group label {
-            font-weight: 600;
-            color: #555;
-            margin-bottom: 8px;
-            font-size: 0.95rem;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
         .individual-section {
-            background: #fff5f5;
+            background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
             border-left: 5px solid #ff6b6b;
         }
 
         .student-row {
-            background: white;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid #e9ecef;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
             position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .student-row:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border-color: #4facfe;
+        }
+
+        .student-row.has-data {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #d4edda 0%, rgba(255, 255, 255, 0.9) 100%);
         }
 
         .delete-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ff4757;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+        }
+
+        .delete-btn:hover {
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
         }
 
         .add-btn {
-            background: #2ed573;
+            background: linear-gradient(135deg, #2ed573 0%, #17a2b8 100%);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
+            padding: 15px 30px;
+            border-radius: 50px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
             margin: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(46, 213, 115, 0.3);
+        }
+
+        .add-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(46, 213, 115, 0.4);
         }
 
         .submit-btn {
-            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
             border: none;
-            padding: 15px 40px;
-            border-radius: 10px;
-            font-size: 1.2rem;
+            padding: 20px 50px;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 600;
             cursor: pointer;
             width: 100%;
-            margin-top: 30px;
-            transition: transform 0.3s;
+            margin-top: 40px;
+            transition: all 0.3s ease;
+            box-shadow: 0 15px 40px rgba(79, 172, 254, 0.3);
         }
 
         .submit-btn:hover {
-            transform: translateY(-2px);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(79, 172, 254, 0.4);
         }
 
         .submit-btn:disabled {
@@ -196,199 +285,316 @@
             transform: none;
         }
 
-        .dashboard-link {
+        .navigation {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .nav-link {
             display: inline-block;
-            background: #ff6b6b;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
             color: white;
             text-decoration: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            margin: 20px 0;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .nav-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.4);
         }
 
         .alert {
-            padding: 15px;
-            border-radius: 8px;
+            padding: 20px 25px;
+            border-radius: 15px;
             margin: 20px 0;
+            border: none;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
         .alert.success {
-            background: #d4edda;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
             color: #155724;
-            border: 1px solid #c3e6cb;
+            border-left: 5px solid #28a745;
         }
 
         .alert.error {
-            background: #f8d7da;
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
             color: #721c24;
-            border: 1px solid #f5c6cb;
+            border-left: 5px solid #dc3545;
         }
 
         .alert.warning {
-            background: #fff3cd;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
             color: #856404;
-            border: 1px solid #ffeaa7;
+            border-left: 5px solid #ffc107;
         }
 
-        .time-info {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
+        /* 모바일 최적화 개선 */
         @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
+            body {
+                padding: 10px;
             }
             
-            .header h1 {
+            .main-header {
+                padding: 25px 20px;
+            }
+            
+            .main-header h1 {
                 font-size: 2rem;
             }
             
-            .main-content {
+            .form-container {
+                padding: 25px 20px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .number-input-group {
+                padding: 15px;
+            }
+            
+            .number-input button {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+            
+            .number-input input {
+                width: 70px;
+                font-size: 1.1rem;
+                padding: 10px;
+            }
+            
+            .student-row {
                 padding: 20px;
             }
+            
+            .submit-btn {
+                padding: 18px 40px;
+                font-size: 1.2rem;
+            }
+            
+            .add-btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+        }
+
+        /* 터치 디바이스 최적화 */
+        @media (hover: none) and (pointer: coarse) {
+            .number-input button:hover,
+            .submit-btn:hover,
+            .add-btn:hover,
+            .student-row:hover {
+                transform: none;
+            }
+            
+            .number-input button:active {
+                transform: scale(0.95);
+            }
+            
+            .submit-btn:active,
+            .add-btn:active {
+                transform: scale(0.98);
+            }
+            
+            /* 터치 타겟 크기 증가 */
+            .form-group select,
+            .form-group input {
+                padding: 15px 20px;
+                font-size: 16px; /* iOS 자동 줌 방지 */
+                min-height: 50px;
+            }
+            
+            .delete-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* 애니메이션 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-container {
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .student-row {
+            animation: fadeInUp 0.4s ease;
+        }
+
+        /* 로딩 스피너 */
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4facfe;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <!-- 메인 헤더 -->
+        <div class="main-header">
             <h1><i class="fas fa-building"></i> 기숙사 인원보고 시스템</h1>
-            <p>매일 22:00 ~ 다음날 21:59까지 보고 가능</p>
-            <div class="time-info">
+            <p class="subtitle">매일 22:00 ~ 다음날 21:59까지 보고 가능</p>
+            <div class="time-display">
                 <i class="fas fa-clock"></i> 현재 시간: <span id="currentTime"></span>
             </div>
         </div>
 
-        <div class="main-content">
-            <div id="alertContainer"></div>
+        <div id="alertContainer"></div>
 
-            <form id="reportForm">
-                <!-- 기본 보고 정보 -->
-                <div class="form-section">
-                    <h2><i class="fas fa-user-tie"></i> 기본 보고 정보</h2>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="manager">담당자</label>
-                            <select id="manager" name="manager" required>
-                                <option value="">담당자 선택</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="building">동</label>
-                            <select id="building" name="building" required>
-                                <option value="">동 선택</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="floor">층</label>
-                            <select id="floor" name="floor" required>
-                                <option value="">층 선택</option>
-                            </select>
+        <form id="reportForm">
+            <!-- 기본 보고 정보 -->
+            <div class="form-container">
+                <div class="section-header">
+                    <i class="fas fa-user-tie"></i>
+                    <h2>기본 보고 정보</h2>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="manager">담당자</label>
+                        <select id="manager" name="manager" required>
+                            <option value="">담당자 선택</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="building">동</label>
+                        <select id="building" name="building" required>
+                            <option value="">동 선택</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="floor">층</label>
+                        <select id="floor" name="floor" required>
+                            <option value="">층 선택</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="number-input-group">
+                        <label>현재원</label>
+                        <div class="number-input">
+                            <button type="button" onclick="decreaseValue('currentCount')">-</button>
+                            <input type="number" id="currentCount" name="currentCount" value="0" min="0">
+                            <button type="button" onclick="increaseValue('currentCount')">+</button>
                         </div>
                     </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>외박</label>
-                            <div class="number-input">
-                                <button type="button" onclick="decreaseValue('overnight')">-</button>
-                                <input type="number" id="overnight" name="overnight" value="0" min="0">
-                                <button type="button" onclick="increaseValue('overnight')">+</button>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>퇴소</label>
-                            <div class="number-input">
-                                <button type="button" onclick="decreaseValue('checkout')">-</button>
-                                <input type="number" id="checkout" name="checkout" value="0" min="0">
-                                <button type="button" onclick="increaseValue('checkout')">+</button>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>이동 OUT (-)</label>
-                            <div class="number-input">
-                                <button type="button" onclick="decreaseValue('moveOut')">-</button>
-                                <input type="number" id="moveOut" name="moveOut" value="0" min="0">
-                                <button type="button" onclick="increaseValue('moveOut')">+</button>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>이동 IN (+)</label>
-                            <div class="number-input">
-                                <button type="button" onclick="decreaseValue('moveIn')">-</button>
-                                <input type="number" id="moveIn" name="moveIn" value="0" min="0">
-                                <button type="button" onclick="increaseValue('moveIn')">+</button>
-                            </div>
+                    <div class="number-input-group">
+                        <label>외박</label>
+                        <div class="number-input">
+                            <button type="button" onclick="decreaseValue('overnight')">-</button>
+                            <input type="number" id="overnight" name="overnight" value="0" min="0">
+                            <button type="button" onclick="increaseValue('overnight')">+</button>
                         </div>
                     </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>현재원 (수동입력)</label>
-                            <div class="number-input">
-                                <button type="button" onclick="decreaseValue('currentCount')">-</button>
-                                <input type="number" id="currentCount" name="currentCount" value="0" min="0">
-                                <button type="button" onclick="increaseValue('currentCount')">+</button>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>외출</label>
-                            <div class="number-input">
-                                <button type="button" onclick="decreaseValue('outing')">-</button>
-                                <input type="number" id="outing" name="outing" value="0" min="0">
-                                <button type="button" onclick="increaseValue('outing')">+</button>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>기타</label>
-                            <div class="number-input">
-                                <button type="button" onclick="decreaseValue('etc')">-</button>
-                                <input type="number" id="etc" name="etc" value="0" min="0">
-                                <button type="button" onclick="increaseValue('etc')">+</button>
-                            </div>
+                    <div class="number-input-group">
+                        <label>외출</label>
+                        <div class="number-input">
+                            <button type="button" onclick="decreaseValue('outing')">-</button>
+                            <input type="number" id="outing" name="outing" value="0" min="0">
+                            <button type="button" onclick="increaseValue('outing')">+</button>
                         </div>
                     </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="memo">기타 사항</label>
-                            <input type="text" id="memo" name="memo" placeholder="기타 내용을 입력하세요">
+                    <div class="number-input-group">
+                        <label>퇴소</label>
+                        <div class="number-input">
+                            <button type="button" onclick="decreaseValue('checkout')">-</button>
+                            <input type="number" id="checkout" name="checkout" value="0" min="0">
+                            <button type="button" onclick="increaseValue('checkout')">+</button>
+                        </div>
+                    </div>
+                    <div class="number-input-group">
+                        <label>이동 OUT (-)</label>
+                        <div class="number-input">
+                            <button type="button" onclick="decreaseValue('moveOut')">-</button>
+                            <input type="number" id="moveOut" name="moveOut" value="0" min="0">
+                            <button type="button" onclick="increaseValue('moveOut')">+</button>
+                        </div>
+                    </div>
+                    <div class="number-input-group">
+                        <label>이동 IN (+)</label>
+                        <div class="number-input">
+                            <button type="button" onclick="decreaseValue('moveIn')">-</button>
+                            <input type="number" id="moveIn" name="moveIn" value="0" min="0">
+                            <button type="button" onclick="increaseValue('moveIn')">+</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- 개별 학생 정보 입력 -->
-                <div class="form-section individual-section">
-                    <h2><i class="fas fa-users"></i> 개별 학생 정보 입력</h2>
-                    <div id="studentRows">
-                        <!-- 학생 행들이 동적으로 추가될 예정 -->
-                    </div>
-                    <button type="button" class="add-btn" onclick="addStudentRow()">
-                        <i class="fas fa-plus"></i> 학생 추가
-                    </button>
+                <div class="form-group">
+                    <label for="memo">기타 사항</label>
+                    <input type="text" id="memo" name="memo" placeholder="기타 내용을 입력하세요">
                 </div>
+            </div>
 
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <i class="fas fa-paper-plane"></i> 인원보고 제출
+            <!-- 개별 학생 정보 입력 -->
+            <div class="form-container individual-section">
+                <div class="section-header">
+                    <i class="fas fa-users"></i>
+                    <h2>개별 학생 정보 입력</h2>
+                </div>
+                <div id="studentRows">
+                    <!-- 학생 행들이 동적으로 추가될 예정 -->
+                </div>
+                <button type="button" class="add-btn" onclick="addStudentRow()">
+                    <i class="fas fa-plus"></i> 학생 추가
                 </button>
-            </form>
+            </div>
 
-            <a href="dashboard-standalone.html" class="dashboard-link">
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <i class="fas fa-paper-plane"></i> 인원보고 제출
+            </button>
+        </form>
+
+        <div class="navigation">
+            <a href="enhanced-dashboard.html" class="nav-link">
                 <i class="fas fa-chart-dashboard"></i> 대시보드 보기
             </a>
         </div>
     </div>
 
     <script>
-        // CONFIG 설정 - 여기서 API 키와 설정을 수정하세요
+        // CONFIG 설정
         const CONFIG = {
             SHEET_ID: '1cASz2h4Dd13H6vhdKAPHOFdf5BMsFjaFledqVbzpP8I',
             SHEET_NAME: 'yulee',
-            API_KEY: 'AIzaSyA1uY-EDvpxvxqyXTDwjNpS2ugYXQ3igtk', // API 키 설정 완료
+            API_KEY: 'AIzaSyA1uY-EDvpxvxqyXTDwjNpS2ugYXQ3igtk',
             
             JANDI_WEBHOOK: 'https://wh.jandi.com/connect-api/webhook/29522216/3d9603c3b428b386c0d640758e236cb4',
             
@@ -415,6 +621,16 @@
                 'D': { '1': '101-123', '2': '201-223', '3': '301-323', '4': '401-423' },
                 'E': { '1': '101-140', '2': '201-240', '3': '301-340', '4': '401-440' },
                 'F': { '1': '101-117', '2': '201-217', '3': '301-317', '4': '401-417' }
+            },
+            
+            // 3인실 시트 매핑 정보
+            TRIPLE_ROOM_MAPPING: {
+                'A4': { startRow: 187, endRow: 282, startRoom: 401, endRoom: 432 }, // 32개 호실 × 3명 = 96행
+                'B4': { startRow: 405, endRow: 467, startRoom: 401, endRoom: 421 }, // 21개 호실 × 3명 = 63행
+                'C4': { startRow: 653, endRow: 748, startRoom: 401, endRoom: 432 }, // 32개 호실 × 3명 = 96행
+                'D4': { startRow: 883, endRow: 951, startRoom: 401, endRoom: 423 }, // 23개 호실 × 3명 = 69행
+                'E4': { startRow: 1184, endRow: 1303, startRoom: 401, endRoom: 440 }, // 40개 호실 × 3명 = 120행
+                'F4': { startRow: 1402, endRow: 1452, startRoom: 401, endRoom: 417 }  // 17개 호실 × 3명 = 51행
             },
             
             STATUS_TYPES: [
@@ -474,7 +690,7 @@
             }
         };
 
-        // SheetsAPI 클래스
+        // SheetsAPI 클래스 (3인실 처리 개선)
         class SheetsAPI {
             constructor() {
                 this.baseUrl = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}`;
@@ -495,65 +711,7 @@
                     const response = await fetch(url);
                     
                     if (!response.ok) {
-                        throw new Error(`시트 읽기 실패: ${response.status} - ${response.statusText}`);
-                    }
-                    
-                    const data = await response.json();
-                    const result = data.values || [];
-                    
-                    this.cache.set(cacheKey, {
-                        data: result,
-                        timestamp: Date.now()
-                    });
-                    
-                    return result;
-                } catch (error) {
-                    console.error('시트 읽기 오류:', error);
-                    throw error;
-                }
-            }
-            
-            async findStudentByRoom(roomNumber) {
-                try {
-                    const data = await this.readRange('A:N');
-                    const students = [];
-                    
-                    for (let i = 1; i < data.length; i++) {
-                        const row = data[i];
-                        if (row[1] === roomNumber && row[2]) {
-                            students.push({
-                                rowIndex: i + 1,
-                                roomNumber: row[1] || '',
-                                name: row[2] || '',
-                                status: row[3] || '',
-                                memo: row[4] || ''
-                            });
-                        }
-                    }
-                    
-                    return students;
-                } catch (error) {
-                    console.error('학생 검색 오류:', error);
-                    throw error;
-                }
-            }
-            
-            async updateStudentStatus(name, status, memo = '') {
-                try {
-                    const data = await this.readRange('A:N');
-                    
-                    for (let i = 1; i < data.length; i++) {
-                        const row = data[i];
-                        if (row[2] === name) {
-                            await this.updateCell(i + 1, 4, status);
-                            if (memo) {
-                                await this.updateCell(i + 1, 5, memo);
-                            }
-                            return { rowIndex: i + 1, name: row[2] };
-                        }
-                    }
-                    
-                    throw new Error(`학생을 찾을 수 없습니다: ${name}`);
+                        throw new Error(`학생을 찾을 수 없습니다: ${name}`);
                 } catch (error) {
                     console.error('학생 상태 업데이트 오류:', error);
                     throw error;
@@ -666,6 +824,8 @@
         function increaseValue(fieldId) {
             const input = document.getElementById(fieldId);
             input.value = parseInt(input.value) + 1;
+            input.style.transform = 'scale(1.1)';
+            setTimeout(() => input.style.transform = 'scale(1)', 200);
         }
 
         function decreaseValue(fieldId) {
@@ -673,6 +833,8 @@
             const currentValue = parseInt(input.value);
             if (currentValue > 0) {
                 input.value = currentValue - 1;
+                input.style.transform = 'scale(1.1)';
+                setTimeout(() => input.style.transform = 'scale(1)', 200);
             }
         }
 
@@ -685,11 +847,11 @@
             rowDiv.id = `studentRow${studentRowCount}`;
             
             rowDiv.innerHTML = `
-                <button type="button" class="delete-btn" onclick="removeStudentRow(${studentRowCount})">
+                <button type="button" class="delete-btn" onclick="removeStudentRow(${studentRowCount})" title="삭제">
                     <i class="fas fa-times"></i>
                 </button>
                 
-                <div class="form-row">
+                <div class="form-grid">
                     <div class="form-group">
                         <label>동</label>
                         <select name="studentBuilding${studentRowCount}" onchange="updateRoomOptions(${studentRowCount})">
@@ -712,21 +874,23 @@
                     </div>
                     <div class="form-group">
                         <label>이름</label>
-                        <input type="text" name="studentName${studentRowCount}" readonly placeholder="자동 입력">
+                        <select name="studentName${studentRowCount}" onchange="checkRowData(${studentRowCount})">
+                            <option value="">이름 선택</option>
+                        </select>
                     </div>
                 </div>
                 
-                <div class="form-row">
+                <div class="form-grid">
                     <div class="form-group">
                         <label>상태</label>
-                        <select name="studentStatus${studentRowCount}">
+                        <select name="studentStatus${studentRowCount}" onchange="checkRowData(${studentRowCount})">
                             <option value="">상태 선택</option>
                             ${CONFIG.STATUS_TYPES.map(s => `<option value="${s}">${s}</option>`).join('')}
                         </select>
                     </div>
                     <div class="form-group">
                         <label>메모</label>
-                        <input type="text" name="studentMemo${studentRowCount}" placeholder="메모 입력">
+                        <input type="text" name="studentMemo${studentRowCount}" placeholder="메모 입력" onchange="checkRowData(${studentRowCount})">
                     </div>
                 </div>
             `;
@@ -737,7 +901,21 @@
         function removeStudentRow(rowId) {
             const row = document.getElementById(`studentRow${rowId}`);
             if (row) {
-                row.remove();
+                row.style.transform = 'scale(0)';
+                row.style.opacity = '0';
+                setTimeout(() => row.remove(), 300);
+            }
+        }
+
+        function checkRowData(rowId) {
+            const row = document.getElementById(`studentRow${rowId}`);
+            const name = document.querySelector(`select[name="studentName${rowId}"]`).value;
+            const status = document.querySelector(`select[name="studentStatus${rowId}"]`).value;
+            
+            if (name && status) {
+                row.classList.add('has-data');
+            } else {
+                row.classList.remove('has-data');
             }
         }
 
@@ -768,30 +946,32 @@
 
         async function updateStudentName(rowId) {
             const roomSelect = document.querySelector(`select[name="studentRoom${rowId}"]`);
-            const nameInput = document.querySelector(`input[name="studentName${rowId}"]`);
+            const nameSelect = document.querySelector(`select[name="studentName${rowId}"]`);
             
             const roomNumber = roomSelect.value;
+            nameSelect.innerHTML = '<option value="">이름 선택</option>';
             
             if (roomNumber) {
                 try {
                     const students = await sheetsAPI.findStudentByRoom(roomNumber);
                     if (students.length > 0) {
-                        if (students.length === 1) {
-                            nameInput.value = students[0].name;
-                        } else {
-                            nameInput.value = students.map(s => s.name).join(', ');
-                        }
+                        students.forEach(student => {
+                            const option = document.createElement('option');
+                            option.value = student.name;
+                            option.textContent = student.name;
+                            nameSelect.appendChild(option);
+                        });
                     } else {
-                        nameInput.value = '';
-                        showAlert('해당 호실에 등록된 학생이 없습니다.', 'warning');
+                        const option = document.createElement('option');
+                        option.value = '';
+                        option.textContent = '등록된 학생 없음';
+                        option.disabled = true;
+                        nameSelect.appendChild(option);
                     }
                 } catch (error) {
                     console.error('학생 이름 조회 오류:', error);
-                    nameInput.value = '';
                     showAlert('학생 정보를 불러오는 중 오류가 발생했습니다.', 'error');
                 }
-            } else {
-                nameInput.value = '';
             }
         }
 
@@ -807,17 +987,25 @@
             localStorage.setItem('submittedReports', JSON.stringify([...submittedReports]));
         }
 
+        // 보고 데이터 저장 (집계용)
+        function saveReportData(reportData) {
+            const reportDate = Utils.getReportPeriodId();
+            const storedReports = JSON.parse(localStorage.getItem('dailyReports') || '{}');
+            
+            if (!storedReports[reportDate]) {
+                storedReports[reportDate] = {};
+            }
+            
+            const reportKey = `${reportData.building}_${reportData.floor}`;
+            storedReports[reportDate][reportKey] = reportData;
+            
+            localStorage.setItem('dailyReports', JSON.stringify(storedReports));
+        }
+
         // 폼 제출 처리
         document.getElementById('reportForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // API 키 확인
-            if (CONFIG.API_KEY === 'YOUR_GOOGLE_SHEETS_API_KEY') {
-                showAlert('Google Sheets API 키를 설정해주세요. 소스코드에서 CONFIG.API_KEY를 실제 API 키로 변경하세요.', 'error');
-                return;
-            }
-            
-            // 보고 시간 확인
             if (!Utils.isValidReportTime()) {
                 showAlert('보고 가능 시간이 아닙니다. (22:00 ~ 21:59)', 'error');
                 return;
@@ -833,7 +1021,6 @@
                 return;
             }
             
-            // 중복 보고 확인
             const reportKey = `${Utils.getReportPeriodId()}_${building}_${floor}`;
             if (submittedReports.has(reportKey)) {
                 if (!confirm('이미 해당 동/층에 대해 보고하셨습니다. 수정하시겠습니까?')) {
@@ -843,7 +1030,7 @@
             
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 제출 중...';
+            submitBtn.innerHTML = '<div class="spinner"></div> 제출 중...';
             
             try {
                 await submitReport(formData, reportKey);
@@ -874,13 +1061,12 @@
                 manager: formData.get('manager'),
                 building: formData.get('building'),
                 floor: formData.get('floor'),
+                currentCount: parseInt(formData.get('currentCount')) || 0,
                 overnight: parseInt(formData.get('overnight')) || 0,
+                outing: parseInt(formData.get('outing')) || 0,
                 checkout: parseInt(formData.get('checkout')) || 0,
                 moveIn: parseInt(formData.get('moveIn')) || 0,
                 moveOut: parseInt(formData.get('moveOut')) || 0,
-                currentCount: parseInt(formData.get('currentCount')) || 0,
-                outing: parseInt(formData.get('outing')) || 0,
-                etc: parseInt(formData.get('etc')) || 0,
                 memo: formData.get('memo') || '',
                 students: [],
                 isModification: submittedReports.has(reportKey)
@@ -915,21 +1101,6 @@
             
             // Jandi 알림 전송
             await sendJandiNotification(reportData);
-        }
-
-        // 보고 데이터 저장 (집계용)
-        function saveReportData(reportData) {
-            const reportDate = Utils.getReportPeriodId();
-            const storedReports = JSON.parse(localStorage.getItem('dailyReports') || '{}');
-            
-            if (!storedReports[reportDate]) {
-                storedReports[reportDate] = {};
-            }
-            
-            const reportKey = `${reportData.building}_${reportData.floor}`;
-            storedReports[reportDate][reportKey] = reportData;
-            
-            localStorage.setItem('dailyReports', JSON.stringify(storedReports));
         }
 
         // Google Sheets 업데이트
@@ -972,7 +1143,7 @@
             }
         }
 
-        // Jandi 메시지 생성
+        // Jandi 메시지 생성 (개별 학생 정보 포함)
         function createJandiMessage(reportData) {
             const modificationText = reportData.isModification ? '[수정] ' : '';
             let message = `${modificationText}🏠 기숙사 인원보고\n\n`;
@@ -987,8 +1158,8 @@
             if (reportData.checkout > 0) message += `🚪 퇴소: ${reportData.checkout}명\n`;
             if (reportData.moveIn > 0) message += `➕ 이동(입): ${reportData.moveIn}명\n`;
             if (reportData.moveOut > 0) message += `➖ 이동(출): ${reportData.moveOut}명\n`;
-            if (reportData.etc > 0) message += `❓ 기타: ${reportData.etc}명\n`;
             
+            // 개별 학생 정보 추가 (이제 포함됨)
             if (reportData.students.length > 0) {
                 message += `\n👥 개별 학생 현황:\n`;
                 reportData.students.forEach(student => {
@@ -1020,7 +1191,9 @@
             // 5초 후 자동 제거
             setTimeout(() => {
                 if (alertDiv.parentNode) {
-                    alertDiv.parentNode.removeChild(alertDiv);
+                    alertDiv.style.opacity = '0';
+                    alertDiv.style.transform = 'translateY(-20px)';
+                    setTimeout(() => alertDiv.parentNode.removeChild(alertDiv), 300);
                 }
             }, 5000);
             
@@ -1029,4 +1202,146 @@
         }
     </script>
 </body>
-</html>
+</html> Error(`시트 읽기 실패: ${response.status} - ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    const result = data.values || [];
+                    
+                    this.cache.set(cacheKey, {
+                        data: result,
+                        timestamp: Date.now()
+                    });
+                    
+                    return result;
+                } catch (error) {
+                    console.error('시트 읽기 오류:', error);
+                    throw error;
+                }
+            }
+            
+            // 3인실 처리를 위한 개선된 학생 찾기 (미배정 제외)
+            async findStudentByRoom(roomNumber) {
+                try {
+                    const building = roomNumber.charAt(0);
+                    const floor = roomNumber.charAt(1);
+                    const room = parseInt(roomNumber.substring(1));
+                    
+                    // 4층(3인실)인지 확인
+                    if (floor === '4') {
+                        const key = building + floor;
+                        const mapping = CONFIG.TRIPLE_ROOM_MAPPING[key];
+                        
+                        if (mapping) {
+                            // 해당 호실의 시작 행 계산
+                            const roomIndex = room - mapping.startRoom;
+                            const startRow = mapping.startRow + (roomIndex * 3);
+                            const endRow = startRow + 2;
+                            
+                            // 해당 범위의 데이터 읽기
+                            const range = `B${startRow}:N${endRow}`;
+                            const data = await this.readRange(range);
+                            
+                            const students = [];
+                            for (let i = 0; i < data.length; i++) {
+                                const row = data[i];
+                                // C열에 이름이 있고 "미배정"이 아닌 경우만
+                                if (row[1] && row[1].trim() !== '미배정') {
+                                    students.push({
+                                        rowIndex: startRow + i,
+                                        roomNumber: roomNumber,
+                                        name: row[1] || '',
+                                        status: row[2] || '',
+                                        memo: row[3] || ''
+                                    });
+                                }
+                            }
+                            return students;
+                        }
+                    } else {
+                        // 1-3층 (1인실) 처리 (미배정 제외)
+                        const data = await this.readRange('A:N');
+                        const students = [];
+                        
+                        for (let i = 1; i < data.length; i++) {
+                            const row = data[i];
+                            if (row[1] === roomNumber && row[2] && row[2].trim() !== '미배정') {
+                                students.push({
+                                    rowIndex: i + 1,
+                                    roomNumber: row[1] || '',
+                                    name: row[2] || '',
+                                    status: row[3] || '',
+                                    memo: row[4] || ''
+                                });
+                            }
+                        }
+                        return students;
+                    }
+                    
+                    return [];
+                } catch (error) {
+                    console.error('학생 검색 오류:', error);
+                    throw error;
+                }
+            }해당 범위의 데이터 읽기
+                            const range = `B${startRow}:N${endRow}`;
+                            const data = await this.readRange(range);
+                            
+                            const students = [];
+                            for (let i = 0; i < data.length; i++) {
+                                const row = data[i];
+                                if (row[1]) { // C열에 이름이 있는 경우
+                                    students.push({
+                                        rowIndex: startRow + i,
+                                        roomNumber: roomNumber,
+                                        name: row[1] || '',
+                                        status: row[2] || '',
+                                        memo: row[3] || ''
+                                    });
+                                }
+                            }
+                            return students;
+                        }
+                    } else {
+                        // 1-3층 (1인실) 처리
+                        const data = await this.readRange('A:N');
+                        const students = [];
+                        
+                        for (let i = 1; i < data.length; i++) {
+                            const row = data[i];
+                            if (row[1] === roomNumber && row[2]) {
+                                students.push({
+                                    rowIndex: i + 1,
+                                    roomNumber: row[1] || '',
+                                    name: row[2] || '',
+                                    status: row[3] || '',
+                                    memo: row[4] || ''
+                                });
+                            }
+                        }
+                        return students;
+                    }
+                    
+                    return [];
+                } catch (error) {
+                    console.error('학생 검색 오류:', error);
+                    throw error;
+                }
+            }
+            
+            async updateStudentStatus(name, status, memo = '') {
+                try {
+                    const data = await this.readRange('A:N');
+                    
+                    for (let i = 1; i < data.length; i++) {
+                        const row = data[i];
+                        if (row[2] === name) { // C열에서 이름 찾기
+                            await this.updateCell(i + 1, 4, status); // D열
+                            if (memo) {
+                                await this.updateCell(i + 1, 5, memo); // E열
+                            }
+                            return { rowIndex: i + 1, name: row[2] };
+                        }
+                    }
+                    
+                    throw new
