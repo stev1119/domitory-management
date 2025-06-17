@@ -1,0 +1,1790 @@
+<!-- 보고 현황 집계 -->
+        <div id="reportSummarySection" class="stats-section" style="display: none;">
+            <h2 class="section-title">📋 오늘 인원보고 현황</h2>
+            <div id="reportSummaryContainer" class="report-summary-grid">
+                <!-- 보고 현황이 여기에 표시됩니다 -->
+            </div>
+        </div>
+
+        <!-- 상태별 인원 표시 -->
+        <div id="statusSection" class="stats-section" style="display: none;">
+            <h2 class="section-title">📈 상태별 인원 현황</h2>
+            <div id="statusGrid" class="stats-grid">
+                <!-- 동적으로 생성될 상태별 카드 -->
+            </div>
+        </div>
+
+        <!-- 동별 현황 -->
+        <div id="buildingSection" class="stats-section" style="display: none;">
+            <h2 class="section-title">🏢 동별 현황</h2>
+            <div id="buildingGrid" class="building-grid">
+                <!-- 동적으로 생성될 동별 카드 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 모달 창들 -->
+    <div id="studentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">학생 정보</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="modalBody">
+                <!-- 모달 내용이 여기에 표시됩니다 -->
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>학생 정보 수정</h3>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
+            <div id="editModalBody">
+                <div class="search-container">
+                    <input type="text" id="editSearchInput" class="search-input" placeholder="수정할 학생 검색...">
+                    <button class="btn btn-primary" onclick="searchForEdit()">검색</button>
+                </div>
+                <div id="editForm" style="display: none;">
+                    <!-- 수정 폼이 여기에 표시됩니다 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIG 설정
+        const CONFIG = {
+            SHEET_ID: '1cASz2h4Dd13H6vhdKAPHOFdf5BMsFjaFledqVbzpP8I',
+            SHEET_NAME: 'yulee',
+            API_KEY: 'AIzaSyA1uY-EDvpxvxqyXTDwjNpS2ugYXQ3igtk',
+            
+            MANAGERS: [
+                '이영운', '김혜정', '이시우', '고승완', '남인달',
+                '조영권', '황민철', '강지훈', '김건희', '송인수',
+                '김영현', '김미경', '유나경', '진정현', '원현주',
+                '김지현', '김정아', '신규1', '신규2', '신규3',
+                '신규4', '신규5', '신규6', '신규7'
+            ],
+            
+            BUILDINGS: ['A', 'B', 'C', 'D', 'E', 'F'],
+            FLOORS: [1, 2, 3, 4],
+            
+            GENDER_BY_BUILDING: {
+                'A': '남', 'B': '남', 'C': '남', 'F': '남',
+                'D': '여', 'E': '여'
+            },
+            
+            // 3인실 시트 매핑 정보
+            TRIPLE_ROOM_MAPPING: {
+                'A4': { startRow: 187, endRow: 282, startRoom: 401, endRoom: 432 },
+                'B4': { startRow: 405, endRow: 467, startRoom: 401, endRoom: 421 },
+                'C4': { startRow: 653, endRow: 748, startRoom: 401, endRoom: 432 },
+                'D4': { startRow: 883, endRow: 951, startRoom: 401, endRoom: 423 },
+                'E4': { startRow: 1184, endRow: 1303, startRoom: 401, endRoom: 440 },
+                'F4': { startRow: 1402, endRow: 1452, startRoom: 401, endRow: 417 }
+            },
+            
+            STATUS_TYPES: [
+                '외박', '외출', '퇴소', '이동+', '이동-', '정상', '기타'
+            ]
+        };
+
+        // SheetsAPI 클래스 (3인실 처리 개선)
+        class SheetsAPI {
+            constructor() {
+                this.baseUrl = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}`;
+                this.cache = new Map();
+                this.cacheExpiry = 5 * 60 * 1000;
+            }
+            
+            async readRange(range) {
+                const cacheKey = `read_${range}`;
+                const cached = this.cache.get(cacheKey);
+                
+                if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
+                    return cached.data;
+                }
+                
+                try {
+                    const url = `${this.baseUrl}/values/${CONFIG.SHEET_NAME}!${range}?key=${CONFIG.API_KEY}`;
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error(`시트 읽기 실패: ${response.status} - ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    const result = data.values || [];
+                    
+                    this.cache.set(cacheKey, {
+                        data: result,
+                        timestamp: Date.now()
+                    });
+                    
+                    return result;
+                } catch (error) {
+                    console.error('시트 읽기 오류:', error);
+                    throw error;
+                }
+            }
+            
+            // 3인실 처리를 위한 개선된 전체 학생 데이터 가져오기 (미배정 제외)
+            async getAllStudents() {
+                try {
+                    const data = await this.readRange('A:N');
+                    const students = [];
+                    
+                    for (let i = 1; i < data.length; i++) {
+                        const row = data[i];
+                        // B열(기숙사번호), C열(이름)이 있고, 이름이 "미배정"이 아닌 경우만 포함
+                        if (row[1] && row[2] && row[2].trim() !== '미배정') {
+                            students.push({
+                                rowIndex: i + 1,
+                                roomNumber: row[1] || '',
+                                name: row[2] || '',
+                                status: row[3] || '',
+                                memo: row[4] || '',
+                                parentPhone: row[5] || '',
+                                studentPhone: row[6] || '',
+                                labSeat: row[7] || '',
+                                group: row[8] || '',
+                                teacher: row[9] || '',
+                                birthDate: row[10] || '', // K열 생년월일
+                                gender: row[11] || '',
+                                admissionDate: row[12] || '',
+                                building: row[1] ? row[1].charAt(0) : '',
+                                floor: row[1] ? row[1].charAt(1) : '',
+                                room: row[1] ? row[1].substring(1) : ''
+                            });
+                        }
+                    }
+                    
+                    return students;
+                } catch (error) {
+                    console.error('학생 데이터 가져오기 오류:', error);
+                    throw error;
+                }
+            }
+            
+            // 3인실 처리를 위한 개선된 학생 찾기 (미배정 제외)
+            async findStudentByRoom(roomNumber) {
+                try {
+                    const building = roomNumber.charAt(0);
+                    const floor = roomNumber.charAt(1);
+                    const room = parseInt(roomNumber.substring(1));
+                    
+                    // 4층(3인실)인지 확인
+                    if (floor === '4') {
+                        const key = building + floor;
+                        const mapping = CONFIG.TRIPLE_ROOM_MAPPING[key];
+                        
+                        if (mapping) {
+                            // 해당 호실의 시작 행 계산
+                            const roomIndex = room - mapping.startRoom;
+                            const startRow = mapping.startRow + (roomIndex * 3);
+                            const endRow = startRow + 2;
+                            
+                            // 해당 범위의 데이터 읽기
+                            const range = `B${startRow}:N${endRow}`;
+                            const data = await this.readRange(range);
+                            
+                            const students = [];
+                            for (let i = 0; i < data.length; i++) {
+                                const row = data[i];
+                                // C열에 이름이 있고 "미배정"이 아닌 경우만
+                                if (row[1] && row[1].trim() !== '미배정') {
+                                    students.push({
+                                        rowIndex: startRow + i,
+                                        roomNumber: roomNumber,
+                                        name: row[1] || '',
+                                        status: row[2] || '',
+                                        memo: row[3] || '',
+                                        parentPhone: row[4] || '',
+                                        studentPhone: row[5] || '',
+                                        labSeat: row[6] || '',
+                                        group: row[7] || '',
+                                        teacher: row[8] || '',
+                                        birthDate: row[9] || '', // K열
+                                        gender: row[10] || '',
+                                        admissionDate: row[11] || '',
+                                        building: building,
+                                        floor: floor,
+                                        room: room.toString()
+                                    });
+                                }
+                            }
+                            return students;
+                        }
+                    }
+                    
+                    // 1-3층 또는 매핑에 없는 경우는 기존 방식 (미배정 제외)
+                    const students = await this.getAllStudents();
+                    return students.filter(student => 
+                        student.roomNumber === roomNumber && student.name.trim() !== '미배정'
+                    );
+                    
+                } catch (error) {
+                    console.error('학생 검색 오류:', error);
+                    throw error;
+                }
+            }
+            
+            async findStudentByName(name) {
+                const students = await this.getAllStudents();
+                return students.filter(student => 
+                    student.name.includes(name) || name.includes(student.name)
+                );
+            }
+            
+            async findStudentByLabSeat(labSeat) {
+                const students = await this.getAllStudents();
+                return students.filter(student => student.labSeat === labSeat);
+            }
+            
+            async getStudentsByBuildingFloor(building, floor) {
+                const students = await this.getAllStudents();
+                return students.filter(student => 
+                    student.building === building && student.floor === floor.toString()
+                );
+            }
+            
+            async updateCell(row, col, value) {
+                const range = `${this.columnToLetter(col)}${row}`;
+                return await this.writeRange(range, [[value]]);
+            }
+            
+            async writeRange(range, values) {
+                try {
+                    const url = `${this.baseUrl}/values/${CONFIG.SHEET_NAME}!${range}?valueInputOption=RAW&key=${CONFIG.API_KEY}`;
+                    
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            values: values
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`시트 쓰기 실패: ${response.status} - ${response.statusText}`);
+                    }
+                    
+                    this.clearCache();
+                    return await response.json();
+                } catch (error) {
+                    console.error('시트 쓰기 오류:', error);
+                    throw error;
+                }
+            }
+            
+            columnToLetter(col) {
+                let letter = '';
+                while (col > 0) {
+                    col--;
+                    letter = String.fromCharCode(65 + (col % 26)) + letter;
+                    col = Math.floor(col / 26);
+                }
+                return letter;
+            }
+            
+            clearCache() {
+                this.cache.clear();
+            }
+            
+            // 보고된 데이터를 기반으로 한 통계 계산
+            async getReportBasedStatistics() {
+                try {
+                    const students = await this.getAllStudents();
+                    const reportDate = getReportPeriodId();
+                    const storedReports = JSON.parse(localStorage.getItem('dailyReports') || '{}');
+                    const todayReports = storedReports[reportDate] || {};
+                    
+                    // 시트 기반 통계
+                    const sheetStats = {
+                        total: students.length,
+                        current: 0,
+                        maleTotal: 0,
+                        femaleTotal: 0,
+                        maleCurrent: 0,
+                        femaleCurrent: 0,
+                        statusCounts: {}
+                    };
+                    
+                    students.forEach(student => {
+                        const gender = CONFIG.GENDER_BY_BUILDING[student.building] || '기타';
+                        const status = student.status || '정상';
+                        
+                        if (gender === '남') {
+                            sheetStats.maleTotal++;
+                            if (status === '정상' || !status) {
+                                sheetStats.maleCurrent++;
+                            }
+                        } else if (gender === '여') {
+                            sheetStats.femaleTotal++;
+                            if (status === '정상' || !status) {
+                                sheetStats.femaleCurrent++;
+                            }
+                        }
+                        
+                        if (status === '정상' || !status) {
+                            sheetStats.current++;
+                        }
+                        
+                        sheetStats.statusCounts[status] = (sheetStats.statusCounts[status] || 0) + 1;
+                    });
+                    
+                    // 보고 기반 통계 (현재원, 외박, 외출 등)
+                    const reportStats = {
+                        reportedCurrentCount: 0,
+                        reportedOvernightCount: 0,
+                        reportedOutingCount: 0,
+                        reportedCheckoutCount: 0,
+                        reportedMoveInCount: 0,
+                        reportedMoveOutCount: 0
+                    };
+                    
+                    Object.values(todayReports).forEach(report => {
+                        reportStats.reportedCurrentCount += report.currentCount || 0;
+                        reportStats.reportedOvernightCount += report.overnight || 0;
+                        reportStats.reportedOutingCount += report.outing || 0;
+                        reportStats.reportedCheckoutCount += report.checkout || 0;
+                        reportStats.reportedMoveInCount += report.moveIn || 0;
+                        reportStats.reportedMoveOutCount += report.moveOut || 0;
+                    });
+                    
+                    return { ...sheetStats, ...reportStats };
+                } catch (error) {
+                    console.error('통계 계산 오류:', error);
+                    throw error;
+                }
+            }
+        }
+
+        // 전역 변수
+        const sheetsAPI = new SheetsAPI();
+        let currentData = null;
+        let currentStats = null;
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshData();
+            
+            // 실시간 검색 기능
+            document.getElementById('searchInput').addEventListener('input', function() {
+                const searchTerm = this.value.trim();
+                if (searchTerm.length >= 2) {
+                    // 2글자 이상 입력시 자동 검색
+                    searchStudent();
+                } else if (searchTerm.length === 0) {
+                    // 검색어가 없으면 검색 결과 숨기기
+                    document.getElementById('searchResultsImmediate').style.display = 'none';
+                }
+            });
+            
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchStudent();
+                }
+            });
+            
+            document.getElementById('editSearchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchForEdit();
+                }
+            });
+        });
+
+        async function refreshData() {
+            try {
+                showLoading();
+                
+                sheetsAPI.clearCache();
+                
+                currentData = await sheetsAPI.getAllStudents();
+                currentStats = await sheetsAPI.getReportBasedStatistics();
+                
+                updateStatsDisplay();
+                updateReportSummary();
+                updateStatusSection();
+                updateBuildingSection();
+                
+                hideLoading();
+            } catch (error) {
+                console.error('데이터 로드 오류:', error);
+                alert('데이터를 불러오는 중 오류가 발생했습니다: ' + error.message);
+                hideLoading();
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loadingContainer').style.display = 'block';
+            document.getElementById('statsContainer').style.display = 'none';
+            document.getElementById('reportSummarySection').style.display = 'none';
+            document.getElementById('statusSection').style.display = 'none';
+            document.getElementById('buildingSection').style.display = 'none';
+            // 검색 결과도 숨기기
+            document.getElementById('searchResultsImmediate').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingContainer').style.display = 'none';
+            document.getElementById('statsContainer').style.display = 'block';
+            document.getElementById('reportSummarySection').style.display = 'block';
+            document.getElementById('statusSection').style.display = 'block';
+            document.getElementById('buildingSection').style.display = 'block';
+        }
+
+        function updateStatsDisplay() {
+            if (!currentStats) return;
+            
+            document.getElementById('totalCount').textContent = currentStats.total;
+            document.getElementById('reportedCurrentCount').textContent = currentStats.reportedCurrentCount;
+            document.getElementById('maleCurrentCount').textContent = currentStats.maleCurrent;
+            document.getElementById('femaleCurrentCount').textContent = currentStats.femaleCurrent;
+            document.getElementById('overnightCount').textContent = currentStats.reportedOvernightCount;
+            document.getElementById('outingCount').textContent = currentStats.reportedOutingCount;
+            document.getElementById('checkoutCount').textContent = currentStats.reportedCheckoutCount;
+            document.getElementById('moveInCount').textContent = currentStats.reportedMoveInCount;
+            document.getElementById('moveOutCount').textContent = currentStats.reportedMoveOutCount;
+        }
+
+        // 보고 현황 집계 업데이트
+        function updateReportSummary() {
+            const container = document.getElementById('reportSummaryContainer');
+            const reportDate = getReportPeriodId();
+            const storedReports = JSON.parse(localStorage.getItem('dailyReports') || '{}');
+            const todayReports = storedReports[reportDate] || {};
+            
+            container.innerHTML = '';
+            
+            // 각 동별로 보고 현황 표시
+            CONFIG.BUILDINGS.forEach(building => {
+                CONFIG.FLOORS.forEach(floor => {
+                    const reportKey = `${building}_${floor}`;
+                    const report = todayReports[reportKey];
+                    
+                    const card = document.createElement('div');
+                    
+                    if (report) {
+                        // 보고된 경우
+                        card.className = 'report-card reported';
+                        card.innerHTML = `
+                            <h4>
+                                <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                                ${building}동 ${floor}층 - ${report.manager}
+                            </h4>
+                            <div class="report-stats">
+                                <div class="report-stat-item">
+                                    <div class="number">${report.currentCount}</div>
+                                    <div class="label">현재원</div>
+                                </div>
+                                <div class="report-stat-item">
+                                    <div class="number">${report.overnight}</div>
+                                    <div class="label">외박</div>
+                                </div>
+                                <div class="report-stat-item">
+                                    <div class="number">${report.outing}</div>
+                                    <div class="label">외출</div>
+                                </div>
+                                <div class="report-stat-item">
+                                    <div class="number">${report.checkout}</div>
+                                    <div class="label">퇴소</div>
+                                </div>
+                                <div class="report-stat-item">
+                                    <div class="number">${report.moveIn}</div>
+                                    <div class="label">이동(+)</div>
+                                </div>
+                                <div class="report-stat-item">
+                                    <div class="number">${report.moveOut}</div>
+                                    <div class="label">이동(-)</div>
+                                </div>
+                            </div>
+                            <small style="color: #6c757d; margin-top: 15px; display: block;">
+                                <i class="fas fa-clock"></i> 보고시간: ${report.timestamp}
+                                ${report.students && report.students.length > 0 ? 
+                                  `<br><i class="fas fa-users"></i> 개별학생: ${report.students.length}명` : ''}
+                            </small>
+                        `;
+                    } else {
+                        // 보고되지 않은 경우
+                        card.className = 'report-card not-reported';
+                        card.innerHTML = `
+                            <h4>
+                                <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
+                                ${building}동 ${floor}층
+                            </h4>
+                            <div style="text-align: center; padding: 20px;">
+                                <p style="color: #721c24; margin: 10px 0; font-size: 1.1rem; font-weight: 600;">
+                                    <i class="fas fa-times-circle"></i> 보고되지 않음
+                                </p>
+                                <small style="color: #856404;">담당자의 보고가 필요합니다.</small>
+                            </div>
+                        `;
+                    }
+                    
+                    container.appendChild(card);
+                });
+            });
+        }
+
+        function updateStatusSection() {
+            const statusGrid = document.getElementById('statusGrid');
+            statusGrid.innerHTML = '';
+            
+            if (!currentStats || !currentStats.statusCounts) return;
+            
+            Object.entries(currentStats.statusCounts).forEach(([status, count]) => {
+                if (count > 0) {
+                    const card = document.createElement('div');
+                    card.className = 'stat-card clickable';
+                    card.onclick = () => showStatusStudents(status);
+                    
+                    const iconClass = getStatusIcon(status);
+                    
+                    card.innerHTML = `
+                        <div class="icon"><i class="${iconClass}"></i></div>
+                        <div class="number">${count}</div>
+                        <div class="label">${status}</div>
+                    `;
+                    
+                    statusGrid.appendChild(card);
+                }
+            });
+        }
+
+        function updateBuildingSection() {
+            const buildingGrid = document.getElementById('buildingGrid');
+            buildingGrid.innerHTML = '';
+            
+            if (!currentData) return;
+            
+            const buildingStats = {};
+            
+            // 동별 통계 계산
+            currentData.forEach(student => {
+                const building = student.building;
+                if (!buildingStats[building]) {
+                    buildingStats[building] = {
+                        total: 0,
+                        current: 0,
+                        floors: {}
+                    };
+                }
+                
+                buildingStats[building].total++;
+                if (!student.status || student.status === '정상') {
+                    buildingStats[building].current++;
+                }
+                
+                const floor = student.floor;
+                if (!buildingStats[building].floors[floor]) {
+                    buildingStats[building].floors[floor] = { total: 0, current: 0 };
+                }
+                
+                buildingStats[building].floors[floor].total++;
+                if (!student.status || student.status === '정상') {
+                    buildingStats[building].floors[floor].current++;
+                }
+            });
+            
+            CONFIG.BUILDINGS.forEach(building => {
+                const stats = buildingStats[building];
+                if (!stats) return;
+                
+                const card = document.createElement('div');
+                card.className = 'building-card';
+                card.style.cssText = `
+                    background: rgba(255, 255, 255, 0.9);
+                    border-radius: 20px;
+                    padding: 25px;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                    border-left: 6px solid #4facfe;
+                    margin-bottom: 20px;
+                `;
+                
+                const genderText = CONFIG.GENDER_BY_BUILDING[building] || '기타';
+                
+                let floorHtml = '';
+                CONFIG.FLOORS.forEach(floor => {
+                    const floorStats = stats.floors[floor.toString()];
+                    if (floorStats) {
+                        floorHtml += `
+                            <div onclick="showBuildingFloorStudents('${building}', '${floor}')" 
+                                 style="background: white; padding: 15px; border-radius: 12px; text-align: center; 
+                                        cursor: pointer; transition: all 0.3s; margin-bottom: 10px; border: 2px solid transparent;">
+                                <div style="font-weight: bold; color: #333; margin-bottom: 5px;">${floor}층</div>
+                                <div style="color: #666; font-size: 0.9rem;">${floorStats.current}/${floorStats.total}명</div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                card.innerHTML = `
+                    <h3 style="color: #333; margin-bottom: 20px; font-size: 1.3rem; font-weight: 600;">
+                        ${building}동 (${genderText}) - ${stats.current}/${stats.total}명
+                    </h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        ${floorHtml}
+                    </div>
+                `;
+                
+                buildingGrid.appendChild(card);
+            });
+        }
+
+        function getStatusIcon(status) {
+            const icons = {
+                '정상': 'fas fa-user-check',
+                '외박': 'fas fa-moon',
+                '외출': 'fas fa-walking',
+                '퇴소': 'fas fa-door-open',
+                '이동+': 'fas fa-arrow-right',
+                '이동-': 'fas fa-arrow-left',
+                '기타': 'fas fa-question-circle'
+            };
+            return icons[status] || 'fas fa-user';
+        }
+
+        async function searchStudent() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (!searchTerm) {
+                // 검색어가 없으면 검색 결과 숨기기
+                document.getElementById('searchResultsImmediate').style.display = 'none';
+                return;
+            }
+            
+            try {
+                // 로딩 표시 (검색 결과 영역에)
+                const resultsSection = document.getElementById('searchResultsImmediate');
+                const resultsContent = document.getElementById('searchResultsContent');
+                const resultsTitle = document.getElementById('searchResultsTitle');
+                
+                resultsSection.style.display = 'block';
+                resultsTitle.textContent = '검색 중...';
+                resultsContent.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i><p>검색 중...</p></div>';
+                
+                let students = [];
+                
+                const nameResults = await sheetsAPI.findStudentByName(searchTerm);
+                students = students.concat(nameResults);
+                
+                const roomResults = await sheetsAPI.findStudentByRoom(searchTerm);
+                students = students.concat(roomResults);
+                
+                const labResults = await sheetsAPI.findStudentByLabSeat(searchTerm);
+                students = students.concat(labResults);
+                
+                // 중복 제거 및 미배정 제외
+                students = students.filter((student, index, self) => 
+                    index === self.findIndex(s => s.rowIndex === student.rowIndex) &&
+                    student.name.trim() !== '미배정'
+                );
+                
+                // 검색 결과를 즉시 표시
+                displaySearchResultsImmediate(students, searchTerm);
+                
+            } catch (error) {
+                console.error('검색 오류:', error);
+                document.getElementById('searchResultsContent').innerHTML = 
+                    `<div class="no-data"><i class="fas fa-exclamation-triangle"></i><p>검색 중 오류가 발생했습니다.</p></div>`;
+            }
+        }
+
+        function displaySearchResultsImmediate(students, searchTerm) {
+            const resultsSection = document.getElementById('searchResultsImmediate');
+            const resultsContent = document.getElementById('searchResultsContent');
+            const resultsTitle = document.getElementById('searchResultsTitle');
+            
+            resultsTitle.textContent = `"${searchTerm}" 검색 결과 (${students.length}명)`;
+            
+            if (students.length === 0) {
+                resultsContent.innerHTML = `
+                    <div class="no-data">
+                        <i class="fas fa-search"></i>
+                        <p>"${searchTerm}"에 대한 검색 결과가 없습니다.</p>
+                    </div>
+                `;
+            } else {
+                resultsContent.innerHTML = students.map(student => createStudentCard(student)).join('');
+            }
+            
+            resultsSection.style.display = 'block';
+        }
+
+        async function showStatusStudents(status) {
+            try {
+                if (!currentData) {
+                    await refreshData();
+                }
+                
+                const students = currentData.filter(student => student.status === status);
+                displayModal(`${status} 학생 목록 (${students.length}명)`, 
+                    students.map(student => createStudentCard(student)).join('') || 
+                    '<div class="no-data"><i class="fas fa-users"></i><p>해당 상태의 학생이 없습니다.</p></div>'
+                );
+            } catch (error) {
+                console.error('상태별 학생 조회 오류:', error);
+                alert('데이터 조회 중 오류가 발생했습니다.');
+            }
+        }
+
+        async function showBuildingFloorStudents(building, floor) {
+            try {
+                const students = await sheetsAPI.getStudentsByBuildingFloor(building, floor);
+                displayModal(`${building}동 ${floor}층 학생 목록 (${students.length}명)`, 
+                    students.map(student => createStudentCard(student)).join('') || 
+                    '<div class="no-data"><i class="fas fa-building"></i><p>해당 동/층에 학생이 없습니다.</p></div>'
+                );
+            } catch (error) {
+                console.error('동/층별 학생 조회 오류:', error);
+                alert('데이터 조회 중 오류가 발생했습니다.');
+            }
+        }
+
+        function createStudentCard(student) {
+            const gender = CONFIG.GENDER_BY_BUILDING[student.building] || '기타';
+            const statusBadge = student.status ? 
+                `<span class="status-badge ${student.status}">${student.status}</span>` : 
+                '<span class="status-badge 정상">정상</span>';
+            
+            // 나이 계산 (생년월일이 있는 경우)
+            let ageText = '';
+            if (student.birthDate) {
+                const today = new Date();
+                const birthDate = new Date(student.birthDate);
+                if (!isNaN(birthDate.getTime())) {
+                    const age = today.getFullYear() - birthDate.getFullYear();
+                    ageText = ` (만 ${age}세)`;
+                }
+            }
+            
+            return `
+                <div class="student-card ${gender.toLowerCase()}">
+                    <div class="gender-badge">
+                        <i class="fas fa-${gender === '남' ? 'mars' : 'venus'}"></i>
+                    </div>
+                    
+                    <div class="student-header">
+                        <div class="student-name-section">
+                            <h3 class="student-name">${student.name}</h3>
+                            ${student.birthDate ? `<div class="student-birth"><i class="fas fa-birthday-cake"></i> ${student.birthDate}${ageText}</div>` : ''}
+                        </div>
+                        <div class="student-room">${student.roomNumber}</div>
+                    </div>
+                    
+                    <div class="student-info">
+                        <div class="info-section">
+                            <h4><i class="fas fa-info-circle"></i> 기본 정보</h4>
+                            <div class="info-item">
+                                <i class="fas fa-flag"></i>
+                                <span>${statusBadge}</span>
+                            </div>
+                            ${student.memo ? `<div class="info-item"><i class="fas fa-sticky-note"></i><span>${student.memo}</span></div>` : ''}
+                            ${student.gender ? `<div class="info-item"><i class="fas fa-${student.gender === '남' ? 'mars' : 'venus'}"></i><span>${student.gender}학생</span></div>` : ''}
+                            ${student.admissionDate ? `<div class="info-item"><i class="fas fa-calendar-plus"></i><span>입소일: ${student.admissionDate}</span></div>` : ''}
+                        </div>
+                        
+                        <div class="info-section">
+                            <h4><i class="fas fa-phone"></i> 연락처</h4>
+                            ${student.parentPhone ? `<div class="info-item"><i class="fas fa-phone"></i><span>학부모: ${student.parentPhone}</span></div>` : '<div class="info-item"><i class="fas fa-phone"></i><span>학부모 연락처 없음</span></div>'}
+                            ${student.studentPhone ? `<div class="info-item"><i class="fas fa-mobile-alt"></i><span>학생: ${student.studentPhone}</span></div>` : '<div class="info-item"><i class="fas fa-mobile-alt"></i><span>학생 연락처 없음</span></div>'}
+                        </div>
+                        
+                        <div class="info-section">
+                            <h4><i class="fas fa-graduation-cap"></i> 학습 정보</h4>
+                            ${student.labSeat ? `<div class="info-item"><i class="fas fa-desktop"></i><span>라브좌석: ${student.labSeat}</span></div>` : '<div class="info-item"><i class="fas fa-desktop"></i><span>라브좌석 미배정</span></div>'}
+                            ${student.group ? `<div class="info-item"><i class="fas fa-users"></i><span>그룹: ${student.group}</span></div>` : '<div class="info-item"><i class="fas fa-users"></i><span>그룹 미배정</span></div>'}
+                            ${student.teacher ? `<div class="info-item"><i class="fas fa-user-tie"></i><span>담임: ${student.teacher}</span></div>` : '<div class="info-item"><i class="fas fa-user-tie"></i><span>담임 미배정</span></div>'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('studentModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('studentModal').style.display = 'none';
+        }
+
+        function showEditModal() {
+            document.getElementById('editModal').style.display = 'block';
+            document.getElementById('editForm').style.display = 'none';
+            document.getElementById('editSearchInput').value = '';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        async function searchForEdit() {
+            const searchTerm = document.getElementById('editSearchInput').value.trim();
+            if (!searchTerm) {
+                alert('검색어를 입력해주세요.');
+                return;
+            }
+            
+            try {
+                const students = await sheetsAPI.findStudentByName(searchTerm);
+                if (students.length === 0) {
+                    alert('해당 학생을 찾을 수 없습니다.');
+                    return;
+                }
+                
+                const student = students[0];
+                showEditForm(student);
+                
+            } catch (error) {
+                console.error('학생 검색 오류:', error);
+                alert('검색 중 오류가 발생했습니다.');
+            }
+        }
+
+        function showEditForm(student) {
+            const form = document.getElementById('editForm');
+            form.innerHTML = `
+                <div class="edit-form">
+                    <div class="form-group">
+                        <label>이름</label>
+                        <input type="text" id="editName" value="${student.name}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>기숙사</label>
+                        <input type="text" id="editRoom" value="${student.roomNumber}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>상태</label>
+                        <select id="editStatus">
+                            <option value="">상태 선택</option>
+                            ${CONFIG.STATUS_TYPES.map(status => 
+                                `<option value="${status}" ${student.status === status ? 'selected' : ''}>${status}</option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>메모</label>
+                        <input type="text" id="editMemo" value="${student.memo || ''}">
+                    </div>
+                </div>
+                <div style="margin-top: 30px; text-align: center;">
+                    <button class="btn btn-primary" onclick="saveStudentEdit(${student.rowIndex})">저장</button>
+                    <button class="btn btn-secondary" onclick="closeEditModal()" style="margin-left: 15px;">취소</button>
+                </div>
+            `;
+            form.style.display = 'block';
+        }
+
+        async function saveStudentEdit(rowIndex) {
+            try {
+                const status = document.getElementById('editStatus').value;
+                const memo = document.getElementById('editMemo').value;
+                
+                if (!status) {
+                    alert('상태를 선택해주세요.');
+                    return;
+                }
+                
+                await sheetsAPI.updateCell(rowIndex, 4, status);
+                await sheetsAPI.updateCell(rowIndex, 5, memo);
+                
+                alert('학생 정보가 성공적으로 수정되었습니다.');
+                closeEditModal();
+                refreshData();
+                
+            } catch (error) {
+                console.error('저장 오류:', error);
+                alert('저장 중 오류가 발생했습니다: ' + error.message);
+            }
+        }
+
+        // 보고 기간 ID 생성 (대시보드용)
+        function getReportPeriodId() {
+            const now = new Date();
+            const hour = now.getHours();
+            
+            if (hour < 22) {
+                now.setDate(now.getDate() - 1);
+            }
+            
+            return now.toISOString().split('T')[0];
+        }
+
+        // 모달 외부 클릭 시 닫기
+        window.onclick = function(event) {
+            const modal1 = document.getElementById('studentModal');
+            const modal2 = document.getElementById('editModal');
+            
+            if (event.target === modal1) {
+                closeModal();
+            }
+            if (event.target === modal2) {
+                closeEditModal();
+            }
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기숙사 현황 대시보드</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .main-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .main-header h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-input {
+            padding: 12px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1rem;
+            width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-results-immediate {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: none;
+        }
+
+        .search-results-immediate h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .stats-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-color: #4facfe;
+        }
+
+        .stat-card.clickable:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .stat-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card .number {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .stat-card .label {
+            color: #6c757d;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .report-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .report-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-left: 6px solid #4facfe;
+            transition: all 0.3s ease;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .report-card.reported {
+            border-left-color: #28a745;
+            background: linear-gradient(135deg, rgba(212, 237, 218, 0.3) 0%, rgba(255, 255, 255, 0.9) 100%);
+        }
+
+        .report-card.not-reported {
+            border-left-color: #dc3545;
+            background: linear-gradient(135deg, rgba(248, 215, 218, 0.3) 0%, rgba(255, 255, 255, 0.9) 100%);
+        }
+
+        .report-card h4 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .report-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .report-stat-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .report-stat-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-stat-item .number {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 2px;
+        }
+
+        .report-stat-item .label {
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .student-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .student-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .student-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .student-card.male::before {
+            background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
+        }
+
+        .student-card.female::before {
+            background: linear-gradient(90deg, #e83e8c 0%, #c2185b 100%);
+        }
+
+        .student-card .student-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .student-card .student-name-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .student-card .student-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .student-card .student-birth {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 6px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            width: fit-content;
+            font-weight: 500;
+        }
+
+        .student-card .student-room {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            min-width: 100px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .student-card .student-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .student-card .info-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .student-card .info-section h4 {
+            color: #495057;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .student-card .info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            transition: all 0.3s ease;
+        }
+
+        .student-card .info-item:hover {
+            transform: translateX(5px);
+            color: #4facfe;
+        }
+
+        .student-card .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .student-card .info-item i {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 1rem;
+        }
+
+        .student-card .info-item span {
+            font-size: 1rem;
+            color: #495057;
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .status-badge.정상 { 
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+            color: white; 
+        }
+        .status-badge.외박 { 
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); 
+            color: white; 
+        }
+        .status-badge.외출 { 
+            background: linear-gradient(135deg, #17a2b8 0%, #007bff 100%); 
+            color: white; 
+        }
+        .status-badge.퇴소 { 
+            background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%); 
+            color: white; 
+        }
+        .status-badge.이동+ { 
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+            color: white; 
+        }
+        .status-badge.이동- { 
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%); 
+            color: white; 
+        }
+        .status-badge.기타 { 
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%); 
+            color: white; 
+        }
+
+        .student-card .gender-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .student-card.male .gender-badge {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        }
+
+        .student-card.female .gender-badge {
+            background: linear-gradient(135deg, #e83e8c 0%, #c2185b 100%);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            margin: 3% auto;
+            padding: 40px;
+            border-radius: 25px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #f0f0f0;
+            padding-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .close {
+            color: #6c757d;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close:hover {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #6c757d;
+        }
+
+        .loading i {
+            font-size: 3rem;
+            animation: spin 1s linear infinite;
+            color: #4facfe;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .edit-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .edit-form .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .edit-form label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .edit-form input,
+        .edit-form select {
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .edit-form input:focus,
+        .edit-form select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            color: #6c757d;
+        }
+
+        .no-data i {
+            font-size: 3rem;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        /* 모바일 최적화 개선 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .main-header {
+                padding: 25px 20px;
+            }
+            
+            .main-header h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-container {
+                width: 100%;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .search-input {
+                width: 100%;
+                font-size: 16px;
+            }
+            
+            .btn {
+                width: 100%;
+                padding: 15px 25px;
+                font-size: 1.1rem;
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .stat-card {
+                padding: 20px 15px;
+            }
+            
+            .stat-card .icon {
+                font-size: 2rem;
+            }
+            
+            .stat-card .number {
+                font-size: 1.8rem;
+            }
+            
+            .report-summary-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .report-card {
+                padding: 20px;
+            }
+            
+            .report-stats {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            
+            .student-card {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .student-card .student-info {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .student-card .info-section {
+                padding: 15px;
+            }
+            
+            .student-card .student-name {
+                font-size: 1.3rem;
+            }
+            
+            .student-card .gender-badge {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+            
+            .modal-content {
+                margin: 5% auto;
+                padding: 25px;
+                width: 95%;
+                max-height: 90vh;
+            }
+            
+            .edit-form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 터치 디바이스 최적화 */
+        @media (hover: none) and (pointer: coarse) {
+            .btn:hover,
+            .stat-card:hover,
+            .student-card:hover,
+            .report-card:hover {
+                transform: none;
+            }
+            
+            .btn:active,
+            .stat-card:active,
+            .student-card:active {
+                transform: scale(0.98);
+            }
+            
+            .search-input {
+                font-size: 16px;
+            }
+        }
+
+        /* 애니메이션 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stats-section {
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .student-card {
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .report-card {
+            animation: fadeInUp 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-header">
+            <h1><i class="fas fa-chart-dashboard"></i> 기숙사 현황 대시보드</h1>
+            <div class="controls">
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="이름, 기숙사 번호, 라브좌석 검색...">
+                    <button class="btn btn-primary" onclick="searchStudent()">
+                        <i class="fas fa-search"></i> 검색
+                    </button>
+                </div>
+                <button class="btn btn-secondary" onclick="refreshData()">
+                    <i class="fas fa-refresh"></i> 새로고침
+                </button>
+                <button class="btn btn-success" onclick="showEditModal()">
+                    <i class="fas fa-edit"></i> 수정
+                </button>
+                <a href="enhanced-report-system.html" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> 인원보고
+                </a>
+            </div>
+            
+            <!-- 즉시 검색 결과 표시 영역 -->
+            <div id="searchResultsImmediate" class="search-results-immediate">
+                <h3 id="searchResultsTitle">검색 결과</h3>
+                <div id="searchResultsContent">
+                    <!-- 검색 결과가 여기에 바로 표시됩니다 -->
+                </div>
+            </div>
+        </div>
+
+        <div id="loadingContainer" class="loading">
+            <i class="fas fa-spinner"></i>
+            <p>데이터를 불러오는 중...</p>
+        </div>
+
+        <!-- 통계 카드 -->
+        <div id="statsContainer" class="stats-section" style="display: none;">
+            <h2 class="section-title">📊 실시간 인원 현황</h2>
+            <div class="stats-grid">
+                <div class="stat-card total">
+                    <div class="icon"><i class="fas fa-users"></i></div>
+                    <div class="number" id="totalCount">0</div>
+                    <div class="label">총원</div>
+                </div>
+                <div class="stat-card current">
+                    <div class="icon"><i class="fas fa-user-check"></i></div>
+                    <div class="number" id="reportedCurrentCount">0</div>
+                    <div class="label">보고된 현재원</div>
+                </div>
+                <div class="stat-card male">
+                    <div class="icon"><i class="fas fa-mars"></i></div>
+                    <div class="number" id="maleCurrentCount">0</div>
+                    <div class="label">남학생 현재원</div>
+                </div>
+                <div class="stat-card female">
+                    <div class="icon"><i class="fas fa-venus"></i></div>
+                    <div class="number" id="femaleCurrentCount">0</div>
+                    <div class="label">여학생 현재원</div>
+                </div>
+                <div class="stat-card absent clickable" onclick="showStatusStudents('외박')">
+                    <div class="icon"><i class="fas fa-moon"></i></div>
+                    <div class="number" id="overnightCount">0</div>
+                    <div class="label">외박</div>
+                </div>
+                <div class="stat-card outing clickable" onclick="showStatusStudents('외출')">
+                    <div class="icon"><i class="fas fa-walking"></i></div>
+                    <div class="number" id="outingCount">0</div>
+                    <div class="label">외출</div>
+                </div>
+                <div class="stat-card checkout clickable" onclick="showStatusStudents('퇴소')">
+                    <div class="icon"><i class="fas fa-door-open"></i></div>
+                    <div class="number" id="checkoutCount">0</div>
+                    <div class="label">퇴소</div>
+                </div>
+                <div class="stat-card move-in clickable" onclick="showStatusStudents('이동+')">
+                    <div class="icon"><i class="fas fa-arrow-right"></i></div>
+                    <div class="number" id="moveInCount">0</div>
+                    <div class="label">이동(+)</div>
+                </div>
+                <div class="stat-card move-out clickable" onclick="showStatusStudents('이동-')">
+                    <div class="icon"><i class="fas fa-arrow-left"></i></div>
+                    <div class="number" id="moveOutCount">0</div>
+                    <div class="label">이동(-)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 보고 현황 집계 -->
+        <div id="reportSummarySection" class="stats-section" style="display: none;">
+            <h2 class="section-title">📋 오늘 인원보고 현황</h2>
+            <div id="reportSummaryContainer
