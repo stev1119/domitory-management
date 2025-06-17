@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+var googleScriptUrl = 'https://script.google.com/macros/s/AKf<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -215,6 +215,41 @@
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
         }
+        .building-stats {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        .building-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        .building-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .building-card:hover {
+            transform: translateY(-3px);
+            border-color: #4facfe;
+        }
+        .building-card .building-name {
+            font-weight: 700;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+        .building-card .building-stats-text {
+            font-size: 0.85rem;
+            color: #6c757d;
+            line-height: 1.4;
+        }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -225,7 +260,7 @@
     <div class="container">
         <div class="header">
             <h1>📊 기숙사 전체 현황 대시보드</h1>
-            <p>실시간 기숙사 인원 현황을 확인하세요</p>
+            <p id="currentDateDisplay">실시간 기숙사 인원 현황을 확인하세요</p>
         </div>
 
         <div class="search-section">
@@ -237,35 +272,41 @@
 
         <div class="dashboard">
             <div class="stats-grid">
-                <div class="stat-card stat-total">
+                <div class="stat-card stat-total" ondblclick="editStatValue('totalCount', '총원')">
                     <div class="icon">👥</div>
                     <div class="number" id="totalCount">450</div>
                     <div class="label">총원 (시트등록)</div>
+                    <div style="font-size: 0.7rem; color: #999; margin-top: 5px;">더블클릭으로 수정</div>
                 </div>
-                <div class="stat-card stat-total" style="border: 2px solid #28a745;">
+                <div class="stat-card stat-total" style="border: 2px solid #28a745;" ondblclick="editStatValue('reportedTotalCount', '총현재원')">
                     <div class="icon">📊</div>
                     <div class="number" id="reportedTotalCount">0</div>
                     <div class="label">총현재원 (보고합계)</div>
+                    <div style="font-size: 0.7rem; color: #999; margin-top: 5px;">더블클릭으로 수정</div>
                 </div>
-                <div class="stat-card stat-male">
+                <div class="stat-card stat-male" ondblclick="editStatValue('maleCount', '남학생')">
                     <div class="icon">👨</div>
                     <div class="number" id="maleCount">280</div>
                     <div class="label">남학생 (A,B,C,F동)</div>
+                    <div style="font-size: 0.7rem; color: #999; margin-top: 5px;">더블클릭으로 수정</div>
                 </div>
-                <div class="stat-card stat-male" style="border: 2px solid #007bff;">
+                <div class="stat-card stat-male" style="border: 2px solid #007bff;" ondblclick="editStatValue('reportedMaleCount', '남학생 현재원')">
                     <div class="icon">👨‍💼</div>
                     <div class="number" id="reportedMaleCount">0</div>
                     <div class="label">남학생 현재원</div>
+                    <div style="font-size: 0.7rem; color: #999; margin-top: 5px;">더블클릭으로 수정</div>
                 </div>
-                <div class="stat-card stat-female">
+                <div class="stat-card stat-female" ondblclick="editStatValue('femaleCount', '여학생')">
                     <div class="icon">👩</div>
                     <div class="number" id="femaleCount">170</div>
                     <div class="label">여학생 (D,E동)</div>
+                    <div style="font-size: 0.7rem; color: #999; margin-top: 5px;">더블클릭으로 수정</div>
                 </div>
-                <div class="stat-card stat-female" style="border: 2px solid #e83e8c;">
+                <div class="stat-card stat-female" style="border: 2px solid #e83e8c;" ondblclick="editStatValue('reportedFemaleCount', '여학생 현재원')">
                     <div class="icon">👩‍💼</div>
                     <div class="number" id="reportedFemaleCount">0</div>
                     <div class="label">여학생 현재원</div>
+                    <div style="font-size: 0.7rem; color: #999; margin-top: 5px;">더블클릭으로 수정</div>
                 </div>
                 <div class="stat-card stat-overnight clickable" onclick="showDetail('overnight')">
                     <div class="icon">🌙</div>
@@ -291,6 +332,14 @@
                     <div class="icon">⬅️</div>
                     <div class="number" id="moveOutCount">1</div>
                     <div class="label">-이동</div>
+                </div>
+            </div>
+
+            <!-- 동별/층별 상세 현황 -->
+            <div class="building-stats">
+                <h2 style="margin-bottom: 20px; color: #495057;">🏢 동별/층별 현황</h2>
+                <div id="buildingStatsGrid" class="building-grid">
+                    <!-- 동적으로 생성될 동별/층별 카드들 -->
                 </div>
             </div>
 
@@ -320,20 +369,274 @@
     <button class="refresh-btn" onclick="loadData()" title="새로고침">🔄</button>
 
     <script>
-        var googleScriptUrl = 'https://script.google.com/macros/s/AKfycbyPIuu7afE5YxjF5FhXAOtClICR1wuiqTg_4r5pYYwNqu6JvtzD63qFqUQrBXcGy7-b/exec';
+        var googleScriptUrl = 'https://script.google.com/macros/s/AKfycbyZhDV9U-J03tl3fLY7Yb5HUQ3pCGvY5fBsYYnAnYbAnHzspe-CSU9-cduDonc3j5eJ/exec';
         
-        var studentsData = [
-            { name: '김민수', dormNumber: 'A101', status: '외박', memo: '가족 방문으로 인한 외박' },
-            { name: '이영희', dormNumber: 'D201', status: '퇴소', memo: '졸업으로 인한 퇴소' },
-            { name: '박철수', dormNumber: 'B305', status: '신규', memo: '신입생 입주' },
-            { name: '최수진', dormNumber: 'E402', status: '+이동', memo: 'C동에서 이동' },
-            { name: '김태현', dormNumber: 'F203', status: '-이동', memo: 'A동으로 이동' },
-            { name: '윤서영', dormNumber: 'D103', status: '외박', memo: '병원 검진' },
-            { name: '정민호', dormNumber: 'A405', status: '신규', memo: '교환학생 입주' },
-            { name: '한지우', dormNumber: 'C201', status: '퇴소', memo: '휴학으로 인한 퇴소' },
-            { name: '이수민', dormNumber: 'B402', status: '외박', memo: '면접으로 인한 외박' },
-            { name: '조현우', dormNumber: 'F101', status: '+이동', memo: 'D동에서 이동' }
-        ];
+        var studentsData = [];
+        var allStudentsData = []; // 전체 학생 데이터 (B~N열)
+        var buildingFloorData = {}; // 동별/층별 데이터
+
+        // 22시 기준 날짜 계산 함수
+        function getReportDate() {
+            var now = new Date();
+            var currentHour = now.getHours();
+            
+            if (currentHour < 22) {
+                var yesterday = new Date(now);
+                yesterday.setDate(yesterday.getDate() - 1);
+                return yesterday.toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long'
+                });
+            } else {
+                return now.toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long'
+                });
+            }
+        }
+
+        // 날짜 표시 업데이트
+        function updateDateDisplay() {
+            var dateElement = document.getElementById('currentDateDisplay');
+            dateElement.textContent = '📅 ' + getReportDate() + ' 현황';
+        }
+
+        // 통계 값 수동 편집
+        function editStatValue(elementId, statName) {
+            var currentValue = document.getElementById(elementId).textContent;
+            var newValue = prompt(statName + ' 값을 입력하세요:', currentValue);
+            
+            if (newValue !== null && !isNaN(newValue) && newValue.trim() !== '') {
+                document.getElementById(elementId).textContent = parseInt(newValue);
+                console.log(statName + ' 값이 ' + newValue + '로 변경되었습니다.');
+            }
+        }
+
+        // 동별/층별 현황 카드 생성
+        function generateBuildingFloorCards() {
+            var buildings = ['A', 'B', 'C', 'D', 'E', 'F'];
+            var floors = [1, 2, 3, 4];
+            var container = document.getElementById('buildingStatsGrid');
+            var cardsHTML = '';
+
+            buildings.forEach(function(building) {
+                floors.forEach(function(floor) {
+                    var key = building + floor;
+                    var data = buildingFloorData[key] || { current: 0, overnight: 0, checkout: 0, newEntry: 0, moveIn: 0, moveOut: 0 };
+                    
+                    cardsHTML += '<div class="building-card" onclick="showBuildingDetail(\'' + building + '\', ' + floor + ')">' +
+                        '<div class="building-name">' + building + '동 ' + floor + '층</div>' +
+                        '<div class="building-stats-text">' +
+                        '현재원: ' + data.current + '명<br>' +
+                        '외박: ' + data.overnight + '명<br>' +
+                        '퇴소: ' + data.checkout + '명<br>' +
+                        '신규: ' + data.newEntry + '명' +
+                        '</div>' +
+                        '</div>';
+                });
+            });
+
+            container.innerHTML = cardsHTML;
+        }
+
+        // 동별/층별 상세 정보 표시
+        function showBuildingDetail(building, floor) {
+            console.log('동별 상세 정보:', building + '동 ' + floor + '층');
+            
+            // 해당 동/층의 학생들 필터링
+            var buildingStudents = allStudentsData.filter(function(student) {
+                return student.building === building && student.floor === floor;
+            });
+
+            var titleText = '🏢 ' + building + '동 ' + floor + '층 학생 현황';
+            document.getElementById('detailTitle').textContent = titleText;
+            renderDetailedStudentCards(buildingStudents, 'detailContent');
+            
+            document.getElementById('detailSection').classList.add('active');
+            document.getElementById('searchResults').classList.remove('active');
+        }
+
+        // 상세 학생 카드 렌더링 (B~N열 정보 포함)
+        function renderDetailedStudentCards(students, containerId) {
+            var container = document.getElementById(containerId);
+            
+            if (students.length === 0) {
+                container.innerHTML = '<div class="no-data">해당 동/층에 학생이 없습니다.</div>';
+                return;
+            }
+
+            var cardsHTML = '';
+            students.forEach(function(student) {
+                var statusClass = '';
+                if (student.status) {
+                    statusClass = {
+                        '외박': 'status-overnight',
+                        '퇴소': 'status-checkout',
+                        '신규': 'status-new',
+                        '+이동': 'status-move-in',
+                        '-이동': 'status-move-out'
+                    }[student.status] || '';
+                }
+                
+                cardsHTML += '<div class="student-card">' +
+                    '<div class="name">' + (student.name || '미배정') + '</div>' +
+                    '<div class="room">📍 ' + (student.dormNumber || '') + '</div>';
+                    
+                if (student.status) {
+                    cardsHTML += '<div class="status ' + statusClass + '">' + student.status + '</div>';
+                }
+                
+                // 추가 정보 표시 (B~N열)
+                cardsHTML += '<div style="font-size: 0.85rem; color: #6c757d; margin-top: 10px;">';
+                if (student.labSeat) cardsHTML += '🪑 랩좌석: ' + student.labSeat + '<br>';
+                if (student.memo) cardsHTML += '📝 ' + student.memo + '<br>';
+                cardsHTML += '</div>';
+                
+                cardsHTML += '</div>';
+            });
+            
+            container.innerHTML = cardsHTML;
+        }
+
+        // 향상된 검색 기능 (이름, 기숙사번호, 랩좌석)
+        function searchStudents() {
+            var query = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            if (!query) {
+                document.getElementById('searchResults').classList.remove('active');
+                return;
+            }
+
+            console.log('검색어:', query);
+
+            var filteredStudents = allStudentsData.filter(function(student) {
+                return (student.name && student.name.toLowerCase().indexOf(query) !== -1) ||
+                       (student.dormNumber && student.dormNumber.toLowerCase().indexOf(query) !== -1) ||
+                       (student.labSeat && student.labSeat.toLowerCase().indexOf(query) !== -1) ||
+                       (student.status && student.status.toLowerCase().indexOf(query) !== -1) ||
+                       (student.memo && student.memo.toLowerCase().indexOf(query) !== -1);
+            });
+
+            console.log('검색 결과:', filteredStudents.length + '명');
+
+            renderDetailedStudentCards(filteredStudents, 'searchContent');
+            document.getElementById('searchResults').classList.add('active');
+            document.getElementById('detailSection').classList.remove('active');
+        }
+
+        function loadData() {
+            console.log('데이터 로드 시작');
+            document.getElementById('loadingDiv').style.display = 'block';
+            updateDateDisplay();
+            
+            // 실제 구글 시트에서 전체 학생 데이터 가져오기
+            fetch(googleScriptUrl + '?action=getAllStudentDetails')
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('네트워크 오류: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(function(result) {
+                    if (result.success) {
+                        console.log('전체 학생 데이터 로드 성공:', result.data.length + '명');
+                        allStudentsData = result.data;
+                        return loadStatistics();
+                    } else {
+                        throw new Error(result.error || '학생 데이터 로드 실패');
+                    }
+                })
+                .then(function() {
+                    return loadBuildingFloorStats();
+                })
+                .catch(function(error) {
+                    console.error('실제 데이터 로드 실패, 샘플 데이터 사용:', error);
+                    generateSampleData();
+                    updateStatistics();
+                    generateBuildingFloorCards();
+                })
+                .finally(function() {
+                    document.getElementById('loadingDiv').style.display = 'none';
+                });
+        }
+
+        function loadStatistics() {
+            return fetch(googleScriptUrl + '?action=getStats')
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('통계 로드 오류: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(function(result) {
+                    if (result.success) {
+                        console.log('실제 통계 데이터 로드 성공:', result.stats);
+                        updateStatisticsFromServer(result.stats);
+                        studentsData = result.stats.overnightStudents.concat(
+                            result.stats.checkoutStudents,
+                            result.stats.newStudents,
+                            result.stats.moveInStudents,
+                            result.stats.moveOutStudents
+                        );
+                    } else {
+                        throw new Error(result.error || '통계 로드 실패');
+                    }
+                });
+        }
+
+        function loadBuildingFloorStats() {
+            return fetch(googleScriptUrl + '?action=getBuildingFloorStats')
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('동별 통계 로드 오류: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(function(result) {
+                    if (result.success) {
+                        buildingFloorData = result.data;
+                        generateBuildingFloorCards();
+                    } else {
+                        throw new Error(result.error || '동별 통계 로드 실패');
+                    }
+                });
+        }
+
+        function generateSampleData() {
+            // 기존 샘플 데이터 + 추가 정보
+            allStudentsData = [
+                { name: '김민수', dormNumber: 'A101', building: 'A', floor: 1, status: '외박', memo: '가족 방문', labSeat: 'L001' },
+                { name: '이영희', dormNumber: 'D201', building: 'D', floor: 2, status: '퇴소', memo: '졸업', labSeat: 'L045' },
+                { name: '박철수', dormNumber: 'B305', building: 'B', floor: 3, status: '신규', memo: '신입생', labSeat: 'L023' },
+                { name: '최수진', dormNumber: 'E402', building: 'E', floor: 4, status: '+이동', memo: 'C동에서 이동', labSeat: 'L067' },
+                { name: '김태현', dormNumber: 'F203', building: 'F', floor: 2, status: '-이동', memo: 'A동으로 이동', labSeat: 'L089' },
+                { name: '윤서영', dormNumber: 'D103', building: 'D', floor: 1, status: '외박', memo: '병원 검진', labSeat: 'L012' },
+                { name: '정민호', dormNumber: 'A405', building: 'A', floor: 4, status: '신규', memo: '교환학생', labSeat: 'L034' },
+                { name: '한지우', dormNumber: 'C201', building: 'C', floor: 2, status: '퇴소', memo: '휴학', labSeat: 'L056' },
+                { name: '이수민', dormNumber: 'B402', building: 'B', floor: 4, status: '외박', memo: '면접', labSeat: 'L078' },
+                { name: '조현우', dormNumber: 'F101', building: 'F', floor: 1, status: '+이동', memo: 'D동에서 이동', labSeat: 'L090' }
+            ];
+
+            studentsData = allStudentsData.filter(function(student) {
+                return student.status && student.status !== '';
+            });
+
+            // 동별/층별 샘플 데이터
+            buildingFloorData = {
+                'A1': { current: 25, overnight: 1, checkout: 0, newEntry: 0, moveIn: 0, moveOut: 0 },
+                'A2': { current: 28, overnight: 0, checkout: 0, newEntry: 0, moveIn: 0, moveOut: 0 },
+                'A3': { current: 30, overnight: 0, checkout: 0, newEntry: 0, moveIn: 0, moveOut: 0 },
+                'A4': { current: 27, overnight: 0, checkout: 0, newEntry: 1, moveIn: 0, moveOut: 1 },
+                'B1': { current: 22, overnight: 0, checkout: 0, newEntry: 0, moveIn: 0, moveOut: 0 },
+                'B2': { current: 24, overnight: 0, checkout: 0, newEntry: 0, moveIn: 0, moveOut: 0 },
+                'B3': { current: 26, overnight: 0, checkout: 0, newEntry: 1, moveIn: 0, moveOut: 0 },
+                'B4': { current: 23, overnight: 1, checkout: 0, newEntry: 0, moveIn: 0, moveOut: 0 }
+            };
+        }
 
         function loadData() {
             console.log('데이터 로드 시작');
