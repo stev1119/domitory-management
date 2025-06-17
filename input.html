@@ -1,4 +1,12 @@
-<!DOCTYPE html>
+// 실시간 날짜/시간 표시 함수
+        function updateDateTime() {
+            var now = new Date();
+            var currentHour = now.getHours();
+            
+            // 22시 기준 날짜 계산
+            var reportDate;
+            if (currentHour < 22) {
+                var yesterday = new Date<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -290,7 +298,9 @@
     <div class="container">
         <div class="header">
             <h1>🏠 기숙사 인원 관리 시스템</h1>
-            <p>각 동별, 층별 인원 정보를 입력하고 관리하세요</p>
+            <div style="font-size: 1.3rem; font-weight: 600; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 10px;">
+                <div id="currentDateTime">로딩 중...</div>
+            </div>
         </div>
 
         <div class="main-content">
@@ -437,7 +447,7 @@
 
     <script>
         // 구글 앱스 스크립트 웹앱 URL
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyZhDV9U-J03tl3fLY7Yb5HUQ3pCGvY5fBsYYnAnYbAnHzspe-CSU9-cduDonc3j5eJ/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz0DcseyZhiKw9XRmYPhOvQa0i5EiypNTJfmOivai2lw-rx0eXLncRWyrOU3xy-qUEf/exec';
         const JANDI_WEBHOOK_URL = 'https://wh.jandi.com/connect-api/webhook/29522216/3d9603c3b428b386c0d640758e236cb4';
 
         // 22시 기준 날짜 계산 함수
@@ -573,7 +583,20 @@
             }, 5000);
         }
 
-        function changeValue(fieldId, delta) {
+        // 비밀번호로 보호된 리셋 함수
+        function resetSheetWithPassword() {
+            var password = prompt('시트 초기화를 위한 비밀번호를 입력하세요:');
+            
+            if (password === null) {
+                return; // 사용자가 취소함
+            }
+            
+            if (password === '3825') {
+                resetSheet();
+            } else {
+                alert('비밀번호가 틀렸습니다.');
+            }
+        }
             const field = document.getElementById(fieldId);
             const currentValue = parseInt(field.value) || 0;
             const newValue = Math.max(0, currentValue + delta);
