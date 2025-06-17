@@ -260,7 +260,9 @@ var googleScriptUrl = 'https://script.google.com/macros/s/AKf<!DOCTYPE html>
     <div class="container">
         <div class="header">
             <h1>📊 기숙사 전체 현황 대시보드</h1>
-            <p id="currentDateDisplay">실시간 기숙사 인원 현황을 확인하세요</p>
+            <div style="font-size: 1.5rem; font-weight: 600; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 10px;">
+                <div id="currentDateTime">로딩 중...</div>
+            </div>
         </div>
 
         <div class="search-section">
@@ -369,7 +371,7 @@ var googleScriptUrl = 'https://script.google.com/macros/s/AKf<!DOCTYPE html>
     <button class="refresh-btn" onclick="loadData()" title="새로고침">🔄</button>
 
     <script>
-        var googleScriptUrl = 'https://script.google.com/macros/s/AKfycbyZhDV9U-J03tl3fLY7Yb5HUQ3pCGvY5fBsYYnAnYbAnHzspe-CSU9-cduDonc3j5eJ/exec';
+        var googleScriptUrl = 'https://script.google.com/macros/s/AKfycbz0DcseyZhiKw9XRmYPhOvQa0i5EiypNTJfmOivai2lw-rx0eXLncRWyrOU3xy-qUEf/exec';
         
         var studentsData = [];
         var allStudentsData = []; // 전체 학생 데이터 (B~N열)
