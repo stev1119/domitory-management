@@ -150,10 +150,194 @@
 
         .student-card {
             background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .student-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+        }
+
+        .student-card.male::before {
+            background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
+        }
+
+        .student-card.female::before {
+            background: linear-gradient(90deg, #e83e8c 0%, #c2185b 100%);
+        }
+
+        .student-card .student-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .student-card .student-name-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .student-card .student-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .student-card .student-birth {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            background: #f8f9fa;
+            padding: 4px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .student-card .student-room {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .student-card .student-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .student-card .info-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .student-card .info-section h4 {
+            color: #495057;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 5px;
+        }
+
+        .student-card .info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            padding: 6px 0;
+        }
+
+        .student-card .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .student-card .info-item i {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .student-card .info-item span {
+            font-size: 0.95rem;
+            color: #495057;
+            flex: 1;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .status-badge.정상 { 
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+            color: white; 
+        }
+        .status-badge.외박 { 
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); 
+            color: white; 
+        }
+        .status-badge.외출 { 
+            background: linear-gradient(135deg, #17a2b8 0%, #007bff 100%); 
+            color: white; 
+        }
+        .status-badge.퇴소 { 
+            background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%); 
+            color: white; 
+        }
+        .status-badge.이동+ { 
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+            color: white; 
+        }
+        .status-badge.이동- { 
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%); 
+            color: white; 
+        }
+        .status-badge.기타 { 
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%); 
+            color: white; 
+        }
+
+        .student-card .gender-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+            font-weight: 600;
+        }
+
+        .student-card.male .gender-badge {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        }
+
+        .student-card.female .gender-badge {
+            background: linear-gradient(135deg, #e83e8c 0%, #c2185b 100%);
+        }-shadow: 0 5px 15px rgba(0,0,0,0.1);
             border-left: 5px solid #4facfe;
         }
 
@@ -287,6 +471,56 @@
             font-size: 1rem;
         }
 
+        .report-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .report-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #4facfe;
+        }
+
+        .report-card.reported {
+            border-left-color: #28a745;
+            background: linear-gradient(135deg, #d4edda 0%, #f8fff9 100%);
+        }
+
+        .report-card.not-reported {
+            border-left-color: #dc3545;
+            background: linear-gradient(135deg, #f8d7da 0%, #fff5f5 100%);
+        }
+
+        .report-card h4 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .report-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .report-stat-item {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .report-stat-item .number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #495057;
+        }
+
         .no-data {
             text-align: center;
             padding: 40px;
@@ -358,10 +592,33 @@
                 <div class="number" id="overnightCount">0</div>
                 <div class="label">외박</div>
             </div>
+            <div class="stat-card clickable" onclick="showStatusStudents('외출')" style="background: linear-gradient(135deg, #17a2b8 0%, #007bff 100%); color: white;">
+                <div class="icon"><i class="fas fa-walking"></i></div>
+                <div class="number" id="outingCount">0</div>
+                <div class="label">외출</div>
+            </div>
             <div class="stat-card checkout clickable" onclick="showStatusStudents('퇴소')">
                 <div class="icon"><i class="fas fa-door-open"></i></div>
                 <div class="number" id="checkoutCount">0</div>
                 <div class="label">퇴소</div>
+            </div>
+            <div class="stat-card clickable" onclick="showStatusStudents('이동+')" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white;">
+                <div class="icon"><i class="fas fa-arrow-right"></i></div>
+                <div class="number" id="moveInCount">0</div>
+                <div class="label">이동(+)</div>
+            </div>
+            <div class="stat-card clickable" onclick="showStatusStudents('이동-')" style="background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%); color: white;">
+                <div class="icon"><i class="fas fa-arrow-left"></i></div>
+                <div class="number" id="moveOutCount">0</div>
+                <div class="label">이동(-)</div>
+            </div>
+        </div>
+
+        <!-- 보고 현황 집계 -->
+        <div id="reportSummarySection" class="section" style="display: none;">
+            <h2>오늘 인원보고 현황</h2>
+            <div id="reportSummaryContainer">
+                <!-- 보고 현황이 여기에 표시됩니다 -->
             </div>
         </div>
 
@@ -430,11 +687,11 @@
             API_KEY: 'AIzaSyA1uY-EDvpxvxqyXTDwjNpS2ugYXQ3igtk', // API 키 설정 완료
             
             MANAGERS: [
-                '김담당', '이담당', '박담당', '최담당', '정담당',
-                '강담당', '조담당', '윤담당', '장담당', '임담당',
-                '한담당', '오담당', '서담당', '신담당', '권담당',
-                '황담당', '안담당', '송담당', '전담당', '홍담당',
-                '문담당', '양담당', '백담당', '남담당'
+                '이영운', '김혜정', '이시우', '고승완', '남인달',
+                '조영권', '황민철', '강지훈', '김건희', '송인수',
+                '김영현', '김미경', '유나경', '진정현', '원현주',
+                '김지현', '김정아', '신규1', '신규2', '신규3',
+                '신규4', '신규5', '신규6', '신규7'
             ],
             
             BUILDINGS: ['A', 'B', 'C', 'D', 'E', 'F'],
@@ -508,6 +765,7 @@
                                 labSeat: row[7] || '',
                                 group: row[8] || '',
                                 teacher: row[9] || '',
+                                birthDate: row[10] || '', // K열 생년월일 추가
                                 gender: row[11] || '',
                                 admissionDate: row[12] || '',
                                 building: row[1] ? row[1].charAt(0) : '',
@@ -698,6 +956,7 @@
                 updateStatsDisplay();
                 updateStatusSection();
                 updateBuildingSection();
+                updateReportSummary();
                 
                 hideLoading();
             } catch (error) {
@@ -718,6 +977,7 @@
         function hideLoading() {
             document.getElementById('loadingContainer').style.display = 'none';
             document.getElementById('statsContainer').style.display = 'grid';
+            document.getElementById('reportSummarySection').style.display = 'block';
             document.getElementById('statusSection').style.display = 'block';
             document.getElementById('buildingSection').style.display = 'block';
         }
@@ -730,7 +990,10 @@
             document.getElementById('maleCurrentCount').textContent = currentStats.maleCurrent;
             document.getElementById('femaleCurrentCount').textContent = currentStats.femaleCurrent;
             document.getElementById('overnightCount').textContent = currentStats.statusCounts['외박'] || 0;
+            document.getElementById('outingCount').textContent = currentStats.statusCounts['외출'] || 0;
             document.getElementById('checkoutCount').textContent = currentStats.statusCounts['퇴소'] || 0;
+            document.getElementById('moveInCount').textContent = currentStats.statusCounts['이동+'] || 0;
+            document.getElementById('moveOutCount').textContent = currentStats.statusCounts['이동-'] || 0;
         }
 
         function updateStatusSection() {
@@ -902,25 +1165,53 @@
                 `<span class="status-badge ${student.status}">${student.status}</span>` : 
                 '<span class="status-badge 정상">정상</span>';
             
+            // 나이 계산 (생년월일이 있는 경우)
+            let ageText = '';
+            if (student.birthDate) {
+                const today = new Date();
+                const birthDate = new Date(student.birthDate);
+                const age = today.getFullYear() - birthDate.getFullYear();
+                ageText = ` (만 ${age}세)`;
+            }
+            
             return `
-                <div class="student-card ${gender}">
+                <div class="student-card ${gender.toLowerCase()}">
+                    <div class="gender-badge">
+                        <i class="fas fa-${gender === '남' ? 'mars' : 'venus'}"></i>
+                    </div>
+                    
                     <div class="student-header">
-                        <div class="student-name">${student.name}</div>
+                        <div class="student-name-section">
+                            <h3 class="student-name">${student.name}</h3>
+                            ${student.birthDate ? `<div class="student-birth"><i class="fas fa-birthday-cake"></i> ${student.birthDate}${ageText}</div>` : ''}
+                        </div>
                         <div class="student-room">${student.roomNumber}</div>
                     </div>
+                    
                     <div class="student-info">
-                        <div class="info-item">
-                            <i class="fas fa-flag"></i>
-                            <span>${statusBadge}</span>
+                        <div class="info-section">
+                            <h4><i class="fas fa-info-circle"></i> 기본 정보</h4>
+                            <div class="info-item">
+                                <i class="fas fa-flag"></i>
+                                <span>${statusBadge}</span>
+                            </div>
+                            ${student.memo ? `<div class="info-item"><i class="fas fa-sticky-note"></i><span>${student.memo}</span></div>` : ''}
+                            ${student.gender ? `<div class="info-item"><i class="fas fa-${student.gender === '남' ? 'mars' : 'venus'}"></i><span>${student.gender}학생</span></div>` : ''}
+                            ${student.admissionDate ? `<div class="info-item"><i class="fas fa-calendar-plus"></i><span>입소일: ${student.admissionDate}</span></div>` : ''}
                         </div>
-                        ${student.memo ? `<div class="info-item"><i class="fas fa-sticky-note"></i><span>${student.memo}</span></div>` : ''}
-                        ${student.parentPhone ? `<div class="info-item"><i class="fas fa-phone"></i><span>학부모: ${student.parentPhone}</span></div>` : ''}
-                        ${student.studentPhone ? `<div class="info-item"><i class="fas fa-mobile-alt"></i><span>학생: ${student.studentPhone}</span></div>` : ''}
-                        ${student.labSeat ? `<div class="info-item"><i class="fas fa-desktop"></i><span>라브: ${student.labSeat}</span></div>` : ''}
-                        ${student.group ? `<div class="info-item"><i class="fas fa-users"></i><span>그룹: ${student.group}</span></div>` : ''}
-                        ${student.teacher ? `<div class="info-item"><i class="fas fa-user-tie"></i><span>담임: ${student.teacher}</span></div>` : ''}
-                        ${student.gender ? `<div class="info-item"><i class="fas fa-${student.gender === '남' ? 'mars' : 'venus'}"></i><span>${student.gender}</span></div>` : ''}
-                        ${student.admissionDate ? `<div class="info-item"><i class="fas fa-calendar"></i><span>입소: ${student.admissionDate}</span></div>` : ''}
+                        
+                        <div class="info-section">
+                            <h4><i class="fas fa-phone"></i> 연락처</h4>
+                            ${student.parentPhone ? `<div class="info-item"><i class="fas fa-phone"></i><span>학부모: ${student.parentPhone}</span></div>` : ''}
+                            ${student.studentPhone ? `<div class="info-item"><i class="fas fa-mobile-alt"></i><span>학생: ${student.studentPhone}</span></div>` : ''}
+                        </div>
+                        
+                        <div class="info-section">
+                            <h4><i class="fas fa-graduation-cap"></i> 학습 정보</h4>
+                            ${student.labSeat ? `<div class="info-item"><i class="fas fa-desktop"></i><span>라브좌석: ${student.labSeat}</span></div>` : ''}
+                            ${student.group ? `<div class="info-item"><i class="fas fa-users"></i><span>그룹: ${student.group}</span></div>` : ''}
+                            ${student.teacher ? `<div class="info-item"><i class="fas fa-user-tie"></i><span>담임: ${student.teacher}</span></div>` : ''}
+                        </div>
                     </div>
                 </div>
             `;
@@ -1026,6 +1317,74 @@
             }
         }
 
+        // 보고 현황 집계 업데이트
+        function updateReportSummary() {
+            const container = document.getElementById('reportSummaryContainer');
+            const reportDate = getReportPeriodId();
+            const storedReports = JSON.parse(localStorage.getItem('dailyReports') || '{}');
+            const todayReports = storedReports[reportDate] || {};
+            
+            let summaryHtml = '<div class="report-summary-grid">';
+            
+            // 각 동별로 보고 현황 표시
+            CONFIG.BUILDINGS.forEach(building => {
+                CONFIG.FLOORS.forEach(floor => {
+                    const reportKey = `${building}_${floor}`;
+                    const report = todayReports[reportKey];
+                    
+                    if (report) {
+                        // 보고된 경우
+                        summaryHtml += `
+                            <div class="report-card reported">
+                                <h4>✅ ${building}동 ${floor}층 - ${report.manager}</h4>
+                                <div class="report-stats">
+                                    <div class="report-stat-item">
+                                        <div class="number">${report.currentCount}</div>
+                                        <div class="label">현재원</div>
+                                    </div>
+                                    <div class="report-stat-item">
+                                        <div class="number">${report.overnight}</div>
+                                        <div class="label">외박</div>
+                                    </div>
+                                    <div class="report-stat-item">
+                                        <div class="number">${report.outing}</div>
+                                        <div class="label">외출</div>
+                                    </div>
+                                    <div class="report-stat-item">
+                                        <div class="number">${report.checkout}</div>
+                                        <div class="label">퇴소</div>
+                                    </div>
+                                    <div class="report-stat-item">
+                                        <div class="number">${report.moveIn}</div>
+                                        <div class="label">이동(+)</div>
+                                    </div>
+                                    <div class="report-stat-item">
+                                        <div class="number">${report.moveOut}</div>
+                                        <div class="label">이동(-)</div>
+                                    </div>
+                                </div>
+                                <small style="color: #6c757d; margin-top: 10px; display: block;">
+                                    보고시간: ${report.timestamp}
+                                </small>
+                            </div>
+                        `;
+                    } else {
+                        // 보고되지 않은 경우
+                        summaryHtml += `
+                            <div class="report-card not-reported">
+                                <h4>❌ ${building}동 ${floor}층</h4>
+                                <p style="color: #721c24; margin: 10px 0;">보고되지 않음</p>
+                                <small style="color: #856404;">담당자의 보고가 필요합니다.</small>
+                            </div>
+                        `;
+                    }
+                });
+            });
+            
+            summaryHtml += '</div>';
+            container.innerHTML = summaryHtml;
+        }
+
         window.onclick = function(event) {
             const modal1 = document.getElementById('studentModal');
             const modal2 = document.getElementById('editModal');
@@ -1037,6 +1396,9 @@
                 closeEditModal();
             }
         }
+    </script>
+</body>
+</html>
     </script>
 </body>
 </html>
