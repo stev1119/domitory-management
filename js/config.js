@@ -3,7 +3,7 @@ const CONFIG = {
     // Google Sheets 설정
     SHEET_ID: '1cASz2h4Dd13H6vhdKAPHOFdf5BMsFjaFledqVbzpP8I',
     SHEET_NAME: 'yulee',
-    API_KEY: 'AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY', // 실제 API 키로 교체 필요
+    API_KEY: 'AIzaSyA1uY-EDvpxvxqyXTDwjNpS2ugYXQ3igtk', // 실제 API 키로 교체 필요
     
     // Jandi Webhook
     JANDI_WEBHOOK: 'https://wh.jandi.com/connect-api/webhook/29522216/3d9603c3b428b386c0d640758e236cb4',
