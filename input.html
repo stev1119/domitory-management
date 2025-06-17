@@ -122,6 +122,16 @@
             width: 80px;
             text-align: center;
             margin: 0;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
         }
 
         .individual-section {
@@ -286,7 +296,7 @@
                             <label>외박</label>
                             <div class="number-input">
                                 <button type="button" onclick="decreaseValue('overnight')">-</button>
-                                <input type="number" id="overnight" name="overnight" value="0" min="0" readonly>
+                                <input type="number" id="overnight" name="overnight" value="0" min="0">
                                 <button type="button" onclick="increaseValue('overnight')">+</button>
                             </div>
                         </div>
@@ -294,19 +304,51 @@
                             <label>퇴소</label>
                             <div class="number-input">
                                 <button type="button" onclick="decreaseValue('checkout')">-</button>
-                                <input type="number" id="checkout" name="checkout" value="0" min="0" readonly>
+                                <input type="number" id="checkout" name="checkout" value="0" min="0">
                                 <button type="button" onclick="increaseValue('checkout')">+</button>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>이동</label>
+                            <label>이동 OUT (-)</label>
                             <div class="number-input">
                                 <button type="button" onclick="decreaseValue('moveOut')">-</button>
-                                <input type="number" id="moveOut" name="moveOut" value="0" min="0" readonly>
-                                <span>Out</span>
+                                <input type="number" id="moveOut" name="moveOut" value="0" min="0">
+                                <button type="button" onclick="increaseValue('moveOut')">+</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>이동 IN (+)</label>
+                            <div class="number-input">
+                                <button type="button" onclick="decreaseValue('moveIn')">-</button>
+                                <input type="number" id="moveIn" name="moveIn" value="0" min="0">
                                 <button type="button" onclick="increaseValue('moveIn')">+</button>
-                                <input type="number" id="moveIn" name="moveIn" value="0" min="0" readonly>
-                                <span>In</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>현재원 (수동입력)</label>
+                            <div class="number-input">
+                                <button type="button" onclick="decreaseValue('currentCount')">-</button>
+                                <input type="number" id="currentCount" name="currentCount" value="0" min="0">
+                                <button type="button" onclick="increaseValue('currentCount')">+</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>외출</label>
+                            <div class="number-input">
+                                <button type="button" onclick="decreaseValue('outing')">-</button>
+                                <input type="number" id="outing" name="outing" value="0" min="0">
+                                <button type="button" onclick="increaseValue('outing')">+</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>기타</label>
+                            <div class="number-input">
+                                <button type="button" onclick="decreaseValue('etc')">-</button>
+                                <input type="number" id="etc" name="etc" value="0" min="0">
+                                <button type="button" onclick="increaseValue('etc')">+</button>
                             </div>
                         </div>
                     </div>
@@ -353,8 +395,8 @@
             MANAGERS: [
                 '이영운', '김혜정', '이시우', '고승완', '남인달',
                 '조영권', '황민철', '강지훈', '김건희', '송인수',
-                '진정현', '유나경', '김미경', '원현주', '김지현',
-                '김정아', '김영현', '신규1', '신규2', '신규3', 
+                '김영현', '김미경', '유나경', '진정현', '원현주',
+                '김지현', '김정아', '신규1', '신규2', '신규3',
                 '신규4', '신규5', '신규6', '신규7'
             ],
             
@@ -836,6 +878,9 @@
                 checkout: parseInt(formData.get('checkout')) || 0,
                 moveIn: parseInt(formData.get('moveIn')) || 0,
                 moveOut: parseInt(formData.get('moveOut')) || 0,
+                currentCount: parseInt(formData.get('currentCount')) || 0,
+                outing: parseInt(formData.get('outing')) || 0,
+                etc: parseInt(formData.get('etc')) || 0,
                 memo: formData.get('memo') || '',
                 students: [],
                 isModification: submittedReports.has(reportKey)
@@ -872,6 +917,21 @@
             await sendJandiNotification(reportData);
         }
 
+        // 보고 데이터 저장 (집계용)
+        function saveReportData(reportData) {
+            const reportDate = Utils.getReportPeriodId();
+            const storedReports = JSON.parse(localStorage.getItem('dailyReports') || '{}');
+            
+            if (!storedReports[reportDate]) {
+                storedReports[reportDate] = {};
+            }
+            
+            const reportKey = `${reportData.building}_${reportData.floor}`;
+            storedReports[reportDate][reportKey] = reportData;
+            
+            localStorage.setItem('dailyReports', JSON.stringify(storedReports));
+        }
+
         // Google Sheets 업데이트
         async function updateSheetsWithReport(reportData) {
             // 개별 학생 상태 업데이트
@@ -882,6 +942,9 @@
                     console.warn(`학생 ${student.name} 상태 업데이트 실패:`, error);
                 }
             }
+            
+            // 보고 데이터 저장 (집계용)
+            saveReportData(reportData);
         }
 
         // Jandi 알림 전송
@@ -918,10 +981,13 @@
             message += `🏢 위치: ${reportData.building}동 ${reportData.floor}층\n\n`;
             
             message += `📊 인원 현황:\n`;
+            if (reportData.currentCount > 0) message += `👥 현재원: ${reportData.currentCount}명\n`;
             if (reportData.overnight > 0) message += `🌙 외박: ${reportData.overnight}명\n`;
+            if (reportData.outing > 0) message += `🚶 외출: ${reportData.outing}명\n`;
             if (reportData.checkout > 0) message += `🚪 퇴소: ${reportData.checkout}명\n`;
             if (reportData.moveIn > 0) message += `➕ 이동(입): ${reportData.moveIn}명\n`;
             if (reportData.moveOut > 0) message += `➖ 이동(출): ${reportData.moveOut}명\n`;
+            if (reportData.etc > 0) message += `❓ 기타: ${reportData.etc}명\n`;
             
             if (reportData.students.length > 0) {
                 message += `\n👥 개별 학생 현황:\n`;
@@ -964,3 +1030,4 @@
     </script>
 </body>
 </html>
+
