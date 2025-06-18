@@ -12,156 +12,203 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #2c3e50;
+            --text-secondary: #6c757d;
+            --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --shadow-heavy: 0 15px 35px rgba(31, 38, 135, 0.2);
+        }
+
         body {
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-gradient);
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
+            color: var(--text-primary);
         }
 
         .container {
-            max-width: 1600px;
+            max-width: 500px;
             margin: 0 auto;
         }
 
         .main-header {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--glass-bg);
             backdrop-filter: blur(20px);
-            border-radius: 25px;
-            padding: 40px;
-            margin-bottom: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 24px 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-light);
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .main-header h1 {
-            font-size: 2.8rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-size: 1.6rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-weight: 700;
         }
 
         .controls {
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-top: 30px;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
         }
 
         .search-container {
-            display: flex;
-            gap: 10px;
-            align-items: center;
+            position: relative;
         }
 
         .search-input {
-            padding: 12px 20px;
-            border: 2px solid #e9ecef;
-            border-radius: 25px;
+            width: 100%;
+            padding: 14px 50px 14px 20px;
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
             font-size: 1rem;
-            width: 300px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            color: white;
             transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .search-input:focus {
             outline: none;
             border-color: #4facfe;
-            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--secondary-gradient);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
 
         .btn {
-            padding: 12px 25px;
+            padding: 12px 16px;
             border: none;
-            border-radius: 25px;
+            border-radius: 16px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             transition: all 0.3s ease;
             text-decoration: none;
-            display: inline-flex;
+            display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: var(--secondary-gradient);
             color: white;
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-            color: white;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            background: var(--glass-bg);
             color: white;
         }
 
         .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
         }
 
         .search-results-immediate {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--glass-bg);
             backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 15px;
+            box-shadow: var(--shadow-light);
             display: none;
         }
 
         .search-results-immediate h3 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 1.3rem;
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
             font-weight: 600;
             text-align: center;
         }
 
         .stats-section {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--glass-bg);
             backdrop-filter: blur(20px);
-            border-radius: 25px;
-            padding: 40px;
-            margin-bottom: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-light);
         }
 
         .section-title {
-            font-size: 1.8rem;
-            color: #2c3e50;
-            margin-bottom: 30px;
+            font-size: 1.2rem;
+            color: white;
+            margin-bottom: 20px;
             font-weight: 600;
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-            border-radius: 20px;
-            padding: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             cursor: pointer;
-            border: 2px solid transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
             overflow: hidden;
         }
@@ -172,157 +219,177 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            height: 3px;
+            background: var(--secondary-gradient);
         }
 
         .stat-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-            border-color: #4facfe;
-        }
-
-        .stat-card.clickable:hover {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-light);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .stat-card .icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            background: var(--secondary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .stat-card .number {
-            font-size: 2.2rem;
+            font-size: 1.6rem;
             font-weight: bold;
-            margin-bottom: 8px;
-            color: #2c3e50;
+            margin-bottom: 4px;
+            color: white;
         }
 
         .stat-card .label {
-            color: #6c757d;
-            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.8rem;
             font-weight: 500;
         }
 
         .report-summary-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
+            grid-template-columns: 1fr;
+            gap: 15px;
         }
 
         .report-card {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border-left: 6px solid #4facfe;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #4facfe;
             transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .report-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
         }
 
         .report-card.reported {
             border-left-color: #28a745;
-            background: linear-gradient(135deg, rgba(212, 237, 218, 0.3) 0%, rgba(255, 255, 255, 0.9) 100%);
+            background: rgba(40, 167, 69, 0.1);
         }
 
         .report-card.not-reported {
             border-left-color: #dc3545;
-            background: linear-gradient(135deg, rgba(248, 215, 218, 0.3) 0%, rgba(255, 255, 255, 0.9) 100%);
+            background: rgba(220, 53, 69, 0.1);
         }
 
         .report-card h4 {
-            margin-bottom: 20px;
-            color: #2c3e50;
-            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: white;
+            font-size: 1rem;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .report-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
         }
 
         .report-stat-item {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 12px;
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 4px;
+            border-radius: 8px;
             text-align: center;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
             cursor: pointer;
         }
 
         .report-stat-item:hover {
             transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.15);
         }
 
         .report-stat-item .number {
-            font-size: 1.4rem;
+            font-size: 1.1rem;
             font-weight: bold;
-            color: #495057;
+            color: white;
             margin-bottom: 2px;
         }
 
         .report-stat-item .label {
-            font-size: 0.85rem;
-            color: #6c757d;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.8);
             font-weight: 500;
         }
 
         .building-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 25px;
+            grid-template-columns: 1fr;
+            gap: 15px;
         }
 
         .building-card {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border-left: 6px solid #4facfe;
-            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #4facfe;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .building-card h3 {
+            color: white;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .floor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
         }
 
         .floor-item {
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-bottom: 10px;
-            border: 2px solid transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .floor-item:hover {
             border-color: #4facfe;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .floor-item .floor-title {
+            font-weight: bold;
+            color: white;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+
+        .floor-item .floor-count {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.8rem;
         }
 
         .student-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--glass-bg);
             backdrop-filter: blur(10px);
-            border-radius: 25px;
-            padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--glass-border);
             position: relative;
             overflow: hidden;
             transition: all 0.4s ease;
@@ -334,13 +401,13 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            height: 4px;
+            background: var(--secondary-gradient);
         }
 
         .student-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-heavy);
         }
 
         .student-card.male::before {
@@ -351,126 +418,126 @@
             background: linear-gradient(90deg, #e83e8c 0%, #c2185b 100%);
         }
 
-        .student-card .student-header {
+        .student-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .student-card .student-name-section {
+        .student-name-section {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 6px;
         }
 
-        .student-card .student-name {
-            font-size: 1.5rem;
+        .student-name {
+            font-size: 1.2rem;
             font-weight: 700;
-            color: #2c3e50;
+            color: white;
             margin: 0;
         }
 
-        .student-card .student-birth {
-            font-size: 0.95rem;
-            color: #7f8c8d;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 6px 15px;
-            border-radius: 20px;
+        .student-birth {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 10px;
+            border-radius: 12px;
             display: inline-block;
             width: fit-content;
             font-weight: 500;
         }
 
-        .student-card .student-room {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .student-room {
+            background: var(--secondary-gradient);
             color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 1rem;
+            padding: 8px 15px;
+            border-radius: 16px;
+            font-size: 0.9rem;
             font-weight: 600;
             text-align: center;
-            min-width: 100px;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            min-width: 80px;
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
         }
 
-        .student-card .student-info {
+        .student-info {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: 1fr;
+            gap: 12px;
         }
 
-        .student-card .info-section {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
+        .info-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .student-card .info-section h4 {
-            color: #495057;
-            font-size: 0.9rem;
+        .info-section h4 {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.8rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #dee2e6;
-            padding-bottom: 8px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-item {
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .student-card .info-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-            padding: 8px 0;
+            margin-bottom: 6px;
+            padding: 4px 0;
             transition: all 0.3s ease;
         }
 
-        .student-card .info-item:hover {
-            transform: translateX(5px);
+        .info-item:hover {
+            transform: translateX(3px);
             color: #4facfe;
         }
 
-        .student-card .info-item:last-child {
+        .info-item:last-child {
             margin-bottom: 0;
         }
 
-        .student-card .info-item i {
-            width: 20px;
-            height: 20px;
+        .info-item i {
+            width: 16px;
+            height: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #6c757d;
-            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
         }
 
-        .student-card .info-item span {
-            font-size: 1rem;
-            color: #495057;
+        .info-item span {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.9);
             flex: 1;
             font-weight: 500;
         }
 
         .status-badge {
-            padding: 8px 16px;
-            border-radius: 25px;
-            font-size: 0.9rem;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             border: none;
         }
 
         .status-badge.정상 { 
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+            background: var(--success-gradient); 
             color: white; 
         }
         .status-badge.외박 { 
@@ -482,7 +549,7 @@
             color: white; 
         }
         .status-badge.퇴소 { 
-            background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%); 
+            background: var(--warning-gradient); 
             color: white; 
         }
         .status-badge.신규 { 
@@ -490,7 +557,7 @@
             color: white; 
         }
         .status-badge.이동+ { 
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+            background: var(--success-gradient); 
             color: white; 
         }
         .status-badge.이동- { 
@@ -502,20 +569,20 @@
             color: white; 
         }
 
-        .student-card .gender-badge {
+        .gender-badge {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 45px;
-            height: 45px;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: white;
             font-weight: 600;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .student-card.male .gender-badge {
@@ -534,69 +601,69 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(5px);
         }
 
         .modal-content {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--glass-bg);
             backdrop-filter: blur(20px);
-            margin: 3% auto;
-            padding: 40px;
-            border-radius: 25px;
-            width: 90%;
-            max-width: 900px;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 450px;
             max-height: 85vh;
             overflow-y: auto;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-heavy);
+            border: 1px solid var(--glass-border);
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #f0f0f0;
-            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 12px;
         }
 
         .modal-header h3 {
-            color: #2c3e50;
-            font-size: 1.8rem;
+            color: white;
+            font-size: 1.2rem;
             font-weight: 600;
         }
 
         .close {
-            color: #6c757d;
-            font-size: 28px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 24px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .close:hover {
-            color: #dc3545;
-            background: rgba(220, 53, 69, 0.1);
+            color: #ff4757;
+            background: rgba(255, 71, 87, 0.1);
         }
 
         .loading {
             text-align: center;
-            padding: 60px;
-            color: #6c757d;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .loading i {
-            font-size: 3rem;
+            font-size: 2rem;
             animation: spin 1s linear infinite;
             color: #4facfe;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         @keyframes spin {
@@ -606,107 +673,70 @@
 
         .no-data {
             text-align: center;
-            padding: 60px;
-            color: #6c757d;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .no-data i {
-            font-size: 3rem;
-            color: #dee2e6;
-            margin-bottom: 20px;
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.3);
+            margin-bottom: 15px;
         }
 
-        /* 모바일 최적화 */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
+        /* 스크롤바 스타일링 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* 작은 화면 최적화 */
+        @media (max-width: 360px) {
+            .container {
+                padding: 0 5px;
             }
-            
-            .main-header {
-                padding: 25px 20px;
-            }
-            
-            .main-header h1 {
-                font-size: 2rem;
-            }
-            
-            .controls {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .search-container {
-                width: 100%;
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .search-input {
-                width: 100%;
-                font-size: 16px;
-            }
-            
-            .btn {
-                width: 100%;
-                padding: 15px 25px;
-                font-size: 1.1rem;
-                justify-content: center;
-            }
-            
+
             .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+
+            .floor-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .report-stats {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
             }
-            
-            .stat-card {
-                padding: 20px 15px;
-            }
-            
-            .stat-card .icon {
-                font-size: 2rem;
-            }
-            
-            .stat-card .number {
-                font-size: 1.8rem;
-            }
-            
-            .report-summary-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .building-grid {
-                grid-template-columns: 1fr;
-            }
-            
+
             .student-card {
-                padding: 20px;
-                margin-bottom: 20px;
+                padding: 16px;
             }
-            
-            .student-card .student-info {
-                grid-template-columns: 1fr;
-                gap: 15px;
+
+            .student-name {
+                font-size: 1.1rem;
             }
-            
-            .student-card .info-section {
-                padding: 15px;
-            }
-            
-            .student-card .student-name {
-                font-size: 1.3rem;
-            }
-            
-            .student-card .gender-badge {
-                width: 35px;
-                height: 35px;
-                font-size: 1rem;
-            }
-            
-            .modal-content {
-                margin: 5% auto;
-                padding: 25px;
-                width: 95%;
-                max-height: 90vh;
+
+            .gender-badge {
+                width: 28px;
+                height: 28px;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -714,20 +744,22 @@
 <body>
     <div class="container">
         <div class="main-header">
-            <h1><i class="fas fa-chart-dashboard"></i> 기숙사 현황 대시보드</h1>
+            <h1><i class="fas fa-chart-dashboard"></i> 기숙사 현황</h1>
             <div class="controls">
                 <div class="search-container">
                     <input type="text" id="searchInput" class="search-input" placeholder="이름, 기숙사 번호, 라브좌석 검색...">
-                    <button class="btn btn-primary" onclick="searchStudent()">
-                        <i class="fas fa-search"></i> 검색
+                    <button class="search-btn" onclick="searchStudent()">
+                        <i class="fas fa-search"></i>
                     </button>
                 </div>
-                <button class="btn btn-secondary" onclick="refreshData()">
-                    <i class="fas fa-refresh"></i> 새로고침
-                </button>
-                <button class="btn btn-success" onclick="showEditModal()">
-                    <i class="fas fa-edit"></i> 수정
-                </button>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="refreshData()">
+                        <i class="fas fa-refresh"></i> 새로고침
+                    </button>
+                    <button class="btn btn-primary" onclick="showEditModal()">
+                        <i class="fas fa-edit"></i> 수정
+                    </button>
+                </div>
             </div>
             
             <!-- 즉시 검색 결과 표시 영역 -->
@@ -746,64 +778,54 @@
 
         <!-- 통계 카드 -->
         <div id="statsContainer" class="stats-section" style="display: none;">
-            <h2 class="section-title">📊 실시간 인원 현황</h2>
+            <h2 class="section-title"><i class="fas fa-chart-pie"></i> 실시간 인원 현황</h2>
             <div class="stats-grid">
                 <div class="stat-card total clickable" onclick="showTotalStudents()">
                     <div class="icon"><i class="fas fa-users"></i></div>
                     <div class="number" id="totalCount">0</div>
-                    <div class="label">총원 (시트기준)</div>
+                    <div class="label">총원</div>
                 </div>
-                <div class="stat-card current clickable" onclick="showReportedStudents('현재원')">
+                <div class="stat-card current clickable" onclick="showStudentsByStatus('정상')">
                     <div class="icon"><i class="fas fa-user-check"></i></div>
-                    <div class="number" id="reportedCurrentCount">0</div>
-                    <div class="label">현재원 (보고)</div>
+                    <div class="number" id="currentCount">0</div>
+                    <div class="label">현재원</div>
                 </div>
                 <div class="stat-card male clickable" onclick="showMaleStudents()">
                     <div class="icon"><i class="fas fa-mars"></i></div>
                     <div class="number" id="maleCurrentCount">0</div>
-                    <div class="label">남학생 현재원</div>
+                    <div class="label">남학생</div>
                 </div>
                 <div class="stat-card female clickable" onclick="showFemaleStudents()">
                     <div class="icon"><i class="fas fa-venus"></i></div>
                     <div class="number" id="femaleCurrentCount">0</div>
-                    <div class="label">여학생 현재원</div>
+                    <div class="label">여학생</div>
                 </div>
-                <div class="stat-card absent clickable" onclick="showReportedStudents('외박')">
+                <div class="stat-card absent clickable" onclick="showStudentsByStatus('외박')">
                     <div class="icon"><i class="fas fa-moon"></i></div>
                     <div class="number" id="overnightCount">0</div>
                     <div class="label">외박</div>
                 </div>
-                <div class="stat-card new clickable" onclick="showReportedStudents('신규')">
+                <div class="stat-card new clickable" onclick="showStudentsByStatus('신규')">
                     <div class="icon"><i class="fas fa-plus-circle"></i></div>
                     <div class="number" id="newStudentCount">0</div>
                     <div class="label">신규</div>
                 </div>
-                <div class="stat-card outing clickable" onclick="showReportedStudents('외출')">
+                <div class="stat-card outing clickable" onclick="showStudentsByStatus('외출')">
                     <div class="icon"><i class="fas fa-walking"></i></div>
                     <div class="number" id="outingCount">0</div>
                     <div class="label">외출</div>
                 </div>
-                <div class="stat-card checkout clickable" onclick="showReportedStudents('퇴소')">
+                <div class="stat-card checkout clickable" onclick="showStudentsByStatus('퇴소')">
                     <div class="icon"><i class="fas fa-door-open"></i></div>
                     <div class="number" id="checkoutCount">0</div>
                     <div class="label">퇴소</div>
-                </div>
-                <div class="stat-card move-in clickable" onclick="showReportedStudents('이동+')">
-                    <div class="icon"><i class="fas fa-arrow-right"></i></div>
-                    <div class="number" id="moveInCount">0</div>
-                    <div class="label">이동(+)</div>
-                </div>
-                <div class="stat-card move-out clickable" onclick="showReportedStudents('이동-')">
-                    <div class="icon"><i class="fas fa-arrow-left"></i></div>
-                    <div class="number" id="moveOutCount">0</div>
-                    <div class="label">이동(-)</div>
                 </div>
             </div>
         </div>
 
         <!-- 보고 현황 집계 -->
         <div id="reportSummarySection" class="stats-section" style="display: none;">
-            <h2 class="section-title">📋 오늘 인원보고 현황</h2>
+            <h2 class="section-title"><i class="fas fa-clipboard-list"></i> 오늘 인원보고 현황</h2>
             <div id="reportSummaryContainer" class="report-summary-grid">
                 <!-- 보고 현황이 여기에 표시됩니다 -->
             </div>
@@ -811,7 +833,7 @@
 
         <!-- 동별 현황 -->
         <div id="buildingSection" class="stats-section" style="display: none;">
-            <h2 class="section-title">🏢 동별 현황</h2>
+            <h2 class="section-title"><i class="fas fa-building"></i> 동별 현황</h2>
             <div id="buildingGrid" class="building-grid">
                 <!-- 동적으로 생성될 동별 카드 -->
             </div>
@@ -840,7 +862,7 @@
             <div id="editModalBody">
                 <div class="search-container">
                     <input type="text" id="editSearchInput" class="search-input" placeholder="수정할 학생 검색...">
-                    <button class="btn btn-primary" onclick="searchForEdit()">검색</button>
+                    <button class="search-btn" onclick="searchForEdit()"><i class="fas fa-search"></i></button>
                 </div>
                 <div id="editForm" style="display: none;">
                     <!-- 수정 폼이 여기에 표시됩니다 -->
@@ -872,14 +894,14 @@
                 'D': '여', 'E': '여'
             },
             
-            // 3인실 시트 매핑 정보 (수정된 정보)
+            // 3인실 시트 매핑 정보 (정확한 매핑)
             TRIPLE_ROOM_MAPPING: {
                 'A4': { startRow: 187, endRow: 282, startRoom: 401, endRoom: 432 },
                 'B4': { startRow: 405, endRow: 467, startRoom: 401, endRoom: 421 },
-                'C4': { startRow: 653, endRow: 748, startRoom: 401, endRoom: 432 },
-                'D4': { startRow: 883, endRow: 951, startRoom: 401, endRoom: 423 },
-                'E4': { startRow: 1184, endRow: 1303, startRoom: 401, endRoom: 440 },
-                'F4': { startRow: 1402, endRow: 1452, startRoom: 401, endRoom: 417 }
+                'C4': { startRow: 653, endRow: 748, startRoom: 401, endRow: 432 },
+                'D4': { startRow: 883, endRow: 951, startRoom: 401, endRow: 423 },
+                'E4': { startRow: 1184, endRow: 1303, startRoom: 401, endRow: 440 },
+                'F4': { startRow: 1402, endRow: 1452, startRoom: 401, endRow: 417 }
             },
             
             STATUS_TYPES: [
@@ -929,9 +951,10 @@
             // 전체 학생 데이터 가져오기 (미배정 제외 + 3인실 올바른 처리)
             async getAllStudents() {
                 try {
-                    const data = await this.readRange('A:N');
                     const students = [];
                     
+                    // 1-3층 일반실 처리
+                    const data = await this.readRange('A:N');
                     for (let i = 1; i < data.length; i++) {
                         const row = data[i];
                         // B열(기숙사번호), C열(이름)이 있고, 이름이 "미배정"이 아닌 경우만 포함
@@ -940,27 +963,68 @@
                             const building = roomNumber.charAt(0);
                             const floor = roomNumber.charAt(1);
                             
-                            students.push({
-                                rowIndex: i + 1,
-                                roomNumber: roomNumber,
-                                name: row[2] || '',
-                                status: row[3] || '',
-                                memo: row[4] || '',
-                                parentPhone: row[5] || '',
-                                studentPhone: row[6] || '',
-                                labSeat: row[7] || '',
-                                group: row[8] || '',
-                                teacher: row[9] || '',
-                                birthDate: row[10] || '',
-                                gender: row[11] || '',
-                                admissionDate: row[12] || '',
-                                building: building,
-                                floor: floor,
-                                room: roomNumber.substring(1)
-                            });
+                            // 4층이 아닌 경우만 여기서 처리
+                            if (floor !== '4') {
+                                students.push({
+                                    rowIndex: i + 1,
+                                    roomNumber: roomNumber,
+                                    name: row[2] || '',
+                                    status: row[3] || '정상', // D열 상태, 빈값이면 정상
+                                    memo: row[4] || '',
+                                    parentPhone: row[5] || '',
+                                    studentPhone: row[6] || '',
+                                    labSeat: row[7] || '',
+                                    group: row[8] || '',
+                                    teacher: row[9] || '',
+                                    birthDate: row[10] || '',
+                                    gender: CONFIG.GENDER_BY_BUILDING[building] || '기타',
+                                    admissionDate: row[12] || '',
+                                    building: building,
+                                    floor: floor,
+                                    room: roomNumber.substring(1)
+                                });
+                            }
                         }
                     }
                     
+                    // 4층 3인실 처리 (수정된 로직)
+                    for (const [buildingFloor, mapping] of Object.entries(CONFIG.TRIPLE_ROOM_MAPPING)) {
+                        const building = buildingFloor.charAt(0);
+                        const floor = buildingFloor.charAt(1);
+                        
+                        // B열부터 N열까지 읽기 (B: 호실번호, C: 이름, D: 상태, E: 메모, ...)
+                        const range = `B${mapping.startRow}:N${mapping.endRow}`;
+                        const tripleData = await this.readRange(range);
+                        
+                        for (let i = 0; i < tripleData.length; i++) {
+                            const row = tripleData[i];
+                            if (row[1] && row[1].trim() !== '미배정') { // C열(이름) 확인
+                                const roomIndex = Math.floor(i / 3);
+                                const roomNumber = building + (mapping.startRoom + roomIndex);
+                                
+                                students.push({
+                                    rowIndex: mapping.startRow + i,
+                                    roomNumber: roomNumber,
+                                    name: row[1] || '',
+                                    status: row[2] || '정상', // D열 상태, 빈값이면 정상
+                                    memo: row[3] || '',
+                                    parentPhone: row[4] || '',
+                                    studentPhone: row[5] || '',
+                                    labSeat: row[6] || '',
+                                    group: row[7] || '',
+                                    teacher: row[8] || '',
+                                    birthDate: row[9] || '',
+                                    gender: CONFIG.GENDER_BY_BUILDING[building] || '기타',
+                                    admissionDate: row[11] || '',
+                                    building: building,
+                                    floor: floor,
+                                    room: (mapping.startRoom + roomIndex).toString()
+                                });
+                            }
+                        }
+                    }
+                    
+                    console.log(`총 ${students.length}명의 학생 데이터 로드 완료`);
                     return students;
                 } catch (error) {
                     console.error('학생 데이터 가져오기 오류:', error);
@@ -998,7 +1062,7 @@
                                         rowIndex: startRow + i,
                                         roomNumber: roomNumber,
                                         name: row[1] || '',
-                                        status: row[2] || '',
+                                        status: row[2] || '정상',
                                         memo: row[3] || '',
                                         parentPhone: row[4] || '',
                                         studentPhone: row[5] || '',
@@ -1006,7 +1070,7 @@
                                         group: row[7] || '',
                                         teacher: row[8] || '',
                                         birthDate: row[9] || '',
-                                        gender: row[10] || '',
+                                        gender: CONFIG.GENDER_BY_BUILDING[building] || '기타',
                                         admissionDate: row[11] || '',
                                         building: building,
                                         floor: floor,
@@ -1163,14 +1227,14 @@
             document.getElementById('buildingSection').style.display = 'block';
         }
 
-        // 통계 계산 (개선된 버전)
+        // 통계 계산 (상태 반영 개선)
         async function calculateStats() {
             try {
                 const reportDate = getReportPeriodId();
                 const storedReports = JSON.parse(localStorage.getItem('dailyReports') || '{}');
                 const todayReports = storedReports[reportDate] || {};
                 
-                // 시트 기반 통계 (총원, 동별/층별 현재원)
+                // 시트 기반 통계 (실제 상태 반영)
                 const sheetStats = {
                     total: currentData.length,
                     current: 0,
@@ -1178,28 +1242,44 @@
                     femaleTotal: 0,
                     maleCurrent: 0,
                     femaleCurrent: 0,
-                    buildingFloorStats: {}
+                    buildingFloorStats: {},
+                    statusCounts: {}
                 };
                 
-                // 시트 데이터 기반으로 현재원 계산 (D열에 상태가 없거나 '정상'인 경우)
+                // 상태별 통계 초기화
+                CONFIG.STATUS_TYPES.forEach(status => {
+                    sheetStats.statusCounts[status] = 0;
+                });
+                sheetStats.statusCounts['정상'] = 0;
+                
+                // 시트 데이터 기반으로 통계 계산
                 currentData.forEach(student => {
-                    const gender = CONFIG.GENDER_BY_BUILDING[student.building] || '기타';
+                    const gender = student.gender;
                     const status = student.status || '정상';
                     
+                    // 성별 통계
                     if (gender === '남') {
                         sheetStats.maleTotal++;
-                        if (!status || status === '정상') {
+                        if (status === '정상') {
                             sheetStats.maleCurrent++;
                         }
                     } else if (gender === '여') {
                         sheetStats.femaleTotal++;
-                        if (!status || status === '정상') {
+                        if (status === '정상') {
                             sheetStats.femaleCurrent++;
                         }
                     }
                     
-                    if (!status || status === '정상') {
+                    // 전체 현재원
+                    if (status === '정상') {
                         sheetStats.current++;
+                    }
+                    
+                    // 상태별 통계
+                    if (sheetStats.statusCounts.hasOwnProperty(status)) {
+                        sheetStats.statusCounts[status]++;
+                    } else {
+                        sheetStats.statusCounts['정상']++;
                     }
                     
                     // 동별/층별 통계
@@ -1208,7 +1288,7 @@
                         sheetStats.buildingFloorStats[key] = { total: 0, current: 0 };
                     }
                     sheetStats.buildingFloorStats[key].total++;
-                    if (!status || status === '정상') {
+                    if (status === '정상') {
                         sheetStats.buildingFloorStats[key].current++;
                     }
                 });
@@ -1246,6 +1326,7 @@
                     }
                 });
                 
+                console.log('통계 계산 완료:', sheetStats);
                 return { ...sheetStats, ...reportStats };
             } catch (error) {
                 console.error('통계 계산 오류:', error);
@@ -1257,15 +1338,13 @@
             if (!currentStats) return;
             
             document.getElementById('totalCount').textContent = currentStats.total;
-            document.getElementById('reportedCurrentCount').textContent = currentStats.reportedCurrentCount;
-            document.getElementById('maleCurrentCount').textContent = currentStats.reportedMaleCurrentCount;
-            document.getElementById('femaleCurrentCount').textContent = currentStats.reportedFemaleCurrentCount;
-            document.getElementById('overnightCount').textContent = currentStats.reportedOvernightCount;
-            document.getElementById('newStudentCount').textContent = currentStats.reportedNewStudentCount;
-            document.getElementById('outingCount').textContent = currentStats.reportedOutingCount;
-            document.getElementById('checkoutCount').textContent = currentStats.reportedCheckoutCount;
-            document.getElementById('moveInCount').textContent = currentStats.reportedMoveInCount;
-            document.getElementById('moveOutCount').textContent = currentStats.reportedMoveOutCount;
+            document.getElementById('currentCount').textContent = currentStats.current;
+            document.getElementById('maleCurrentCount').textContent = currentStats.maleCurrent;
+            document.getElementById('femaleCurrentCount').textContent = currentStats.femaleCurrent;
+            document.getElementById('overnightCount').textContent = currentStats.statusCounts['외박'] || 0;
+            document.getElementById('newStudentCount').textContent = currentStats.statusCounts['신규'] || 0;
+            document.getElementById('outingCount').textContent = currentStats.statusCounts['외출'] || 0;
+            document.getElementById('checkoutCount').textContent = currentStats.statusCounts['퇴소'] || 0;
         }
 
         // 보고 현황 집계 업데이트
@@ -1294,7 +1373,7 @@
                                 ${building}동 ${floor}층 - ${report.manager}
                             </h4>
                             <div class="report-stats">
-                                <div class="report-stat-item" onclick="showReportedStudentsFromFloor('${building}', '${floor}', '현재원')">
+                                <div class="report-stat-item" onclick="showReportedStudentsFromFloor('${building}', '${floor}', '정상')">
                                     <div class="number">${report.currentCount}</div>
                                     <div class="label">현재원</div>
                                 </div>
@@ -1310,21 +1389,9 @@
                                     <div class="number">${report.checkout}</div>
                                     <div class="label">퇴소</div>
                                 </div>
-                                <div class="report-stat-item" onclick="showReportedStudentsFromFloor('${building}', '${floor}', '신규')">
-                                    <div class="number">${report.newStudent || 0}</div>
-                                    <div class="label">신규</div>
-                                </div>
-                                <div class="report-stat-item" onclick="showReportedStudentsFromFloor('${building}', '${floor}', '이동+')">
-                                    <div class="number">${report.moveIn}</div>
-                                    <div class="label">이동(+)</div>
-                                </div>
-                                <div class="report-stat-item" onclick="showReportedStudentsFromFloor('${building}', '${floor}', '이동-')">
-                                    <div class="number">${report.moveOut}</div>
-                                    <div class="label">이동(-)</div>
-                                </div>
                             </div>
-                            <small style="color: #6c757d; margin-top: 15px; display: block;">
-                                <i class="fas fa-clock"></i> 보고시간: ${report.timestamp}
+                            <small style="color: rgba(255, 255, 255, 0.7); margin-top: 10px; display: block; font-size: 0.75rem;">
+                                <i class="fas fa-clock"></i> ${report.timestamp}
                                 ${report.students && report.students.length > 0 ? 
                                   `<br><i class="fas fa-users"></i> 개별학생: ${report.students.length}명` : ''}
                             </small>
@@ -1337,11 +1404,11 @@
                                 <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
                                 ${building}동 ${floor}층
                             </h4>
-                            <div style="text-align: center; padding: 20px;">
-                                <p style="color: #721c24; margin: 10px 0; font-size: 1.1rem; font-weight: 600;">
+                            <div style="text-align: center; padding: 15px;">
+                                <p style="color: rgba(255, 255, 255, 0.8); margin: 8px 0; font-size: 0.9rem; font-weight: 600;">
                                     <i class="fas fa-times-circle"></i> 보고되지 않음
                                 </p>
-                                <small style="color: #856404;">담당자의 보고가 필요합니다.</small>
+                                <small style="color: rgba(255, 255, 255, 0.6); font-size: 0.75rem;">담당자의 보고가 필요합니다.</small>
                             </div>
                         `;
                     }
@@ -1363,14 +1430,6 @@
                 
                 const card = document.createElement('div');
                 card.className = 'building-card';
-                card.style.cssText = `
-                    background: rgba(255, 255, 255, 0.9);
-                    border-radius: 20px;
-                    padding: 25px;
-                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-                    border-left: 6px solid #4facfe;
-                    margin-bottom: 20px;
-                `;
                 
                 const genderText = CONFIG.GENDER_BY_BUILDING[building] || '기타';
                 
@@ -1383,25 +1442,23 @@
                     const floorStudents = buildingStudents.filter(student => student.floor === floor.toString());
                     if (floorStudents.length > 0) {
                         const floorTotal = floorStudents.length;
-                        const floorCurrent = floorStudents.filter(student => !student.status || student.status === '정상').length;
+                        const floorCurrent = floorStudents.filter(student => student.status === '정상' || !student.status).length;
                         
                         buildingTotal += floorTotal;
                         buildingCurrent += floorCurrent;
                         
                         floorHtml += `
                             <div class="floor-item" onclick="showBuildingFloorStudents('${building}', '${floor}')">
-                                <div style="font-weight: bold; color: #333; margin-bottom: 5px;">${floor}층</div>
-                                <div style="color: #666; font-size: 0.9rem;">${floorCurrent}/${floorTotal}명</div>
+                                <div class="floor-title">${floor}층</div>
+                                <div class="floor-count">${floorCurrent}/${floorTotal}명</div>
                             </div>
                         `;
                     }
                 });
                 
                 card.innerHTML = `
-                    <h3 style="color: #333; margin-bottom: 20px; font-size: 1.3rem; font-weight: 600;">
-                        ${building}동 (${genderText}) - ${buildingCurrent}/${buildingTotal}명
-                    </h3>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                    <h3>${building}동 (${genderText}) - ${buildingCurrent}/${buildingTotal}명</h3>
+                    <div class="floor-grid">
                         ${floorHtml}
                     </div>
                 `;
@@ -1447,230 +1504,218 @@
                 
             } catch (error) {
                 console.error('검색 오류:', error);
-                document.getElementById('searchResultsContent').innerHTML = 
-                    `<div class="no-data"><i class="fas fa-exclamation-triangle"></i><p>검색 중 오류가 발생했습니다.</p></div>`;
+                const resultsContent = document.getElementById('searchResultsContent');
+                resultsContent.innerHTML = '<div class="no-data"><i class="fas fa-exclamation-triangle"></i><p>검색 중 오류가 발생했습니다.</p></div>';
             }
         }
 
         function displaySearchResultsImmediate(students, searchTerm) {
-            const resultsSection = document.getElementById('searchResultsImmediate');
             const resultsContent = document.getElementById('searchResultsContent');
             const resultsTitle = document.getElementById('searchResultsTitle');
             
-            resultsTitle.textContent = `"${searchTerm}" 검색 결과 (${students.length}명)`;
-            
             if (students.length === 0) {
-                resultsContent.innerHTML = `
-                    <div class="no-data">
-                        <i class="fas fa-search"></i>
-                        <p>"${searchTerm}"에 대한 검색 결과가 없습니다.</p>
-                    </div>
-                `;
-            } else {
-                resultsContent.innerHTML = students.map(student => createStudentCard(student)).join('');
-            }
-            
-            resultsSection.style.display = 'block';
-        }
-
-        // 학생 카드 표시 함수들
-        async function showTotalStudents() {
-            if (!currentData) {
-                await refreshData();
-            }
-            
-            displayModal(`전체 학생 목록 (${currentData.length}명)`, 
-                currentData.map(student => createStudentCard(student)).join('') || 
-                '<div class="no-data"><i class="fas fa-users"></i><p>학생이 없습니다.</p></div>'
-            );
-        }
-
-        async function showReportedStudents(type) {
-            const reportDate = getReportPeriodId();
-            const storedReports = JSON.parse(localStorage.getItem('dailyReports') || '{}');
-            const todayReports = storedReports[reportDate] || {};
-            
-            let students = [];
-            
-            // 보고된 개별 학생 정보에서 해당 상태인 학생들을 찾기
-            Object.values(todayReports).forEach(report => {
-                if (report.students) {
-                    report.students.forEach(student => {
-                        if (type === '현재원') {
-                            // 현재원은 별도 처리 - 시트에서 상태가 없거나 정상인 학생들
-                            // 여기서는 보고된 현재원 수만 표시하고 개별 학생은 시트 기준으로
-                        } else if (student.status === type) {
-                            students.push(student);
-                        }
-                    });
-                }
-            });
-            
-            // 현재원의 경우 시트 데이터에서 상태가 없거나 정상인 학생들 표시
-            if (type === '현재원') {
-                students = currentData.filter(student => !student.status || student.status === '정상');
-            }
-            
-            const typeNames = {
-                '현재원': '현재원',
-                '외박': '외박', 
-                '외출': '외출',
-                '퇴소': '퇴소',
-                '신규': '신규',
-                '이동+': '이동(입)',
-                '이동-': '이동(출)'
-            };
-            
-            displayModal(`${typeNames[type]} 학생 목록 (${students.length}명)`, 
-                students.map(student => createStudentCard(student)).join('') || 
-                '<div class="no-data"><i class="fas fa-users"></i><p>해당 학생이 없습니다.</p></div>'
-            );
-        }
-
-        async function showMaleStudents() {
-            const maleStudents = currentData.filter(student => {
-                const gender = CONFIG.GENDER_BY_BUILDING[student.building];
-                return gender === '남' && (!student.status || student.status === '정상');
-            });
-            
-            displayModal(`남학생 현재원 목록 (${maleStudents.length}명)`, 
-                maleStudents.map(student => createStudentCard(student)).join('') || 
-                '<div class="no-data"><i class="fas fa-users"></i><p>해당 학생이 없습니다.</p></div>'
-            );
-        }
-
-        async function showFemaleStudents() {
-            const femaleStudents = currentData.filter(student => {
-                const gender = CONFIG.GENDER_BY_BUILDING[student.building];
-                return gender === '여' && (!student.status || student.status === '정상');
-            });
-            
-            displayModal(`여학생 현재원 목록 (${femaleStudents.length}명)`, 
-                femaleStudents.map(student => createStudentCard(student)).join('') || 
-                '<div class="no-data"><i class="fas fa-users"></i><p>해당 학생이 없습니다.</p></div>'
-            );
-        }
-
-        async function showReportedStudentsFromFloor(building, floor, type) {
-            const reportDate = getReportPeriodId();
-            const storedReports = JSON.parse(localStorage.getItem('dailyReports') || '{}');
-            const todayReports = storedReports[reportDate] || {};
-            const reportKey = `${building}_${floor}`;
-            const report = todayReports[reportKey];
-            
-            if (!report || !report.students) {
-                displayModal(`${building}동 ${floor}층 ${type} 학생 목록 (0명)`, 
-                    '<div class="no-data"><i class="fas fa-users"></i><p>해당 학생이 없습니다.</p></div>'
-                );
+                resultsTitle.textContent = '검색 결과 없음';
+                resultsContent.innerHTML = '<div class="no-data"><i class="fas fa-search"></i><p>검색 결과가 없습니다.</p></div>';
                 return;
             }
             
-            let students = [];
+            resultsTitle.textContent = `검색 결과 (${students.length}명)`;
+            resultsContent.innerHTML = '';
             
-            if (type === '현재원') {
-                // 현재원은 해당 층의 모든 학생 중 상태가 없거나 정상인 학생들
-                const floorStudents = currentData.filter(student => 
-                    student.building === building && student.floor === floor && 
-                    (!student.status || student.status === '정상')
-                );
-                students = floorStudents;
-            } else {
-                // 기타 상태는 보고된 개별 학생 정보에서
-                students = report.students.filter(student => student.status === type);
-                
-                // 시트에서 상세 정보 가져오기
-                const detailedStudents = [];
-                for (const student of students) {
-                    const sheetStudent = currentData.find(s => s.name === student.name);
-                    if (sheetStudent) {
-                        detailedStudents.push(sheetStudent);
-                    }
-                }
-                students = detailedStudents;
+            students.forEach(student => {
+                const studentCard = createStudentCard(student);
+                resultsContent.appendChild(studentCard);
+            });
+        }
+
+        // 상태별 학생 표시 함수 (핵심 수정)
+        function showStudentsByStatus(status) {
+            if (!currentData) {
+                alert('데이터를 먼저 로드해주세요.');
+                return;
             }
             
-            displayModal(`${building}동 ${floor}층 ${type} 학생 목록 (${students.length}명)`, 
-                students.map(student => createStudentCard(student)).join('') || 
-                '<div class="no-data"><i class="fas fa-users"></i><p>해당 학생이 없습니다.</p></div>'
-            );
+            let students;
+            let title;
+            
+            if (status === '정상') {
+                students = currentData.filter(student => 
+                    student.status === '정상' || !student.status
+                );
+                title = '현재원 학생 목록';
+            } else {
+                students = currentData.filter(student => student.status === status);
+                title = `${status} 학생 목록`;
+            }
+            
+            showStudentModal(students, title);
+        }
+
+        function showTotalStudents() {
+            if (!currentData) {
+                alert('데이터를 먼저 로드해주세요.');
+                return;
+            }
+            
+            showStudentModal(currentData, '전체 학생 목록');
+        }
+
+        function showMaleStudents() {
+            if (!currentData) {
+                alert('데이터를 먼저 로드해주세요.');
+                return;
+            }
+            
+            const students = currentData.filter(student => student.gender === '남');
+            showStudentModal(students, '남학생 목록');
+        }
+
+        function showFemaleStudents() {
+            if (!currentData) {
+                alert('데이터를 먼저 로드해주세요.');
+                return;
+            }
+            
+            const students = currentData.filter(student => student.gender === '여');
+            showStudentModal(students, '여학생 목록');
         }
 
         async function showBuildingFloorStudents(building, floor) {
             try {
                 const students = await sheetsAPI.getStudentsByBuildingFloor(building, floor);
-                displayModal(`${building}동 ${floor}층 학생 목록 (${students.length}명)`, 
-                    students.map(student => createStudentCard(student)).join('') || 
-                    '<div class="no-data"><i class="fas fa-building"></i><p>해당 동/층에 학생이 없습니다.</p></div>'
-                );
+                showStudentModal(students, `${building}동 ${floor}층 학생 목록`);
             } catch (error) {
-                console.error('동/층별 학생 조회 오류:', error);
-                alert('데이터 조회 중 오류가 발생했습니다.');
+                console.error('동별 학생 조회 오류:', error);
+                alert('학생 정보를 불러오는 중 오류가 발생했습니다.');
             }
+        }
+
+        async function showReportedStudentsFromFloor(building, floor, status) {
+            try {
+                const students = await sheetsAPI.getStudentsByBuildingFloor(building, floor);
+                let filteredStudents;
+                
+                if (status === '정상') {
+                    filteredStudents = students.filter(student => 
+                        student.status === '정상' || !student.status
+                    );
+                } else {
+                    filteredStudents = students.filter(student => student.status === status);
+                }
+                
+                showStudentModal(filteredStudents, `${building}동 ${floor}층 ${status} 학생`);
+            } catch (error) {
+                console.error('보고 학생 조회 오류:', error);
+                alert('학생 정보를 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        function showStudentModal(students, title) {
+            const modal = document.getElementById('studentModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            
+            modalTitle.textContent = title;
+            modalBody.innerHTML = '';
+            
+            if (students.length === 0) {
+                modalBody.innerHTML = '<div class="no-data"><i class="fas fa-users"></i><p>해당하는 학생이 없습니다.</p></div>';
+            } else {
+                students.forEach(student => {
+                    const studentCard = createStudentCard(student);
+                    modalBody.appendChild(studentCard);
+                });
+            }
+            
+            modal.style.display = 'block';
         }
 
         function createStudentCard(student) {
-            const gender = CONFIG.GENDER_BY_BUILDING[student.building] || '기타';
+            const card = document.createElement('div');
+            card.className = `student-card ${student.gender === '남' ? 'male' : 'female'}`;
+            
             const status = student.status || '정상';
-            const statusBadge = `<span class="status-badge ${status}">${status}</span>`;
             
-            // 나이 계산
-            let ageText = '';
-            if (student.birthDate) {
-                const today = new Date();
-                const birthDate = new Date(student.birthDate);
-                if (!isNaN(birthDate.getTime())) {
-                    const age = today.getFullYear() - birthDate.getFullYear();
-                    ageText = ` (만 ${age}세)`;
-                }
-            }
-            
-            return `
-                <div class="student-card ${gender.toLowerCase()}">
-                    <div class="gender-badge">
-                        <i class="fas fa-${gender === '남' ? 'mars' : 'venus'}"></i>
+            card.innerHTML = `
+                <div class="gender-badge">${student.gender === '남' ? 'M' : 'F'}</div>
+                
+                <div class="student-header">
+                    <div class="student-name-section">
+                        <div class="student-name">${student.name}</div>
+                        ${student.birthDate ? `<div class="student-birth">${student.birthDate}</div>` : ''}
+                    </div>
+                    <div class="student-room">${student.roomNumber}</div>
+                </div>
+                
+                <div class="student-info">
+                    <div class="info-section">
+                        <h4><i class="fas fa-info-circle"></i> 기본 정보</h4>
+                        <div class="info-item">
+                            <i class="fas fa-building"></i>
+                            <span>${student.building}동 ${student.floor}층 ${student.room}호</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-venus-mars"></i>
+                            <span>${student.gender}학생</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-user-check"></i>
+                            <span class="status-badge ${status}">${status}</span>
+                        </div>
+                        ${student.memo ? `
+                        <div class="info-item">
+                            <i class="fas fa-sticky-note"></i>
+                            <span>${student.memo}</span>
+                        </div>` : ''}
                     </div>
                     
-                    <div class="student-header">
-                        <div class="student-name-section">
-                            <h3 class="student-name">${student.name}</h3>
-                            ${student.birthDate ? `<div class="student-birth"><i class="fas fa-birthday-cake"></i> ${student.birthDate}${ageText}</div>` : ''}
-                        </div>
-                        <div class="student-room">${student.roomNumber}</div>
-                    </div>
+                    ${student.parentPhone || student.studentPhone ? `
+                    <div class="info-section">
+                        <h4><i class="fas fa-phone"></i> 연락처</h4>
+                        ${student.parentPhone ? `
+                        <div class="info-item">
+                            <i class="fas fa-user-friends"></i>
+                            <span>학부모: ${student.parentPhone}</span>
+                        </div>` : ''}
+                        ${student.studentPhone ? `
+                        <div class="info-item">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>본인: ${student.studentPhone}</span>
+                        </div>` : ''}
+                    </div>` : ''}
                     
-                    <div class="student-info">
-                        <div class="info-section">
-                            <h4><i class="fas fa-info-circle"></i> 기본 정보</h4>
-                            <div class="info-item">
-                                <i class="fas fa-flag"></i>
-                                <span>${statusBadge}</span>
-                            </div>
-                            ${student.memo ? `<div class="info-item"><i class="fas fa-sticky-note"></i><span>${student.memo}</span></div>` : ''}
-                            ${student.gender ? `<div class="info-item"><i class="fas fa-${student.gender === '남' ? 'mars' : 'venus'}"></i><span>${student.gender}학생</span></div>` : ''}
-                            ${student.admissionDate ? `<div class="info-item"><i class="fas fa-calendar-plus"></i><span>입소일: ${student.admissionDate}</span></div>` : ''}
+                    ${student.labSeat || student.group || student.teacher ? `
+                    <div class="info-section">
+                        <h4><i class="fas fa-graduation-cap"></i> 학업 정보</h4>
+                        ${student.labSeat ? `
+                        <div class="info-item">
+                            <i class="fas fa-laptop"></i>
+                            <span>랩실 좌석: ${student.labSeat}</span>
+                        </div>` : ''}
+                        ${student.group ? `
+                        <div class="info-item">
+                            <i class="fas fa-users"></i>
+                            <span>그룹: ${student.group}</span>
+                        </div>` : ''}
+                        ${student.teacher ? `
+                        <div class="info-item">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>담당교사: ${student.teacher}</span>
+                        </div>` : ''}
+                    </div>` : ''}
+                    
+                    ${student.admissionDate ? `
+                    <div class="info-section">
+                        <h4><i class="fas fa-calendar-alt"></i> 입사 정보</h4>
+                        <div class="info-item">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>입사일: ${student.admissionDate}</span>
                         </div>
-                        
-                        <div class="info-section">
-                            <h4><i class="fas fa-phone"></i> 연락처</h4>
-                            ${student.parentPhone ? `<div class="info-item"><i class="fas fa-phone"></i><span>학부모: ${student.parentPhone}</span></div>` : '<div class="info-item"><i class="fas fa-phone"></i><span>학부모 연락처 없음</span></div>'}
-                            ${student.studentPhone ? `<div class="info-item"><i class="fas fa-mobile-alt"></i><span>학생: ${student.studentPhone}</span></div>` : '<div class="info-item"><i class="fas fa-mobile-alt"></i><span>학생 연락처 없음</span></div>'}
-                        </div>
-                        
-                        <div class="info-section">
-                            <h4><i class="fas fa-graduation-cap"></i> 학습 정보</h4>
-                            ${student.labSeat ? `<div class="info-item"><i class="fas fa-desktop"></i><span>라브좌석: ${student.labSeat}</span></div>` : '<div class="info-item"><i class="fas fa-desktop"></i><span>라브좌석 미배정</span></div>'}
-                            ${student.group ? `<div class="info-item"><i class="fas fa-users"></i><span>그룹: ${student.group}</span></div>` : '<div class="info-item"><i class="fas fa-users"></i><span>그룹 미배정</span></div>'}
-                            ${student.teacher ? `<div class="info-item"><i class="fas fa-user-tie"></i><span>담임: ${student.teacher}</span></div>` : '<div class="info-item"><i class="fas fa-user-tie"></i><span>담임 미배정</span></div>'}
-                        </div>
-                    </div>
+                    </div>` : ''}
                 </div>
             `;
-        }
-
-        function displayModal(title, content) {
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalBody').innerHTML = content;
-            document.getElementById('studentModal').style.display = 'block';
+            
+            return card;
         }
 
         function closeModal() {
@@ -1679,12 +1724,11 @@
 
         function showEditModal() {
             document.getElementById('editModal').style.display = 'block';
-            document.getElementById('editForm').style.display = 'none';
-            document.getElementById('editSearchInput').value = '';
         }
 
         function closeEditModal() {
             document.getElementById('editModal').style.display = 'none';
+            document.getElementById('editForm').style.display = 'none';
         }
 
         async function searchForEdit() {
@@ -1696,78 +1740,99 @@
             
             try {
                 const students = await sheetsAPI.findStudentByName(searchTerm);
+                
                 if (students.length === 0) {
-                    alert('해당 학생을 찾을 수 없습니다.');
+                    alert('검색 결과가 없습니다.');
                     return;
                 }
                 
-                const student = students[0];
-                showEditForm(student);
-                
+                if (students.length === 1) {
+                    showEditForm(students[0]);
+                } else {
+                    // 여러 결과가 있는 경우 선택할 수 있도록 표시
+                    showStudentSelectionModal(students);
+                }
             } catch (error) {
                 console.error('학생 검색 오류:', error);
                 alert('검색 중 오류가 발생했습니다.');
             }
         }
 
+        function showStudentSelectionModal(students) {
+            const editForm = document.getElementById('editForm');
+            editForm.style.display = 'block';
+            editForm.innerHTML = `
+                <h4 style="color: white; margin-bottom: 15px;">수정할 학생을 선택하세요:</h4>
+                <div style="max-height: 300px; overflow-y: auto;">
+                    ${students.map(student => `
+                        <div style="background: rgba(255,255,255,0.1); margin: 8px 0; padding: 12px; border-radius: 8px; cursor: pointer;"
+                             onclick="showEditForm(${JSON.stringify(student).replace(/"/g, '&quot;')})">
+                            <strong>${student.name}</strong> - ${student.roomNumber} (${student.status || '정상'})
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
         function showEditForm(student) {
-            const form = document.getElementById('editForm');
-            form.innerHTML = `
-                <div class="edit-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px;">
-                    <div style="display: flex; flex-direction: column;">
-                        <label style="font-weight: 600; color: #555; margin-bottom: 8px; font-size: 1rem;">이름</label>
-                        <input type="text" id="editName" value="${student.name}" readonly style="padding: 12px 15px; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem;">
-                    </div>
-                    <div style="display: flex; flex-direction: column;">
-                        <label style="font-weight: 600; color: #555; margin-bottom: 8px; font-size: 1rem;">기숙사</label>
-                        <input type="text" id="editRoom" value="${student.roomNumber}" readonly style="padding: 12px 15px; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem;">
-                    </div>
-                    <div style="display: flex; flex-direction: column;">
-                        <label style="font-weight: 600; color: #555; margin-bottom: 8px; font-size: 1rem;">상태</label>
-                        <select id="editStatus" style="padding: 12px 15px; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem;">
-                            <option value="">상태 선택</option>
-                            ${CONFIG.STATUS_TYPES.map(status => 
+            const editForm = document.getElementById('editForm');
+            editForm.style.display = 'block';
+            editForm.innerHTML = `
+                <h4 style="color: white; margin-bottom: 15px;">${student.name} 학생 정보 수정</h4>
+                <form id="studentEditForm">
+                    <input type="hidden" id="editRowIndex" value="${student.rowIndex}">
+                    <input type="hidden" id="editStudentName" value="${student.name}">
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="color: rgba(255,255,255,0.9); margin-bottom: 5px; display: block;">현재 상태</label>
+                        <select id="editStatus" style="width: 100%; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                            <option value="정상" ${(!student.status || student.status === '정상') ? 'selected' : ''}>정상</option>
+                            ${CONFIG.STATUS_TYPES.filter(s => s !== '정상').map(status => 
                                 `<option value="${status}" ${student.status === status ? 'selected' : ''}>${status}</option>`
                             ).join('')}
                         </select>
                     </div>
-                    <div style="display: flex; flex-direction: column;">
-                        <label style="font-weight: 600; color: #555; margin-bottom: 8px; font-size: 1rem;">메모</label>
-                        <input type="text" id="editMemo" value="${student.memo || ''}" style="padding: 12px 15px; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 1rem;">
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="color: rgba(255,255,255,0.9); margin-bottom: 5px; display: block;">메모</label>
+                        <input type="text" id="editMemo" value="${student.memo || ''}" 
+                               style="width: 100%; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
                     </div>
-                </div>
-                <div style="margin-top: 30px; text-align: center;">
-                    <button class="btn btn-primary" onclick="saveStudentEdit(${student.rowIndex})" style="margin-right: 15px;">저장</button>
-                    <button class="btn btn-secondary" onclick="closeEditModal()">취소</button>
-                </div>
+                    
+                    <button type="submit" style="background: var(--secondary-gradient); color: white; border: none; padding: 10px 20px; border-radius: 8px; width: 100%; cursor: pointer;">
+                        저장
+                    </button>
+                </form>
             `;
-            form.style.display = 'block';
+            
+            document.getElementById('studentEditForm').addEventListener('submit', handleEditSubmit);
         }
 
-        async function saveStudentEdit(rowIndex) {
+        async function handleEditSubmit(e) {
+            e.preventDefault();
+            
+            const rowIndex = document.getElementById('editRowIndex').value;
+            const studentName = document.getElementById('editStudentName').value;
+            const status = document.getElementById('editStatus').value;
+            const memo = document.getElementById('editMemo').value;
+            
             try {
-                const status = document.getElementById('editStatus').value;
-                const memo = document.getElementById('editMemo').value;
+                // D열에 상태 업데이트
+                await sheetsAPI.updateCell(parseInt(rowIndex), 4, status === '정상' ? '' : status);
                 
-                if (!status) {
-                    alert('상태를 선택해주세요.');
-                    return;
-                }
-                
-                await sheetsAPI.updateCell(rowIndex, 4, status);
-                await sheetsAPI.updateCell(rowIndex, 5, memo);
+                // E열에 메모 업데이트
+                await sheetsAPI.updateCell(parseInt(rowIndex), 5, memo);
                 
                 alert('학생 정보가 성공적으로 수정되었습니다.');
                 closeEditModal();
-                refreshData();
+                refreshData(); // 데이터 새로고침
                 
             } catch (error) {
-                console.error('저장 오류:', error);
-                alert('저장 중 오류가 발생했습니다: ' + error.message);
+                console.error('학생 정보 수정 오류:', error);
+                alert('수정 중 오류가 발생했습니다: ' + error.message);
             }
         }
 
-        // 보고 기간 ID 생성
         function getReportPeriodId() {
             const now = new Date();
             const hour = now.getHours();
@@ -1781,13 +1846,13 @@
 
         // 모달 외부 클릭 시 닫기
         window.onclick = function(event) {
-            const modal1 = document.getElementById('studentModal');
-            const modal2 = document.getElementById('editModal');
+            const studentModal = document.getElementById('studentModal');
+            const editModal = document.getElementById('editModal');
             
-            if (event.target === modal1) {
+            if (event.target === studentModal) {
                 closeModal();
             }
-            if (event.target === modal2) {
+            if (event.target === editModal) {
                 closeEditModal();
             }
         }
