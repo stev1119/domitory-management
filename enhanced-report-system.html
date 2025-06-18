@@ -1003,6 +1003,11 @@
                 }
             },
             
+            // 3인실 정보 (모든 동의 4층은 3인실)
+            TRIPLE_ROOMS: {
+                'A4': true, 'B4': true, 'C4': true, 'D4': true, 'E4': true, 'F4': true
+            },
+            
             STATUS_TYPES: [
                 '외박', '외출', '퇴소', '이동+', '이동-', '정상', '신규', '기타'
             ],
@@ -1474,11 +1479,14 @@
             if (!range) return [];
             
             const rooms = [];
+            const isTripleRoom = CONFIG.TRIPLE_ROOMS && CONFIG.TRIPLE_ROOMS[building + floor];
+            
             for (let i = range[0]; i <= range[1]; i++) {
-                rooms.push(building + i.toString());
+                const roomNumber = building + i.toString();
+                rooms.push(roomNumber);
             }
             
-            console.log(`${building}동 ${floor}층 호실 생성:`, rooms.length, '개');
+            console.log(`${building}동 ${floor}층 호실 생성: ${rooms.length}개 ${isTripleRoom ? '(3인실)' : '(1인실)'}`);
             return rooms;
         }
 
