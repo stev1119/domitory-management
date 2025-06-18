@@ -725,6 +725,9 @@
             SHEET_NAME: 'yulee',
             API_KEY: 'AIzaSyA1uY-EDvpxvxqyXTDwjNpS2ugYXQ3igtk',
             
+            // Google Apps Script 웹앱 URL (실제 배포된 URL)
+            WEBAPP_URL: 'https://script.google.com/macros/s/AKfycbyqOma-J5J44BewIq9GeEvYjq0390UA0jm7prZbjjGQ5xjZi-mxojOlxv_I6c7Not67/exec',
+            
             JANDI_WEBHOOK: 'https://wh.jandi.com/connect-api/webhook/29522216/3d9603c3b428b386c0d640758e236cb4',
             
             MANAGERS: [
@@ -899,85 +902,166 @@
                 }
             }
             
-            // 학생 상태 업데이트 함수 (핵심 수정)
+            // 학생 상태 업데이트 함수 (단순화된 방식)
             async updateStudentStatus(name, status, memo = '') {
                 try {
                     console.log(`학생 상태 업데이트 시작: ${name} -> ${status}`);
                     
-                    // 먼저 일반실(1-3층)에서 찾기
-                    const data = await this.readRange('A:E');
-                    
-                    for (let i = 1; i < data.length; i++) {
-                        const row = data[i];
-                        if (row[2] === name && row[2].trim() !== '미배정') { // C열에서 이름 찾기
-                            console.log(`일반실에서 학생 발견: 행 ${i + 1}`);
-                            
-                            // D열에 상태 업데이트
-                            await this.updateCell(i + 1, 4, status);
-                            if (memo) {
-                                // E열에 메모 업데이트
-                                await this.updateCell(i + 1, 5, memo);
-                            }
-                            return { rowIndex: i + 1, name: row[2] };
-                        }
+                    // 웹앱 URL이 설정되어 있으면 웹앱 사용
+                    if (CONFIG.WEBAPP_URL && CONFIG.WEBAPP_URL.includes('script.google.com')) {
+                        return await this.updateViaWebApp(name, status, memo);
                     }
                     
-                    // 일반실에서 못 찾으면 3인실에서 찾기
-                    for (const [buildingFloor, mapping] of Object.entries(CONFIG.TRIPLE_ROOM_MAPPING)) {
-                        console.log(`3인실 검색: ${buildingFloor}, 범위: ${mapping.startRow}-${mapping.endRow}`);
-                        
-                        // C, D, E 열 읽기 (C: 이름, D: 상태, E: 메모)
-                        const range = `C${mapping.startRow}:E${mapping.endRow}`;
-                        const tripleData = await this.readRange(range);
-                        
-                        for (let i = 0; i < tripleData.length; i++) {
-                            const row = tripleData[i];
-                            if (row[0] === name && row[0].trim() !== '미배정') { // C열에서 이름 찾기
-                                const actualRow = mapping.startRow + i;
-                                console.log(`3인실에서 학생 발견: 행 ${actualRow}`);
-                                
-                                // D열에 상태 업데이트
-                                await this.updateCell(actualRow, 4, status);
-                                if (memo) {
-                                    // E열에 메모 업데이트
-                                    await this.updateCell(actualRow, 5, memo);
-                                }
-                                return { rowIndex: actualRow, name: row[0] };
-                            }
-                        }
-                    }
+                    // 아니면 직접 API 호출 (읽기 전용이지만 시도)
+                    return await this.updateViaDirectAPI(name, status, memo);
                     
-                    throw new Error(`학생을 찾을 수 없습니다: ${name}`);
                 } catch (error) {
                     console.error('학생 상태 업데이트 오류:', error);
+                    // 에러가 나도 로컬 스토리지에 저장
+                    this.saveToLocalStorage(name, status, memo);
                     throw error;
                 }
+            }
+            
+            // 웹앱을 통한 업데이트
+            async updateViaWebApp(name, status, memo) {
+                try {
+                    const response = await fetch(CONFIG.WEBAPP_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'updateStudent',
+                            name: name,
+                            status: status === '정상' ? '' : status,
+                            memo: memo || ''
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`웹앱 호출 실패: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                    
+                    this.clearCache();
+                    return result;
+                } catch (error) {
+                    console.error('웹앱 업데이트 오류:', error);
+                    throw error;
+                }
+            }
+            
+            // 직접 API를 통한 업데이트 (폴백)
+            async updateViaDirectAPI(name, status, memo) {
+                // 먼저 일반실(1-3층)에서 찾기
+                const data = await this.readRange('A:E');
+                
+                for (let i = 1; i < data.length; i++) {
+                    const row = data[i];
+                    if (row[2] === name && row[2].trim() !== '미배정') {
+                        console.log(`일반실에서 학생 발견: 행 ${i + 1}`);
+                        
+                        // 간단한 방식으로 업데이트 시도
+                        await this.writeRange(`D${i + 1}`, [[status === '정상' ? '' : status]]);
+                        if (memo !== undefined) {
+                            await this.writeRange(`E${i + 1}`, [[memo]]);
+                        }
+                        return { rowIndex: i + 1, name: row[2] };
+                    }
+                }
+                
+                // 일반실에서 못 찾으면 3인실에서 찾기
+                for (const [buildingFloor, mapping] of Object.entries(CONFIG.TRIPLE_ROOM_MAPPING)) {
+                    const range = `C${mapping.startRow}:E${mapping.endRow}`;
+                    const tripleData = await this.readRange(range);
+                    
+                    for (let i = 0; i < tripleData.length; i++) {
+                        const row = tripleData[i];
+                        if (row[0] === name && row[0].trim() !== '미배정') {
+                            const actualRow = mapping.startRow + i;
+                            console.log(`3인실에서 학생 발견: 행 ${actualRow}`);
+                            
+                            await this.writeRange(`D${actualRow}`, [[status === '정상' ? '' : status]]);
+                            if (memo !== undefined) {
+                                await this.writeRange(`E${actualRow}`, [[memo]]);
+                            }
+                            return { rowIndex: actualRow, name: row[0] };
+                        }
+                    }
+                }
+                
+                throw new Error(`학생을 찾을 수 없습니다: ${name}`);
+            }
+            
+            // 로컬 스토리지에 백업 저장
+            saveToLocalStorage(name, status, memo) {
+                const updates = JSON.parse(localStorage.getItem('pendingUpdates') || '[]');
+                updates.push({
+                    name,
+                    status,
+                    memo,
+                    timestamp: new Date().toISOString()
+                });
+                localStorage.setItem('pendingUpdates', JSON.stringify(updates));
+                console.log('로컬 스토리지에 백업 저장됨:', { name, status, memo });
             }
             
             async resetAllStatuses() {
                 try {
                     console.log('모든 상태 리셋 시작...');
                     
-                    // 일반실 D, E열 리셋
-                    const data = await this.readRange('A:E');
-                    const resetPromises = [];
-                    
-                    for (let i = 2; i <= data.length; i++) {
-                        resetPromises.push(this.updateCell(i, 4, '')); // D열
-                        resetPromises.push(this.updateCell(i, 5, '')); // E열
+                    // 웹앱 URL이 설정되어 있으면 웹앱 사용
+                    if (CONFIG.WEBAPP_URL && CONFIG.WEBAPP_URL.includes('script.google.com') && !CONFIG.WEBAPP_URL.includes('YOUR_WEBAPP_ID')) {
+                        const response = await fetch(CONFIG.WEBAPP_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                action: 'resetAll'
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error(`웹앱 호출 실패: ${response.status}`);
+                        }
+                        
+                        const result = await response.json();
+                        if (result.error) {
+                            throw new Error(result.error);
+                        }
+                        
+                        this.clearCache();
+                        console.log('웹앱을 통한 리셋 완료');
+                        return;
                     }
                     
-                    // 3인실 D, E열 리셋
+                    // 웹앱이 설정되지 않은 경우 직접 API 시도 (실패할 가능성 높음)
+                    console.log('웹앱이 설정되지 않음. 직접 API 시도...');
+                    
+                    // 일반실 D, E열 리셋 시도
+                    const resetPromises = [];
+                    for (let i = 2; i <= 500; i++) { // 500행까지만
+                        resetPromises.push(this.writeRange(`D${i}`, [['']]));
+                        resetPromises.push(this.writeRange(`E${i}`, [['']]));
+                    }
+                    
+                    // 3인실 D, E열 리셋 시도
                     for (const mapping of Object.values(CONFIG.TRIPLE_ROOM_MAPPING)) {
                         for (let row = mapping.startRow; row <= mapping.endRow; row++) {
-                            resetPromises.push(this.updateCell(row, 4, '')); // D열
-                            resetPromises.push(this.updateCell(row, 5, '')); // E열
+                            resetPromises.push(this.writeRange(`D${row}`, [['']]));
+                            resetPromises.push(this.writeRange(`E${row}`, [['']]));
                         }
                     }
                     
-                    await Promise.all(resetPromises);
+                    await Promise.allSettled(resetPromises);
                     this.clearCache();
-                    console.log('모든 상태 리셋 완료');
+                    console.log('직접 API를 통한 리셋 시도 완료 (일부 실패 가능)');
                 } catch (error) {
                     console.error('상태 리셋 오류:', error);
                     throw error;
@@ -1466,25 +1550,42 @@
             console.log('구글 시트 업데이트 시작:', reportData.students.length, '명');
             
             // 개별 학생 상태 업데이트
-            const updatePromises = [];
+            const updateResults = [];
             for (const student of reportData.students) {
                 try {
                     console.log(`학생 ${student.name} 상태를 ${student.status}로 업데이트 중...`);
-                    updatePromises.push(
-                        sheetsAPI.updateStudentStatus(student.name, student.status, student.memo)
-                    );
+                    const result = await sheetsAPI.updateStudentStatus(student.name, student.status, student.memo);
+                    updateResults.push({ success: true, student: student.name, result });
+                    console.log(`✓ ${student.name} 업데이트 성공`);
                 } catch (error) {
-                    console.warn(`학생 ${student.name} 상태 업데이트 실패:`, error);
+                    console.warn(`✗ 학생 ${student.name} 상태 업데이트 실패:`, error.message);
+                    updateResults.push({ success: false, student: student.name, error: error.message });
                 }
             }
             
-            // 모든 업데이트를 병렬로 처리
-            await Promise.allSettled(updatePromises);
+            // 결과 요약
+            const successCount = updateResults.filter(r => r.success).length;
+            const failCount = updateResults.filter(r => !r.success).length;
+            
+            console.log(`구글 시트 업데이트 완료: 성공 ${successCount}명, 실패 ${failCount}명`);
+            
+            if (failCount > 0) {
+                console.log('실패한 업데이트들:', updateResults.filter(r => !r.success));
+                
+                // 실패한 경우 사용자에게 알림
+                const failedStudents = updateResults.filter(r => !r.success).map(r => r.student).join(', ');
+                showAlert(`일부 학생 업데이트 실패: ${failedStudents}. 로컬에 백업 저장됨.`, 'warning');
+            }
+            
+            // 웹앱이 설정되지 않은 경우 안내
+            if (failCount === reportData.students.length && CONFIG.WEBAPP_URL.includes('YOUR_WEBAPP_ID')) {
+                showAlert('Google Apps Script 웹앱을 설정해주세요. 현재는 로컬에만 저장됩니다.', 'warning');
+            }
             
             // 로컬 스토리지에 보고 데이터 저장
             saveReportData(reportData);
             
-            console.log('구글 시트 업데이트 완료');
+            console.log('구글 시트 업데이트 프로세스 완료');
         }
 
         async function sendJandiNotification(reportData) {
