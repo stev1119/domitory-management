@@ -948,23 +948,27 @@
                 }
             }
             
-            // 전체 학생 데이터 가져오기 (미배정 제외 + 3인실 올바른 처리)
+            // 전체 학생 데이터 가져오기 (수정된 버전 - 중복 방지)
             async getAllStudents() {
                 try {
                     const students = [];
                     
-                    // 1-3층 일반실 처리
-                    const data = await this.readRange('A:N');
+                    // 1-3층 일반실 처리 (범위 제한)
+                    const data = await this.readRange('A1:N500'); // 범위를 500행으로 제한
+                    console.log(`일반실 데이터 범위: ${data.length}행`);
+                    
                     for (let i = 1; i < data.length; i++) {
                         const row = data[i];
                         // B열(기숙사번호), C열(이름)이 있고, 이름이 "미배정"이 아닌 경우만 포함
-                        if (row[1] && row[2] && row[2].trim() !== '미배정') {
+                        if (row[1] && row[2] && row[2].trim() !== '미배정' && row[2].trim() !== '') {
                             const roomNumber = row[1];
+                            if (!roomNumber) continue; // 기숙사번호가 없으면 스킵
+                            
                             const building = roomNumber.charAt(0);
                             const floor = roomNumber.charAt(1);
                             
-                            // 4층이 아닌 경우만 여기서 처리
-                            if (floor !== '4') {
+                            // 4층이 아닌 경우만 여기서 처리 (3인실은 별도 처리)
+                            if (floor !== '4' && CONFIG.BUILDINGS.includes(building)) {
                                 students.push({
                                     rowIndex: i + 1,
                                     roomNumber: roomNumber,
@@ -987,10 +991,15 @@
                         }
                     }
                     
-                    // 4층 3인실 처리 (수정된 로직)
+                    console.log(`일반실 학생 수: ${students.length}명`);
+                    
+                    // 4층 3인실 처리 (개선된 로직)
+                    let tripleRoomStudents = 0;
                     for (const [buildingFloor, mapping] of Object.entries(CONFIG.TRIPLE_ROOM_MAPPING)) {
                         const building = buildingFloor.charAt(0);
                         const floor = buildingFloor.charAt(1);
+                        
+                        console.log(`3인실 처리: ${buildingFloor}, 범위: ${mapping.startRow}-${mapping.endRow}`);
                         
                         // B열부터 N열까지 읽기 (B: 호실번호, C: 이름, D: 상태, E: 메모, ...)
                         const range = `B${mapping.startRow}:N${mapping.endRow}`;
@@ -998,7 +1007,7 @@
                         
                         for (let i = 0; i < tripleData.length; i++) {
                             const row = tripleData[i];
-                            if (row[1] && row[1].trim() !== '미배정') { // C열(이름) 확인
+                            if (row[1] && row[1].trim() !== '미배정' && row[1].trim() !== '') { // C열(이름) 확인
                                 const roomIndex = Math.floor(i / 3);
                                 const roomNumber = building + (mapping.startRoom + roomIndex);
                                 
@@ -1020,12 +1029,21 @@
                                     floor: floor,
                                     room: (mapping.startRoom + roomIndex).toString()
                                 });
+                                tripleRoomStudents++;
                             }
                         }
                     }
                     
-                    console.log(`총 ${students.length}명의 학생 데이터 로드 완료`);
-                    return students;
+                    console.log(`3인실 학생 수: ${tripleRoomStudents}명`);
+                    console.log(`총 학생 수: ${students.length}명`);
+                    
+                    // 중복 제거 (같은 이름과 기숙사번호를 가진 경우)
+                    const uniqueStudents = students.filter((student, index, self) => 
+                        index === self.findIndex(s => s.name === student.name && s.roomNumber === student.roomNumber)
+                    );
+                    
+                    console.log(`중복 제거 후 학생 수: ${uniqueStudents.length}명`);
+                    return uniqueStudents;
                 } catch (error) {
                     console.error('학생 데이터 가져오기 오류:', error);
                     throw error;
@@ -1043,7 +1061,7 @@
                         const key = building + floor;
                         const mapping = CONFIG.TRIPLE_ROOM_MAPPING[key];
                         
-                        if (mapping) {
+                        if (mapping && room >= mapping.startRoom && room <= mapping.endRoom) {
                             // 해당 호실의 시작 행 계산
                             const roomIndex = room - mapping.startRoom;
                             const startRow = mapping.startRow + (roomIndex * 3);
@@ -1054,10 +1072,10 @@
                             const data = await this.readRange(range);
                             
                             const students = [];
-                            for (let i = 0; i < data.length; i++) {
+                            for (let i = 0; i < data.length && i < 3; i++) { // 최대 3명
                                 const row = data[i];
                                 // C열에 이름이 있고 "미배정"이 아닌 경우만
-                                if (row[1] && row[1].trim() !== '미배정') {
+                                if (row[1] && row[1].trim() !== '미배정' && row[1].trim() !== '') {
                                     students.push({
                                         rowIndex: startRow + i,
                                         roomNumber: roomNumber,
@@ -1078,15 +1096,18 @@
                                     });
                                 }
                             }
+                            console.log(`3인실 ${roomNumber}에서 ${students.length}명 발견`);
                             return students;
                         }
                     }
                     
                     // 1-3층 또는 매핑에 없는 경우는 기존 방식 (미배정 제외)
                     const students = await this.getAllStudents();
-                    return students.filter(student => 
+                    const result = students.filter(student => 
                         student.roomNumber === roomNumber && student.name.trim() !== '미배정'
                     );
+                    console.log(`일반실 ${roomNumber}에서 ${result.length}명 발견`);
+                    return result;
                     
                 } catch (error) {
                     console.error('학생 검색 오류:', error);
@@ -1528,7 +1549,7 @@
             });
         }
 
-        // 상태별 학생 표시 함수 (핵심 수정)
+        // 상태별 학생 표시 함수 (수정된 버전)
         function showStudentsByStatus(status) {
             if (!currentData) {
                 alert('데이터를 먼저 로드해주세요.');
@@ -1538,15 +1559,25 @@
             let students;
             let title;
             
+            console.log(`상태별 학생 조회: ${status}`);
+            console.log('전체 데이터:', currentData.length, '명');
+            
             if (status === '정상') {
-                students = currentData.filter(student => 
-                    student.status === '정상' || !student.status
-                );
+                students = currentData.filter(student => {
+                    const studentStatus = student.status || '정상';
+                    return studentStatus === '정상' || studentStatus === '';
+                });
                 title = '현재원 학생 목록';
             } else {
-                students = currentData.filter(student => student.status === status);
+                students = currentData.filter(student => {
+                    const studentStatus = student.status || '정상';
+                    return studentStatus === status;
+                });
                 title = `${status} 학생 목록`;
             }
+            
+            console.log(`${status} 상태 학생:`, students.length, '명');
+            students.forEach(s => console.log(`- ${s.name} (${s.roomNumber}): ${s.status || '정상'}`));
             
             showStudentModal(students, title);
         }
@@ -1557,6 +1588,7 @@
                 return;
             }
             
+            console.log('전체 학생 조회:', currentData.length, '명');
             showStudentModal(currentData, '전체 학생 목록');
         }
 
@@ -1567,6 +1599,7 @@
             }
             
             const students = currentData.filter(student => student.gender === '남');
+            console.log('남학생 조회:', students.length, '명');
             showStudentModal(students, '남학생 목록');
         }
 
@@ -1577,12 +1610,22 @@
             }
             
             const students = currentData.filter(student => student.gender === '여');
+            console.log('여학생 조회:', students.length, '명');
             showStudentModal(students, '여학생 목록');
         }
 
         async function showBuildingFloorStudents(building, floor) {
             try {
-                const students = await sheetsAPI.getStudentsByBuildingFloor(building, floor);
+                console.log(`${building}동 ${floor}층 학생 조회`);
+                
+                // currentData에서 해당 동/층 필터링
+                const students = currentData.filter(student => 
+                    student.building === building && student.floor === floor.toString()
+                );
+                
+                console.log(`${building}동 ${floor}층: ${students.length}명`);
+                students.forEach(s => console.log(`- ${s.name} (${s.roomNumber}): ${s.status || '정상'}`));
+                
                 showStudentModal(students, `${building}동 ${floor}층 학생 목록`);
             } catch (error) {
                 console.error('동별 학생 조회 오류:', error);
@@ -1592,16 +1635,29 @@
 
         async function showReportedStudentsFromFloor(building, floor, status) {
             try {
-                const students = await sheetsAPI.getStudentsByBuildingFloor(building, floor);
+                console.log(`${building}동 ${floor}층 ${status} 학생 조회`);
+                
+                // currentData에서 해당 동/층/상태 필터링
+                const floorStudents = currentData.filter(student => 
+                    student.building === building && student.floor === floor.toString()
+                );
+                
                 let filteredStudents;
                 
-                if (status === '정상') {
-                    filteredStudents = students.filter(student => 
-                        student.status === '정상' || !student.status
-                    );
+                if (status === '정상' || status === '현재원') {
+                    filteredStudents = floorStudents.filter(student => {
+                        const studentStatus = student.status || '정상';
+                        return studentStatus === '정상' || studentStatus === '';
+                    });
                 } else {
-                    filteredStudents = students.filter(student => student.status === status);
+                    filteredStudents = floorStudents.filter(student => {
+                        const studentStatus = student.status || '정상';
+                        return studentStatus === status;
+                    });
                 }
+                
+                console.log(`${building}동 ${floor}층 ${status}: ${filteredStudents.length}명`);
+                filteredStudents.forEach(s => console.log(`- ${s.name} (${s.roomNumber}): ${s.status || '정상'}`));
                 
                 showStudentModal(filteredStudents, `${building}동 ${floor}층 ${status} 학생`);
             } catch (error) {
