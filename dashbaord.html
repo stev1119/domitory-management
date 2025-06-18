@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -47,24 +48,6 @@
             margin-bottom: 20px;
             box-shadow: var(--shadow-light);
             text-align: center;
-        }
-
-        /* 로고 이미지 스타일 */
-        .header-logo {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            object-fit: cover;
-        }
-
-        .header-logo:hover {
-            transform: scale(1.1);
-            border-color: #4facfe;
-            box-shadow: 0 12px 35px rgba(79, 172, 254, 0.3);
         }
 
         .main-header h1 {
@@ -197,43 +180,6 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: var(--shadow-light);
-        }
-
-        /* 배경 이미지가 있는 특별한 stats-section */
-        .stats-section.with-background {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stats-section.with-background::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url('https://drive.google.com/uc?id=1TiM9bvMxK5K2t57P9fpt-6-U7q6_QuHl');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0.3;
-            z-index: -1;
-        }
-
-        .stats-section.with-background::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
-            z-index: 0;
-        }
-
-        .stats-section.with-background > * {
-            position: relative;
-            z-index: 1;
         }
 
         .section-title {
@@ -763,11 +709,6 @@
                 padding: 0 5px;
             }
 
-            .header-logo {
-                width: 50px;
-                height: 50px;
-            }
-
             .stats-grid {
                 grid-template-columns: 1fr;
                 gap: 8px;
@@ -804,10 +745,6 @@
 <body>
     <div class="container">
         <div class="main-header">
-            <!-- 헤더 로고 이미지 추가 -->
-            <img src="https://drive.google.com/uc?id=1TiM9bvMxK5K2t57P9fpt-6-U7q6_QuHl" 
-                 alt="기숙사 로고" 
-                 class="header-logo">
             <h1><i class="fas fa-chart-dashboard"></i> 기숙사 현황</h1>
             <div class="controls">
                 <div class="search-container">
@@ -840,8 +777,8 @@
             <p>데이터를 불러오는 중...</p>
         </div>
 
-        <!-- 통계 카드 (배경 이미지 포함) -->
-        <div id="statsContainer" class="stats-section with-background" style="display: none;">
+        <!-- 통계 카드 -->
+        <div id="statsContainer" class="stats-section" style="display: none;">
             <h2 class="section-title"><i class="fas fa-chart-pie"></i> 실시간 인원 현황</h2>
             <div class="stats-grid">
                 <div class="stat-card total clickable" onclick="showTotalStudents()">
@@ -876,6 +813,65 @@
                 </div>
                 <div class="stat-card outing clickable" onclick="showStudentsByStatus('외출')">
                     <div class="icon"><i class="fas fa-walking"></i></div>
+                    <div class="number" id="outingCount">0</div>
+                    <div class="label">외출</div>
+                </div>
+                <div class="stat-card checkout clickable" onclick="showStudentsByStatus('퇴소')">
+                    <div class="icon"><i class="fas fa-door-open"></i></div>
+                    <div class="number" id="checkoutCount">0</div>
+                    <div class="label">퇴소</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 보고 현황 집계 -->
+        <div id="reportSummarySection" class="stats-section" style="display: none;">
+            <h2 class="section-title"><i class="fas fa-clipboard-list"></i> 오늘 인원보고 현황</h2>
+            <div id="reportSummaryContainer" class="report-summary-grid">
+                <!-- 보고 현황이 여기에 표시됩니다 -->
+            </div>
+        </div>
+
+        <!-- 동별 현황 -->
+        <div id="buildingSection" class="stats-section" style="display: none;">
+            <h2 class="section-title"><i class="fas fa-building"></i> 동별 현황</h2>
+            <div id="buildingGrid" class="building-grid">
+                <!-- 동적으로 생성될 동별 카드 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 모달 창들 -->
+    <div id="studentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">학생 정보</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="modalBody">
+                <!-- 모달 내용이 여기에 표시됩니다 -->
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>학생 정보 수정</h3>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
+            <div id="editModalBody">
+                <div class="search-container">
+                    <input type="text" id="editSearchInput" class="search-input" placeholder="수정할 학생 검색...">
+                    <button class="search-btn" onclick="searchForEdit()"><i class="fas fa-search"></i></button>
+                </div>
+                <div id="editForm" style="display: none;">
+                    <!-- 수정 폼이 여기에 표시됩니다 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // CONFIG 설정
         const CONFIG = {
@@ -905,7 +901,7 @@
                 'B4': { startRow: 406, endRow: 468, startRoom: 401, endRoom: 421 },
                 'C4': { startRow: 654, endRow: 749, startRoom: 401, endRow: 432 },
                 'D4': { startRow: 884, endRow: 952, startRoom: 401, endRow: 423 },
-                'E4': { startRow: 1185, endRow: 1304, startRoom: 401, endRow: 440 },
+                'E4': { startRow: 1184, endRow: 1303, startRoom: 401, endRow: 440 },
                 'F4': { startRow: 1403, endRow: 1453, startRoom: 401, endRow: 417 }
             },
             
