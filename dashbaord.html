@@ -13,83 +13,166 @@
         }
 
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --primary-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --secondary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.12);
             --glass-border: rgba(255, 255, 255, 0.2);
-            --text-primary: #2c3e50;
-            --text-secondary: #6c757d;
-            --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.37);
-            --shadow-heavy: 0 15px 35px rgba(31, 38, 135, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.85);
+            --text-accent: rgba(255, 255, 255, 0.95);
+            --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.2);
+            --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.3);
+            --logo-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
         }
 
         body {
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--primary-gradient);
             min-height: 100vh;
-            padding: 15px;
+            padding: 20px;
             color: var(--text-primary);
+            background-attachment: fixed;
+            overflow-x: auto;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
         }
 
         .container {
-            max-width: 500px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
         .main-header {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 24px 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-light);
+            backdrop-filter: blur(25px);
+            border: 2px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 35px 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-heavy);
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://drive.google.com/uc?export=view&id=1TiM9bvMxK5K2t57P9fpt-6-U7q6_QuHl') center/80px no-repeat;
+            opacity: 0.08;
+            z-index: 0;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .logo-container {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 12px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--logo-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .logo-container:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: brightness(1.2) contrast(1.1);
         }
 
         .main-header h1 {
-            font-size: 1.6rem;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #ffffff 0%, #e3f2fd 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-            font-weight: 700;
+            background-clip: text;
+            margin-bottom: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
         }
 
         .controls {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-top: 20px;
+            gap: 18px;
+            margin-top: 25px;
         }
 
         .search-container {
             position: relative;
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         .search-input {
             width: 100%;
-            padding: 14px 50px 14px 20px;
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            font-size: 1rem;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            color: white;
+            padding: 16px 60px 16px 24px;
+            border: 2px solid var(--glass-border);
+            border-radius: 25px;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            color: var(--text-primary);
             transition: all 0.3s ease;
+            font-weight: 500;
         }
 
         .search-input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 400;
         }
 
         .search-input:focus {
             outline: none;
             border-color: #4facfe;
-            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+            box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.2);
             background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
         }
 
         .search-btn {
@@ -97,120 +180,229 @@
             right: 8px;
             top: 50%;
             transform: translateY(-50%);
-            background: var(--secondary-gradient);
+            background: var(--accent-gradient);
             border: none;
             border-radius: 50%;
-            width: 36px;
-            height: 36px;
+            width: 44px;
+            height: 44px;
             color: white;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
         }
 
         .search-btn:hover {
             transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
         }
 
         .btn-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
         }
 
         .btn {
-            padding: 12px 16px;
+            padding: 14px 20px;
             border: none;
-            border-radius: 16px;
+            border-radius: 18px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: 600;
             transition: all 0.3s ease;
             text-decoration: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
+            gap: 10px;
+            backdrop-filter: blur(15px);
+            border: 2px solid var(--glass-border);
+            box-shadow: var(--shadow-light);
         }
 
         .btn-primary {
-            background: var(--secondary-gradient);
+            background: var(--accent-gradient);
             color: white;
         }
 
         .btn-secondary {
-            background: var(--glass-bg);
-            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-light);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
         }
 
         .search-results-immediate {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 20px;
-            margin-top: 15px;
+            backdrop-filter: blur(25px);
+            border: 2px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 25px;
+            margin-top: 20px;
             box-shadow: var(--shadow-light);
             display: none;
         }
 
         .search-results-immediate h3 {
-            color: white;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            color: var(--text-accent);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 700;
             text-align: center;
         }
 
-        .stats-section {
+        /* 반응형 레이아웃 */
+        .main-layout {
+            display: grid;
+            gap: 25px;
+        }
+
+        /* 데스크톱: 가로 레이아웃 */
+        @media (min-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr 1fr;
+                grid-template-areas: 
+                    "stats reports"
+                    "buildings buildings";
+            }
+
+            .stats-section {
+                grid-area: stats;
+            }
+
+            .report-summary-section {
+                grid-area: reports;
+            }
+
+            .building-section {
+                grid-area: buildings;
+            }
+
+            .container {
+                padding: 0 20px;
+            }
+
+            .main-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .logo-container {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        /* 태블릿 */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 모바일 */
+        @media (max-width: 767px) {
+            .container {
+                max-width: 100%;
+                padding: 0 5px;
+            }
+
+            .main-header {
+                padding: 25px 20px;
+                margin-bottom: 20px;
+            }
+
+            .main-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .logo-container {
+                width: 60px;
+                height: 60px;
+            }
+
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+
+            .search-input {
+                font-size: 1rem;
+                padding: 14px 55px 14px 20px;
+            }
+
+            .search-btn {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        .stats-section, .report-summary-section, .building-section {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(25px);
+            border: 2px solid var(--glass-border);
             border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 25px;
             box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+
+        .stats-section:hover, .report-summary-section:hover, .building-section:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-heavy);
         }
 
         .section-title {
-            font-size: 1.2rem;
-            color: white;
-            margin-bottom: 20px;
-            font-weight: 600;
+            font-size: 1.4rem;
+            color: var(--text-accent);
+            margin-bottom: 25px;
+            font-weight: 700;
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .section-title i {
+            font-size: 1.6rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px 16px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
             cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(10px);
         }
 
         .stat-card::before {
@@ -219,177 +411,201 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 3px;
-            background: var(--secondary-gradient);
+            height: 4px;
+            background: var(--accent-gradient);
+            transition: height 0.3s ease;
         }
 
         .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-light);
-            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(79, 172, 254, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(79, 172, 254, 0.3);
+        }
+
+        .stat-card:hover::before {
+            height: 100%;
+            opacity: 0.1;
         }
 
         .stat-card .icon {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-            background: var(--secondary-gradient);
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            filter: drop-shadow(0 2px 4px rgba(79, 172, 254, 0.3));
         }
 
         .stat-card .number {
-            font-size: 1.6rem;
-            font-weight: bold;
-            margin-bottom: 4px;
-            color: white;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+            text-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
         }
 
         .stat-card .label {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.8rem;
-            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
         }
 
         .report-summary-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 15px;
+            gap: 18px;
         }
 
         .report-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #4facfe;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #4facfe;
+            transition: all 0.4s ease;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
 
         .report-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
             box-shadow: var(--shadow-light);
+            background: rgba(255, 255, 255, 0.12);
         }
 
         .report-card.reported {
             border-left-color: #28a745;
-            background: rgba(40, 167, 69, 0.1);
+            background: rgba(40, 167, 69, 0.15);
         }
 
         .report-card.not-reported {
             border-left-color: #dc3545;
-            background: rgba(220, 53, 69, 0.1);
+            background: rgba(220, 53, 69, 0.15);
         }
 
         .report-card h4 {
-            margin-bottom: 12px;
-            color: white;
-            font-size: 1rem;
-            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-accent);
+            font-size: 1.1rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .report-stats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
         .report-stat-item {
             background: rgba(255, 255, 255, 0.1);
-            padding: 8px 4px;
-            border-radius: 8px;
+            padding: 10px 6px;
+            border-radius: 12px;
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .report-stat-item:hover {
             transform: scale(1.05);
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(79, 172, 254, 0.3);
         }
 
         .report-stat-item .number {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: white;
-            margin-bottom: 2px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 3px;
         }
 
         .report-stat-item .label {
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 500;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 600;
         }
 
         .building-grid {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
 
         .building-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #4facfe;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #4facfe;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .building-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-light);
+            background: rgba(255, 255, 255, 0.12);
         }
 
         .building-card h3 {
-            color: white;
-            margin-bottom: 12px;
-            font-size: 1rem;
-            font-weight: 600;
+            color: var(--text-accent);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
         }
 
         .floor-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
+            gap: 12px;
         }
 
         .floor-item {
             background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 12px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.1);
         }
 
         .floor-item:hover {
             border-color: #4facfe;
-            transform: translateY(-2px);
-            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.18);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.2);
         }
 
         .floor-item .floor-title {
-            font-weight: bold;
-            color: white;
-            margin-bottom: 4px;
-            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-accent);
+            margin-bottom: 6px;
+            font-size: 1rem;
         }
 
         .floor-item .floor-count {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
         }
 
         .student-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 15px;
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 20px;
             box-shadow: var(--shadow-light);
-            border: 1px solid var(--glass-border);
+            border: 2px solid var(--glass-border);
             position: relative;
             overflow: hidden;
             transition: all 0.4s ease;
@@ -401,12 +617,24 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 4px;
-            background: var(--secondary-gradient);
+            height: 5px;
+            background: var(--accent-gradient);
+        }
+
+        .student-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://drive.google.com/uc?export=view&id=1TiM9bvMxK5K2t57P9fpt-6-U7q6_QuHl') center/80px no-repeat;
+            opacity: 0.03;
+            z-index: 0;
         }
 
         .student-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-6px);
             box-shadow: var(--shadow-heavy);
         }
 
@@ -422,85 +650,96 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 15px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
         }
 
         .student-name-section {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
 
         .student-name {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: white;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-primary);
             margin: 0;
+            text-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
         }
 
         .student-birth {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
-            background: rgba(255, 255, 255, 0.1);
-            padding: 4px 10px;
-            border-radius: 12px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.12);
+            padding: 6px 12px;
+            border-radius: 14px;
             display: inline-block;
             width: fit-content;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .student-room {
-            background: var(--secondary-gradient);
+            background: var(--accent-gradient);
             color: white;
-            padding: 8px 15px;
-            border-radius: 16px;
-            font-size: 0.9rem;
-            font-weight: 600;
+            padding: 10px 18px;
+            border-radius: 18px;
+            font-size: 1rem;
+            font-weight: 700;
             text-align: center;
-            min-width: 80px;
-            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+            min-width: 90px;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
         }
 
         .student-info {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 12px;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
         }
 
         .info-section {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .info-section:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(79, 172, 254, 0.2);
         }
 
         .info-section h4 {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.8rem;
-            font-weight: 600;
+            color: var(--text-accent);
+            font-size: 0.9rem;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 4px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .info-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 6px;
-            padding: 4px 0;
+            gap: 10px;
+            margin-bottom: 8px;
+            padding: 6px 0;
             transition: all 0.3s ease;
         }
 
         .info-item:hover {
-            transform: translateX(3px);
+            transform: translateX(5px);
             color: #4facfe;
         }
 
@@ -509,30 +748,30 @@
         }
 
         .info-item i {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-size: 1rem;
         }
 
         .info-item span {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
             flex: 1;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .status-badge {
-            padding: 6px 12px;
-            border-radius: 16px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: 18px;
+            font-size: 0.8rem;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
             border: none;
         }
 
@@ -571,18 +810,18 @@
 
         .gender-badge {
             position: absolute;
-            top: 16px;
-            right: 16px;
-            width: 32px;
-            height: 32px;
+            top: 20px;
+            right: 20px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: white;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .student-card.male .gender-badge {
@@ -601,48 +840,48 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
         }
 
         .modal-content {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: 20px;
+            backdrop-filter: blur(25px);
+            margin: 3% auto;
+            padding: 30px;
+            border-radius: 24px;
             width: 95%;
-            max-width: 450px;
-            max-height: 85vh;
+            max-width: 600px;
+            max-height: 90vh;
             overflow-y: auto;
             box-shadow: var(--shadow-heavy);
-            border: 1px solid var(--glass-border);
+            border: 2px solid var(--glass-border);
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 12px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
         }
 
         .modal-header h3 {
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 600;
+            color: var(--text-accent);
+            font-size: 1.4rem;
+            font-weight: 700;
         }
 
         .close {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 24px;
+            color: var(--text-secondary);
+            font-size: 28px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -650,20 +889,22 @@
 
         .close:hover {
             color: #ff4757;
-            background: rgba(255, 71, 87, 0.1);
+            background: rgba(255, 71, 87, 0.15);
+            transform: rotate(90deg);
         }
 
         .loading {
             text-align: center;
-            padding: 40px;
-            color: rgba(255, 255, 255, 0.7);
+            padding: 50px;
+            color: var(--text-secondary);
         }
 
         .loading i {
-            font-size: 2rem;
+            font-size: 2.5rem;
             animation: spin 1s linear infinite;
             color: #4facfe;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 2px 8px rgba(79, 172, 254, 0.3));
         }
 
         @keyframes spin {
@@ -673,100 +914,69 @@
 
         .no-data {
             text-align: center;
-            padding: 40px;
-            color: rgba(255, 255, 255, 0.7);
+            padding: 50px;
+            color: var(--text-secondary);
         }
 
         .no-data i {
-            font-size: 2rem;
+            font-size: 2.5rem;
             color: rgba(255, 255, 255, 0.3);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         /* 스크롤바 스타일링 */
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
 
         ::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
+            border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.3);
-            border-radius: 3px;
+            border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.5);
-        }
-
-        /* 작은 화면 최적화 */
-        @media (max-width: 360px) {
-            .container {
-                padding: 0 5px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
-
-            .btn-group {
-                grid-template-columns: 1fr;
-            }
-
-            .floor-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .report-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .student-card {
-                padding: 16px;
-            }
-
-            .student-name {
-                font-size: 1.1rem;
-            }
-
-            .gender-badge {
-                width: 28px;
-                height: 28px;
-                font-size: 0.9rem;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="main-header">
-            <h1><i class="fas fa-chart-dashboard"></i> 시대인재 기숙사 현황</h1>
-            <div class="controls">
-                <div class="search-container">
-                    <input type="text" id="searchInput" class="search-input" placeholder="이름, 기숙사 번호, 라브좌석 검색...">
-                    <button class="search-btn" onclick="searchStudent()">
-                        <i class="fas fa-search"></i>
-                    </button>
+            <div class="header-content">
+                <div class="header-logo">
+                    <div class="logo-container">
+                        <img src="https://drive.google.com/uc?export=view&id=1TiM9bvMxK5K2t57P9fpt-6-U7q6_QuHl" alt="시대인재 로고" class="logo-img">
+                    </div>
+                    <h1>시대인재 기숙사 현황</h1>
                 </div>
-                <div class="btn-group">
-                    <button class="btn btn-secondary" onclick="refreshData()">
-                        <i class="fas fa-refresh"></i> 새로고침
-                    </button>
-                    <button class="btn btn-primary" onclick="showEditModal()">
-                        <i class="fas fa-edit"></i> 수정
-                    </button>
+                <div class="controls">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" class="search-input" placeholder="이름, 기숙사 번호, 라브좌석 검색...">
+                        <button class="search-btn" onclick="searchStudent()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="refreshData()">
+                            <i class="fas fa-refresh"></i> 새로고침
+                        </button>
+                        <button class="btn btn-primary" onclick="showEditModal()">
+                            <i class="fas fa-edit"></i> 수정
+                        </button>
+                    </div>
                 </div>
-            </div>
-            
-            <!-- 즉시 검색 결과 표시 영역 -->
-            <div id="searchResultsImmediate" class="search-results-immediate">
-                <h3 id="searchResultsTitle">검색 결과</h3>
-                <div id="searchResultsContent">
-                    <!-- 검색 결과가 여기에 바로 표시됩니다 -->
+                
+                <!-- 즉시 검색 결과 표시 영역 -->
+                <div id="searchResultsImmediate" class="search-results-immediate">
+                    <h3 id="searchResultsTitle">검색 결과</h3>
+                    <div id="searchResultsContent">
+                        <!-- 검색 결과가 여기에 바로 표시됩니다 -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -776,66 +986,68 @@
             <p>데이터를 불러오는 중...</p>
         </div>
 
-        <!-- 통계 카드 -->
-        <div id="statsContainer" class="stats-section" style="display: none;">
-            <h2 class="section-title"><i class="fas fa-chart-pie"></i> 실시간 인원 현황</h2>
-            <div class="stats-grid">
-                <div class="stat-card total clickable" onclick="showTotalStudents()">
-                    <div class="icon"><i class="fas fa-users"></i></div>
-                    <div class="number" id="totalCount">0</div>
-                    <div class="label">총원</div>
-                </div>
-                <div class="stat-card current clickable" onclick="showStudentsByStatus('정상')">
-                    <div class="icon"><i class="fas fa-user-check"></i></div>
-                    <div class="number" id="currentCount">0</div>
-                    <div class="label">현재원</div>
-                </div>
-                <div class="stat-card male clickable" onclick="showMaleStudents()">
-                    <div class="icon"><i class="fas fa-mars"></i></div>
-                    <div class="number" id="maleCurrentCount">0</div>
-                    <div class="label">남학생</div>
-                </div>
-                <div class="stat-card female clickable" onclick="showFemaleStudents()">
-                    <div class="icon"><i class="fas fa-venus"></i></div>
-                    <div class="number" id="femaleCurrentCount">0</div>
-                    <div class="label">여학생</div>
-                </div>
-                <div class="stat-card absent clickable" onclick="showStudentsByStatus('외박')">
-                    <div class="icon"><i class="fas fa-moon"></i></div>
-                    <div class="number" id="overnightCount">0</div>
-                    <div class="label">외박</div>
-                </div>
-                <div class="stat-card new clickable" onclick="showStudentsByStatus('신규')">
-                    <div class="icon"><i class="fas fa-plus-circle"></i></div>
-                    <div class="number" id="newStudentCount">0</div>
-                    <div class="label">신규</div>
-                </div>
-                <div class="stat-card outing clickable" onclick="showStudentsByStatus('외출')">
-                    <div class="icon"><i class="fas fa-walking"></i></div>
-                    <div class="number" id="outingCount">0</div>
-                    <div class="label">외출</div>
-                </div>
-                <div class="stat-card checkout clickable" onclick="showStudentsByStatus('퇴소')">
-                    <div class="icon"><i class="fas fa-door-open"></i></div>
-                    <div class="number" id="checkoutCount">0</div>
-                    <div class="label">퇴소</div>
+        <div class="main-layout">
+            <!-- 통계 카드 -->
+            <div id="statsContainer" class="stats-section" style="display: none;">
+                <h2 class="section-title"><i class="fas fa-chart-pie"></i> 실시간 인원 현황</h2>
+                <div class="stats-grid">
+                    <div class="stat-card total clickable" onclick="showTotalStudents()">
+                        <div class="icon"><i class="fas fa-users"></i></div>
+                        <div class="number" id="totalCount">0</div>
+                        <div class="label">총원</div>
+                    </div>
+                    <div class="stat-card current clickable" onclick="showStudentsByStatus('정상')">
+                        <div class="icon"><i class="fas fa-user-check"></i></div>
+                        <div class="number" id="currentCount">0</div>
+                        <div class="label">현재원</div>
+                    </div>
+                    <div class="stat-card male clickable" onclick="showMaleStudents()">
+                        <div class="icon"><i class="fas fa-mars"></i></div>
+                        <div class="number" id="maleCurrentCount">0</div>
+                        <div class="label">남학생</div>
+                    </div>
+                    <div class="stat-card female clickable" onclick="showFemaleStudents()">
+                        <div class="icon"><i class="fas fa-venus"></i></div>
+                        <div class="number" id="femaleCurrentCount">0</div>
+                        <div class="label">여학생</div>
+                    </div>
+                    <div class="stat-card absent clickable" onclick="showStudentsByStatus('외박')">
+                        <div class="icon"><i class="fas fa-moon"></i></div>
+                        <div class="number" id="overnightCount">0</div>
+                        <div class="label">외박</div>
+                    </div>
+                    <div class="stat-card new clickable" onclick="showStudentsByStatus('신규')">
+                        <div class="icon"><i class="fas fa-plus-circle"></i></div>
+                        <div class="number" id="newStudentCount">0</div>
+                        <div class="label">신규</div>
+                    </div>
+                    <div class="stat-card outing clickable" onclick="showStudentsByStatus('외출')">
+                        <div class="icon"><i class="fas fa-walking"></i></div>
+                        <div class="number" id="outingCount">0</div>
+                        <div class="label">외출</div>
+                    </div>
+                    <div class="stat-card checkout clickable" onclick="showStudentsByStatus('퇴소')">
+                        <div class="icon"><i class="fas fa-door-open"></i></div>
+                        <div class="number" id="checkoutCount">0</div>
+                        <div class="label">퇴소</div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 보고 현황 집계 -->
-        <div id="reportSummarySection" class="stats-section" style="display: none;">
-            <h2 class="section-title"><i class="fas fa-clipboard-list"></i> 오늘 인원보고 현황</h2>
-            <div id="reportSummaryContainer" class="report-summary-grid">
-                <!-- 보고 현황이 여기에 표시됩니다 -->
+            <!-- 보고 현황 집계 -->
+            <div id="reportSummarySection" class="report-summary-section" style="display: none;">
+                <h2 class="section-title"><i class="fas fa-clipboard-list"></i> 오늘 인원보고 현황</h2>
+                <div id="reportSummaryContainer" class="report-summary-grid">
+                    <!-- 보고 현황이 여기에 표시됩니다 -->
+                </div>
             </div>
-        </div>
 
-        <!-- 동별 현황 -->
-        <div id="buildingSection" class="stats-section" style="display: none;">
-            <h2 class="section-title"><i class="fas fa-building"></i> 동별 현황</h2>
-            <div id="buildingGrid" class="building-grid">
-                <!-- 동적으로 생성될 동별 카드 -->
+            <!-- 동별 현황 -->
+            <div id="buildingSection" class="building-section" style="display: none;">
+                <h2 class="section-title"><i class="fas fa-building"></i> 동별 현황</h2>
+                <div id="buildingGrid" class="building-grid">
+                    <!-- 동적으로 생성될 동별 카드 -->
+                </div>
             </div>
         </div>
     </div>
@@ -872,7 +1084,7 @@
     </div>
 
     <script>
-        // CONFIG 설정
+        // CONFIG 설정 (정확한 호실 범위로 수정)
         const CONFIG = {
             SHEET_ID: '1cASz2h4Dd13H6vhdKAPHOFdf5BMsFjaFledqVbzpP8I',
             SHEET_NAME: 'yulee',
@@ -894,14 +1106,26 @@
                 'D': '여', 'E': '여'
             },
             
-            // 3인실 시트 매핑 정보 (정확한 매핑)
-            TRIPLE_ROOM_MAPPING: {
-                'A4': { startRow: 187, endRow: 282, startRoom: 401, endRoom: 432 },
-                'B4': { startRow: 405, endRow: 467, startRoom: 401, endRoom: 421 },
-                'C4': { startRow: 653, endRow: 748, startRoom: 401, endRow: 432 },
-                'D4': { startRow: 883, endRow: 951, startRoom: 401, endRow: 423 },
-                'E4': { startRow: 1184, endRow: 1303, startRoom: 401, endRow: 440 },
-                'F4': { startRow: 1402, endRow: 1452, startRoom: 401, endRow: 417 }
+            // 정확한 호실 범위 (실제 시트 데이터 기준)
+            ROOM_RANGES: {
+                'A': { 
+                    '1': [101, 132], '2': [201, 232], '3': [301, 332], '4': [401, 432] 
+                },
+                'B': { 
+                    '1': [101, 121], '2': [201, 221], '3': [301, 321], '4': [401, 421] 
+                },
+                'C': { 
+                    '1': [101, 161], '2': [201, 262], '3': [301, 362], '4': [401, 432] // 수정된 범위
+                },
+                'D': { 
+                    '1': [101, 123], '2': [201, 223], '3': [301, 323], '4': [401, 423] 
+                },
+                'E': { 
+                    '1': [101, 140], '2': [201, 240], '3': [301, 340], '4': [401, 440] 
+                },
+                'F': { 
+                    '1': [101, 117], '2': [201, 217], '3': [301, 317], '4': [401, 417] 
+                }
             },
             
             STATUS_TYPES: [
@@ -909,7 +1133,7 @@
             ]
         };
 
-        // SheetsAPI 클래스 (3인실 처리 개선)
+        // SheetsAPI 클래스 (수정된 버전)
         class SheetsAPI {
             constructor() {
                 this.baseUrl = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}`;
@@ -948,7 +1172,7 @@
                 }
             }
             
-            // 전체 학생 데이터 가져오기 (완전 단순화)
+            // 전체 학생 데이터 가져오기 (시트 구조에 맞게 수정)
             async getAllStudents() {
                 try {
                     const students = [];
@@ -1168,7 +1392,7 @@
             document.getElementById('buildingSection').style.display = 'block';
         }
 
-        // 통계 계산 (완전 단순화)
+        // 통계 계산
         async function calculateStats() {
             try {
                 const reportDate = getReportPeriodId();
@@ -1337,7 +1561,7 @@
                                     <div class="label">퇴소</div>
                                 </div>
                             </div>
-                            <small style="color: rgba(255, 255, 255, 0.7); margin-top: 10px; display: block; font-size: 0.75rem;">
+                            <small style="color: rgba(255, 255, 255, 0.7); margin-top: 12px; display: block; font-size: 0.8rem;">
                                 <i class="fas fa-clock"></i> ${report.timestamp}
                                 ${report.students && report.students.length > 0 ? 
                                   `<br><i class="fas fa-users"></i> 개별학생: ${report.students.length}명` : ''}
@@ -1351,11 +1575,11 @@
                                 <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
                                 ${building}동 ${floor}층
                             </h4>
-                            <div style="text-align: center; padding: 15px;">
-                                <p style="color: rgba(255, 255, 255, 0.8); margin: 8px 0; font-size: 0.9rem; font-weight: 600;">
+                            <div style="text-align: center; padding: 20px;">
+                                <p style="color: rgba(255, 255, 255, 0.8); margin: 10px 0; font-size: 1rem; font-weight: 600;">
                                     <i class="fas fa-times-circle"></i> 보고되지 않음
                                 </p>
-                                <small style="color: rgba(255, 255, 255, 0.6); font-size: 0.75rem;">담당자의 보고가 필요합니다.</small>
+                                <small style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem;">담당자의 보고가 필요합니다.</small>
                             </div>
                         `;
                     }
@@ -1475,7 +1699,7 @@
             });
         }
 
-        // 상태별 학생 표시 함수 (수정된 버전)
+        // 상태별 학생 표시 함수
         function showStudentsByStatus(status) {
             if (!currentData) {
                 alert('데이터를 먼저 로드해주세요.');
@@ -1742,12 +1966,15 @@
             const editForm = document.getElementById('editForm');
             editForm.style.display = 'block';
             editForm.innerHTML = `
-                <h4 style="color: white; margin-bottom: 15px;">수정할 학생을 선택하세요:</h4>
-                <div style="max-height: 300px; overflow-y: auto;">
+                <h4 style="color: white; margin-bottom: 20px; font-size: 1.2rem; font-weight: 700;">수정할 학생을 선택하세요:</h4>
+                <div style="max-height: 400px; overflow-y: auto;">
                     ${students.map(student => `
-                        <div style="background: rgba(255,255,255,0.1); margin: 8px 0; padding: 12px; border-radius: 8px; cursor: pointer;"
-                             onclick="showEditForm(${JSON.stringify(student).replace(/"/g, '&quot;')})">
-                            <strong>${student.name}</strong> - ${student.roomNumber} (${student.status || '정상'})
+                        <div style="background: rgba(255,255,255,0.1); margin: 10px 0; padding: 15px; border-radius: 12px; cursor: pointer; border: 2px solid rgba(255,255,255,0.1); transition: all 0.3s ease;"
+                             onclick="showEditForm(${JSON.stringify(student).replace(/"/g, '&quot;')})"
+                             onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.borderColor='rgba(79,172,254,0.3)'"
+                             onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.1)'">
+                            <strong style="font-size: 1.1rem;">${student.name}</strong> - ${student.roomNumber} 
+                            <span class="status-badge ${student.status || '정상'}" style="margin-left: 10px;">${student.status || '정상'}</span>
                         </div>
                     `).join('')}
                 </div>
@@ -1758,14 +1985,14 @@
             const editForm = document.getElementById('editForm');
             editForm.style.display = 'block';
             editForm.innerHTML = `
-                <h4 style="color: white; margin-bottom: 15px;">${student.name} 학생 정보 수정</h4>
+                <h4 style="color: white; margin-bottom: 20px; font-size: 1.2rem; font-weight: 700;">${student.name} 학생 정보 수정</h4>
                 <form id="studentEditForm">
                     <input type="hidden" id="editRowIndex" value="${student.rowIndex}">
                     <input type="hidden" id="editStudentName" value="${student.name}">
                     
-                    <div style="margin-bottom: 15px;">
-                        <label style="color: rgba(255,255,255,0.9); margin-bottom: 5px; display: block;">현재 상태</label>
-                        <select id="editStatus" style="width: 100%; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                    <div style="margin-bottom: 20px;">
+                        <label style="color: rgba(255,255,255,0.9); margin-bottom: 8px; display: block; font-weight: 600;">현재 상태</label>
+                        <select id="editStatus" style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.1); color: white; border: 2px solid rgba(255,255,255,0.2); font-size: 1rem;">
                             <option value="정상" ${(!student.status || student.status === '정상') ? 'selected' : ''}>정상</option>
                             ${CONFIG.STATUS_TYPES.filter(s => s !== '정상').map(status => 
                                 `<option value="${status}" ${student.status === status ? 'selected' : ''}>${status}</option>`
@@ -1773,14 +2000,14 @@
                         </select>
                     </div>
                     
-                    <div style="margin-bottom: 15px;">
-                        <label style="color: rgba(255,255,255,0.9); margin-bottom: 5px; display: block;">메모</label>
+                    <div style="margin-bottom: 25px;">
+                        <label style="color: rgba(255,255,255,0.9); margin-bottom: 8px; display: block; font-weight: 600;">메모</label>
                         <input type="text" id="editMemo" value="${student.memo || ''}" 
-                               style="width: 100%; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                               style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.1); color: white; border: 2px solid rgba(255,255,255,0.2); font-size: 1rem;">
                     </div>
                     
-                    <button type="submit" style="background: var(--secondary-gradient); color: white; border: none; padding: 10px 20px; border-radius: 8px; width: 100%; cursor: pointer;">
-                        저장
+                    <button type="submit" style="background: var(--accent-gradient); color: white; border: none; padding: 14px 24px; border-radius: 12px; width: 100%; cursor: pointer; font-size: 1rem; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);">
+                        <i class="fas fa-save"></i> 저장
                     </button>
                 </form>
             `;
@@ -1797,10 +2024,10 @@
             const memo = document.getElementById('editMemo').value;
             
             try {
-                // D열에 상태 업데이트
+                // D열에 상태 업데이트 (D열은 4번째 열)
                 await sheetsAPI.updateCell(parseInt(rowIndex), 4, status === '정상' ? '' : status);
                 
-                // E열에 메모 업데이트
+                // E열에 메모 업데이트 (E열은 5번째 열)
                 await sheetsAPI.updateCell(parseInt(rowIndex), 5, memo);
                 
                 alert('학생 정보가 성공적으로 수정되었습니다.');
