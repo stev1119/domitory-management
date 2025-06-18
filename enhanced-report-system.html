@@ -285,26 +285,30 @@
             transform: none;
         }
 
-        .navigation {
+        .modification-checkbox {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
             text-align: center;
-            margin-top: 30px;
         }
 
-        .nav-link {
-            display: inline-block;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-            color: white;
-            text-decoration: none;
-            padding: 15px 30px;
-            border-radius: 50px;
+        .modification-checkbox label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-size: 1.1rem;
             font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+            color: #856404;
+            cursor: pointer;
         }
 
-        .nav-link:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.4);
+        .modification-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #ffc107;
         }
 
         .alert {
@@ -334,7 +338,13 @@
             border-left: 5px solid #ffc107;
         }
 
-        /* 모바일 최적화 개선 */
+        .alert.info {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border-left: 5px solid #17a2b8;
+        }
+
+        /* 모바일 최적화 */
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -386,64 +396,6 @@
                 padding: 18px 40px;
                 font-size: 1.2rem;
             }
-            
-            .add-btn {
-                padding: 12px 25px;
-                font-size: 1rem;
-            }
-        }
-
-        /* 터치 디바이스 최적화 */
-        @media (hover: none) and (pointer: coarse) {
-            .number-input button:hover,
-            .submit-btn:hover,
-            .add-btn:hover,
-            .student-row:hover {
-                transform: none;
-            }
-            
-            .number-input button:active {
-                transform: scale(0.95);
-            }
-            
-            .submit-btn:active,
-            .add-btn:active {
-                transform: scale(0.98);
-            }
-            
-            /* 터치 타겟 크기 증가 */
-            .form-group select,
-            .form-group input {
-                padding: 15px 20px;
-                font-size: 16px; /* iOS 자동 줌 방지 */
-                min-height: 50px;
-            }
-            
-            .delete-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 1.1rem;
-            }
-        }
-
-        /* 애니메이션 */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .form-container {
-            animation: fadeInUp 0.6s ease;
-        }
-
-        .student-row {
-            animation: fadeInUp 0.4s ease;
         }
 
         /* 로딩 스피너 */
@@ -506,6 +458,15 @@
                     </div>
                 </div>
 
+                <!-- 수정 보고 체크박스 -->
+                <div id="modificationCheckbox" class="modification-checkbox" style="display: none;">
+                    <label>
+                        <input type="checkbox" id="isModification" name="isModification">
+                        <i class="fas fa-edit"></i>
+                        기존 보고를 수정합니다 (기존 데이터가 대체됩니다)
+                    </label>
+                </div>
+
                 <div class="stats-grid">
                     <div class="number-input-group">
                         <label>현재원</label>
@@ -537,6 +498,14 @@
                             <button type="button" onclick="decreaseValue('checkout')">-</button>
                             <input type="number" id="checkout" name="checkout" value="0" min="0">
                             <button type="button" onclick="increaseValue('checkout')">+</button>
+                        </div>
+                    </div>
+                    <div class="number-input-group">
+                        <label>신규</label>
+                        <div class="number-input">
+                            <button type="button" onclick="decreaseValue('newStudent')">-</button>
+                            <input type="number" id="newStudent" name="newStudent" value="0" min="0">
+                            <button type="button" onclick="increaseValue('newStudent')">+</button>
                         </div>
                     </div>
                     <div class="number-input-group">
@@ -581,12 +550,6 @@
                 <i class="fas fa-paper-plane"></i> 인원보고 제출
             </button>
         </form>
-
-        <div class="navigation">
-            <a href="enhanced-dashboard.html" class="nav-link">
-                <i class="fas fa-chart-dashboard"></i> 대시보드 보기
-            </a>
-        </div>
     </div>
 
     <script>
@@ -614,15 +577,6 @@
                 'D': '여', 'E': '여'
             },
             
-            ROOM_RANGES: {
-                'A': { '1': '101-132', '2': '201-232', '3': '301-332', '4': '401-432' },
-                'B': { '1': '101-121', '2': '201-221', '3': '301-321', '4': '401-421' },
-                'C': { '1': '101-132', '2': '201-232', '3': '301-332', '4': '401-432' },
-                'D': { '1': '101-123', '2': '201-223', '3': '301-323', '4': '401-423' },
-                'E': { '1': '101-140', '2': '201-240', '3': '301-340', '4': '401-440' },
-                'F': { '1': '101-117', '2': '201-217', '3': '301-317', '4': '401-417' }
-            },
-            
             // 3인실 시트 매핑 정보
             TRIPLE_ROOM_MAPPING: {
                 'A4': { startRow: 187, endRow: 282, startRoom: 401, endRoom: 432 },
@@ -634,7 +588,7 @@
             },
             
             STATUS_TYPES: [
-                '외박', '외출', '퇴소', '이동+', '이동-', '정상', '기타'
+                '외박', '외출', '퇴소', '이동+', '이동-', '정상', '신규', '기타'
             ],
             
             REPORT_START_HOUR: 22,
@@ -665,18 +619,6 @@
                 return now.toISOString().split('T')[0];
             },
             
-            generateRoomNumbers(building, floor) {
-                const range = CONFIG.ROOM_RANGES[building][floor];
-                const [start, end] = range.split('-').map(num => parseInt(num));
-                const rooms = [];
-                
-                for (let i = start; i <= end; i++) {
-                    rooms.push(building + i.toString().padStart(3, '0'));
-                }
-                
-                return rooms;
-            },
-            
             getCurrentTimeString() {
                 return new Date().toLocaleString('ko-KR', {
                     timeZone: 'Asia/Seoul',
@@ -690,7 +632,7 @@
             }
         };
 
-        // SheetsAPI 클래스 (완전한 버전)
+        // SheetsAPI 클래스
         class SheetsAPI {
             constructor() {
                 this.baseUrl = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}`;
@@ -729,7 +671,6 @@
                 }
             }
             
-            // 3인실 처리를 위한 개선된 학생 찾기 (미배정 제외)
             async findStudentByRoom(roomNumber) {
                 try {
                     const building = roomNumber.charAt(0);
@@ -742,19 +683,16 @@
                         const mapping = CONFIG.TRIPLE_ROOM_MAPPING[key];
                         
                         if (mapping) {
-                            // 해당 호실의 시작 행 계산
                             const roomIndex = room - mapping.startRoom;
                             const startRow = mapping.startRow + (roomIndex * 3);
                             const endRow = startRow + 2;
                             
-                            // 해당 범위의 데이터 읽기
                             const range = `B${startRow}:N${endRow}`;
                             const data = await this.readRange(range);
                             
                             const students = [];
                             for (let i = 0; i < data.length; i++) {
                                 const row = data[i];
-                                // C열에 이름이 있고 "미배정"이 아닌 경우만
                                 if (row[1] && row[1].trim() !== '미배정') {
                                     students.push({
                                         rowIndex: startRow + i,
@@ -768,7 +706,6 @@
                             return students;
                         }
                     } else {
-                        // 1-3층 (1인실) 처리 (미배정 제외)
                         const data = await this.readRange('A:N');
                         const students = [];
                         
@@ -873,6 +810,10 @@
             updateCurrentTime();
             setInterval(updateCurrentTime, 1000);
             loadSubmittedReports();
+            
+            // 동/층 변경 시 기존 보고 확인
+            document.getElementById('building').addEventListener('change', checkExistingReport);
+            document.getElementById('floor').addEventListener('change', checkExistingReport);
             
             for (let i = 0; i < 5; i++) {
                 addStudentRow();
@@ -1029,7 +970,7 @@
             
             if (building && floor) {
                 try {
-                    const rooms = Utils.generateRoomNumbers(building, floor);
+                    const rooms = generateRoomNumbers(building, floor);
                     rooms.forEach(room => {
                         const option = document.createElement('option');
                         option.value = room;
@@ -1040,6 +981,26 @@
                     console.error('호실 옵션 업데이트 오류:', error);
                 }
             }
+        }
+
+        function generateRoomNumbers(building, floor) {
+            const ranges = {
+                'A': { '1': [101, 132], '2': [201, 232], '3': [301, 332], '4': [401, 432] },
+                'B': { '1': [101, 121], '2': [201, 221], '3': [301, 321], '4': [401, 421] },
+                'C': { '1': [101, 132], '2': [201, 232], '3': [301, 332], '4': [401, 432] },
+                'D': { '1': [101, 123], '2': [201, 223], '3': [301, 323], '4': [401, 423] },
+                'E': { '1': [101, 140], '2': [201, 240], '3': [301, 340], '4': [401, 440] },
+                'F': { '1': [101, 117], '2': [201, 217], '3': [301, 317], '4': [401, 417] }
+            };
+            
+            const range = ranges[building][floor];
+            const rooms = [];
+            
+            for (let i = range[0]; i <= range[1]; i++) {
+                rooms.push(building + i.toString());
+            }
+            
+            return rooms;
         }
 
         async function updateStudentName(rowId) {
@@ -1054,18 +1015,16 @@
                     const students = await sheetsAPI.findStudentByRoom(roomNumber);
                     if (students.length > 0) {
                         students.forEach(student => {
-                            // 미배정이 아닌 학생만 표시
                             if (student.name.trim() !== '미배정') {
                                 const option = document.createElement('option');
                                 option.value = student.name;
                                 option.textContent = student.name;
-                                option.dataset.rowIndex = student.rowIndex; // 시트 행 번호 저장
+                                option.dataset.rowIndex = student.rowIndex;
                                 nameSelect.appendChild(option);
                             }
                         });
                         
                         if (nameSelect.children.length === 1) {
-                            // 미배정만 있는 경우
                             const option = document.createElement('option');
                             option.value = '';
                             option.textContent = '배정된 학생 없음';
@@ -1086,6 +1045,24 @@
             }
         }
 
+        function checkExistingReport() {
+            const building = document.getElementById('building').value;
+            const floor = document.getElementById('floor').value;
+            
+            if (building && floor) {
+                const reportKey = `${Utils.getReportPeriodId()}_${building}_${floor}`;
+                const modificationCheckbox = document.getElementById('modificationCheckbox');
+                
+                if (submittedReports.has(reportKey)) {
+                    modificationCheckbox.style.display = 'block';
+                    showAlert(`${building}동 ${floor}층에 대한 보고가 이미 제출되었습니다. 수정하려면 체크박스를 선택하세요.`, 'warning');
+                } else {
+                    modificationCheckbox.style.display = 'none';
+                    document.getElementById('isModification').checked = false;
+                }
+            }
+        }
+
         function loadSubmittedReports() {
             const stored = localStorage.getItem('submittedReports');
             if (stored) {
@@ -1098,7 +1075,6 @@
             localStorage.setItem('submittedReports', JSON.stringify([...submittedReports]));
         }
 
-        // 보고 데이터 저장 (집계용)
         function saveReportData(reportData) {
             const reportDate = Utils.getReportPeriodId();
             const storedReports = JSON.parse(localStorage.getItem('dailyReports') || '{}');
@@ -1113,7 +1089,7 @@
             localStorage.setItem('dailyReports', JSON.stringify(storedReports));
         }
 
-        // 폼 제출 처리 (개선된 버전)
+        // 폼 제출 처리
         document.getElementById('reportForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -1126,9 +1102,18 @@
             const building = formData.get('building');
             const floor = formData.get('floor');
             const manager = formData.get('manager');
+            const isModification = formData.get('isModification') === 'on';
             
             if (!building || !floor || !manager) {
                 showAlert('담당자, 동, 층을 모두 선택해주세요.', 'error');
+                return;
+            }
+            
+            const reportKey = `${Utils.getReportPeriodId()}_${building}_${floor}`;
+            
+            // 기존 보고 확인
+            if (submittedReports.has(reportKey) && !isModification) {
+                showAlert('이미 해당 동/층에 대해 보고하셨습니다. 수정하려면 수정 체크박스를 선택하세요.', 'error');
                 return;
             }
             
@@ -1144,7 +1129,6 @@
                 const name = formData.get(`studentName${i}`);
                 const status = formData.get(`studentStatus${i}`);
                 
-                // 일부만 입력된 경우 경고
                 if ((building || floor || room || name || status) && 
                     !(building && floor && room && name && status)) {
                     showAlert(`${i}번째 학생 정보가 불완전합니다. 모든 필드를 입력하거나 전체를 비워주세요.`, 'warning');
@@ -1156,37 +1140,26 @@
                 }
             }
             
-            // 중복 보고 확인
-            const reportKey = `${Utils.getReportPeriodId()}_${building}_${floor}`;
-            if (submittedReports.has(reportKey)) {
-                if (!confirm('이미 해당 동/층에 대해 보고하셨습니다. 수정하시겠습니까?')) {
-                    return;
-                }
-            }
-            
             const submitBtn = document.getElementById('submitBtn');
             const originalText = submitBtn.innerHTML;
             submitBtn.disabled = true;
             
             try {
-                // 1단계: 시작
                 submitBtn.innerHTML = '<div class="spinner"></div> 보고서 처리 중...';
                 
-                // 2단계: Google Sheets 업데이트
                 submitBtn.innerHTML = '<div class="spinner"></div> 학생 정보 업데이트 중...';
-                await submitReport(formData, reportKey);
+                await submitReport(formData, reportKey, isModification);
                 
-                // 3단계: 완료
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> 제출 완료!';
-                showAlert(`인원보고가 성공적으로 제출되었습니다. ${studentData.length > 0 ? `개별 학생 ${studentData.length}명 정보도 업데이트되었습니다.` : ''}`, 'success');
+                showAlert(`인원보고가 성공적으로 ${isModification ? '수정' : '제출'}되었습니다. ${studentData.length > 0 ? `개별 학생 ${studentData.length}명 정보도 업데이트되었습니다.` : ''}`, 'success');
                 
                 saveSubmittedReport(reportKey);
                 
-                // 폼 초기화
                 setTimeout(() => {
                     this.reset();
                     studentRowCount = 0;
                     document.getElementById('studentRows').innerHTML = '';
+                    document.getElementById('modificationCheckbox').style.display = 'none';
                     for (let i = 0; i < 5; i++) {
                         addStudentRow();
                     }
@@ -1202,10 +1175,7 @@
             }
         });
 
-        // 보고서 제출 처리 (개선된 버전)
-        async function submitReport(formData, reportKey) {
-            console.log('보고서 제출 시작');
-            
+        async function submitReport(formData, reportKey, isModification) {
             const reportData = {
                 timestamp: Utils.getCurrentTimeString(),
                 manager: formData.get('manager'),
@@ -1215,14 +1185,13 @@
                 overnight: parseInt(formData.get('overnight')) || 0,
                 outing: parseInt(formData.get('outing')) || 0,
                 checkout: parseInt(formData.get('checkout')) || 0,
+                newStudent: parseInt(formData.get('newStudent')) || 0,
                 moveIn: parseInt(formData.get('moveIn')) || 0,
                 moveOut: parseInt(formData.get('moveOut')) || 0,
                 memo: formData.get('memo') || '',
                 students: [],
-                isModification: submittedReports.has(reportKey)
+                isModification: isModification
             };
-            
-            console.log('기본 보고 데이터:', reportData);
             
             // 개별 학생 정보 수집
             for (let i = 1; i <= studentRowCount; i++) {
@@ -1236,57 +1205,31 @@
                 const status = formData.get(`studentStatus${i}`);
                 const memo = formData.get(`studentMemo${i}`);
                 
-                // 필수 정보가 모두 있는 경우만 추가
                 if (building && floor && room && name && status && name.trim() !== '미배정') {
-                    const studentData = {
-                        building,
-                        floor,
-                        room,
+                    reportData.students.push({
+                        building, floor, room,
                         name: name.trim(),
-                        status,
-                        memo: memo ? memo.trim() : ''
-                    };
-                    
-                    reportData.students.push(studentData);
-                    console.log(`개별 학생 추가: ${studentData.name} - ${studentData.status}`);
+                        status, memo: memo ? memo.trim() : ''
+                    });
                 }
             }
             
-            console.log(`총 ${reportData.students.length}명의 개별 학생 정보 수집 완료`);
-            
-            // Google Sheets 업데이트
-            showAlert('Google Sheets 업데이트 중...', 'info');
             await updateSheetsWithReport(reportData);
-            
-            // Jandi 알림 전송
-            showAlert('Jandi 알림 전송 중...', 'info');
             await sendJandiNotification(reportData);
-            
-            console.log('보고서 제출 완료');
         }
 
-        // Google Sheets 업데이트 (개선된 버전)
         async function updateSheetsWithReport(reportData) {
-            console.log('Google Sheets 업데이트 시작:', reportData);
-            
-            // 개별 학생 상태 업데이트
             for (const student of reportData.students) {
                 try {
-                    console.log(`학생 ${student.name} 상태 업데이트 시도: ${student.status}, 메모: ${student.memo}`);
                     await sheetsAPI.updateStudentStatus(student.name, student.status, student.memo);
-                    console.log(`학생 ${student.name} 상태 업데이트 성공`);
                 } catch (error) {
                     console.warn(`학생 ${student.name} 상태 업데이트 실패:`, error);
-                    // 개별 학생 업데이트 실패해도 전체 보고는 계속 진행
                 }
             }
             
-            // 보고 데이터 저장 (집계용)
             saveReportData(reportData);
-            console.log('보고 데이터 저장 완료');
         }
 
-        // Jandi 알림 전송
         async function sendJandiNotification(reportData) {
             const message = createJandiMessage(reportData);
             
@@ -1311,9 +1254,8 @@
             }
         }
 
-        // Jandi 메시지 생성 (개별 학생 정보 포함 - 개선)
         function createJandiMessage(reportData) {
-            const modificationText = reportData.isModification ? '[수정] ' : '';
+            const modificationText = reportData.isModification ? '[🔄 수정보고] ' : '';
             let message = `${modificationText}🏠 기숙사 인원보고\n\n`;
             message += `📅 보고시간: ${reportData.timestamp}\n`;
             message += `👤 담당자: ${reportData.manager}\n`;
@@ -1324,14 +1266,13 @@
             if (reportData.overnight > 0) message += `🌙 외박: ${reportData.overnight}명\n`;
             if (reportData.outing > 0) message += `🚶 외출: ${reportData.outing}명\n`;
             if (reportData.checkout > 0) message += `🚪 퇴소: ${reportData.checkout}명\n`;
+            if (reportData.newStudent > 0) message += `🆕 신규: ${reportData.newStudent}명\n`;
             if (reportData.moveIn > 0) message += `➕ 이동(입): ${reportData.moveIn}명\n`;
             if (reportData.moveOut > 0) message += `➖ 이동(출): ${reportData.moveOut}명\n`;
             
-            // 개별 학생 정보를 상태별로 그룹화하여 표시
             if (reportData.students.length > 0) {
                 message += `\n👥 개별 학생 세부사항:\n`;
                 
-                // 상태별로 그룹화
                 const groupedByStatus = {};
                 reportData.students.forEach(student => {
                     if (!groupedByStatus[student.status]) {
@@ -1340,16 +1281,11 @@
                     groupedByStatus[student.status].push(student);
                 });
                 
-                // 각 상태별로 학생들 표시
                 Object.entries(groupedByStatus).forEach(([status, students]) => {
                     const statusEmoji = {
-                        '외박': '🌙',
-                        '외출': '🚶',
-                        '퇴소': '🚪',
-                        '이동+': '➕',
-                        '이동-': '➖',
-                        '정상': '✅',
-                        '기타': '❓'
+                        '외박': '🌙', '외출': '🚶', '퇴소': '🚪',
+                        '이동+': '➕', '이동-': '➖', '정상': '✅',
+                        '신규': '🆕', '기타': '❓'
                     };
                     
                     message += `\n${statusEmoji[status] || '📝'} ${status} (${students.length}명):\n`;
@@ -1370,7 +1306,6 @@
             return message;
         }
 
-        // 알림 표시
         function showAlert(message, type = 'info') {
             const alertContainer = document.getElementById('alertContainer');
             const alertDiv = document.createElement('div');
@@ -1382,7 +1317,6 @@
             
             alertContainer.appendChild(alertDiv);
             
-            // 5초 후 자동 제거
             setTimeout(() => {
                 if (alertDiv.parentNode) {
                     alertDiv.style.opacity = '0';
@@ -1391,7 +1325,6 @@
                 }
             }, 5000);
             
-            // 스크롤을 알림으로 이동
             alertDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
     </script>
