@@ -78,8 +78,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('https://drive.google.com/uc?export=view&id=1TiM9bvMxK5K2t57P9fpt-6-U7q6_QuHl') center/80px no-repeat;
-            opacity: 0.08;
+            background: none;
+            opacity: 0;
             z-index: 0;
         }
 
@@ -628,7 +628,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('https://drive.google.com/uc?export=view&id=1TiM9bvMxK5K2t57P9fpt-6-U7q6_QuHl') center/80px no-repeat;
+            background: none;
             opacity: 0.03;
             z-index: 0;
         }
@@ -950,7 +950,11 @@
             <div class="header-content">
                 <div class="header-logo">
                     <div class="logo-container">
-                        <img src="https://drive.google.com/uc?export=view&id=1TiM9bvMxK5K2t57P9fpt-6-U7q6_QuHl" alt="시대인재 로고" class="logo-img">
+                        <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M50 10 L85 75 L15 75 Z" fill="white" stroke="white" stroke-width="2"/>
+                            <circle cx="50" cy="45" r="8" fill="#1e3c72"/>
+                            <path d="M40 55 L50 75 L60 55 Z" fill="#1e3c72"/>
+                        </svg>
                     </div>
                     <h1>시대인재 기숙사 현황</h1>
                 </div>
@@ -1109,22 +1113,22 @@
             // 정확한 호실 범위 (실제 시트 데이터 기준)
             ROOM_RANGES: {
                 'A': { 
-                    '1': [101, 132], '2': [201, 232], '3': [301, 332], '4': [401, 432] 
+                    '1': [101, 160], '2': [201, 262], '3': [301, 362], '4': [401, 432] 
                 },
                 'B': { 
-                    '1': [101, 121], '2': [201, 221], '3': [301, 321], '4': [401, 421] 
+                    '1': [101, 140], '2': [201, 241], '3': [301, 341], '4': [401, 421] 
                 },
                 'C': { 
-                    '1': [101, 161], '2': [201, 262], '3': [301, 362], '4': [401, 432] // 수정된 범위
+                    '1': [101, 161], '2': [201, 262], '3': [301, 362], '4': [401, 432]
                 },
                 'D': { 
-                    '1': [101, 123], '2': [201, 223], '3': [301, 323], '4': [401, 423] 
+                    '1': [101, 144], '2': [201, 245], '3': [301, 345], '4': [401, 423] 
                 },
                 'E': { 
-                    '1': [101, 140], '2': [201, 240], '3': [301, 340], '4': [401, 440] 
+                    '1': [101, 176], '2': [201, 278], '3': [301, 378], '4': [401, 440] 
                 },
                 'F': { 
-                    '1': [101, 117], '2': [201, 217], '3': [301, 317], '4': [401, 417] 
+                    '1': [101, 132], '2': [201, 233], '3': [301, 333], '4': [401, 417] 
                 }
             },
             
