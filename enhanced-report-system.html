@@ -1041,27 +1041,9 @@
                         return;
                     }
                     
-                    // 웹앱이 설정되지 않은 경우 직접 API 시도 (실패할 가능성 높음)
-                    console.log('웹앱이 설정되지 않음. 직접 API 시도...');
+                    // 웹앱이 설정되지 않은 경우
+                    throw new Error('Google Apps Script 웹앱이 설정되지 않았습니다.');
                     
-                    // 일반실 D, E열 리셋 시도
-                    const resetPromises = [];
-                    for (let i = 2; i <= 500; i++) { // 500행까지만
-                        resetPromises.push(this.writeRange(`D${i}`, [['']]));
-                        resetPromises.push(this.writeRange(`E${i}`, [['']]));
-                    }
-                    
-                    // 3인실 D, E열 리셋 시도
-                    for (const mapping of Object.values(CONFIG.TRIPLE_ROOM_MAPPING)) {
-                        for (let row = mapping.startRow; row <= mapping.endRow; row++) {
-                            resetPromises.push(this.writeRange(`D${row}`, [['']]));
-                            resetPromises.push(this.writeRange(`E${row}`, [['']]));
-                        }
-                    }
-                    
-                    await Promise.allSettled(resetPromises);
-                    this.clearCache();
-                    console.log('직접 API를 통한 리셋 시도 완료 (일부 실패 가능)');
                 } catch (error) {
                     console.error('상태 리셋 오류:', error);
                     throw error;
