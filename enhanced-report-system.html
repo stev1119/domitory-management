@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>기숙사 인원보고 시스템</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>시대인재 기숙사 인원보고</title>
     <style>
         * {
             margin: 0;
@@ -12,602 +11,290 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --primary-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            --secondary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --glass-bg: rgba(255, 255, 255, 0.12);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.85);
-            --text-accent: rgba(255, 255, 255, 0.95);
-            --shadow-light: 0 4px 16px rgba(0, 0, 0, 0.1);
-            --shadow-heavy: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
         body {
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--primary-gradient);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 15px;
-            color: var(--text-primary);
-            background-attachment: fixed;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.15) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
+            padding: 20px;
+            color: #333;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
-        }
-
-        /* 반응형 레이아웃 - 균형잡힌 배치 */
-        @media (min-width: 1200px) {
-            .container {
-                max-width: 1200px;
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 40px;
-                align-items: start;
-            }
-
-            .main-header {
-                grid-column: 1 / -1;
-                margin-bottom: 30px;
-            }
-
-            .reset-btn {
-                grid-column: 1 / -1;
-                max-width: 400px;
-                margin: 0 auto 30px auto;
-            }
-
-            #alertContainer {
-                grid-column: 1 / -1;
-            }
-
-            .left-column {
-                grid-column: 1;
-            }
-
-            .right-column {
-                grid-column: 2;
-            }
-
-            .form-container {
-                position: sticky;
-                top: 20px;
-                height: fit-content;
-            }
-
-            .main-header h1 {
-                font-size: 2.8rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-        }
-
-        @media (min-width: 1024px) and (max-width: 1199px) {
-            .container {
-                max-width: 1000px;
-                padding: 0 20px;
-            }
-
-            .main-header h1 {
-                font-size: 2.5rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 15px;
-            }
-
-            .reset-btn {
-                max-width: 300px;
-                margin: 0 auto 25px auto;
-            }
-        }
-
-        @media (max-width: 1023px) {
-            .container {
-                max-width: 500px;
-            }
-        }
-
-        .main-header {
-            background: var(--glass-bg);
-            backdrop-filter: blur(25px);
-            border: 2px solid var(--glass-border);
-            border-radius: 28px;
-            padding: 35px 30px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow-heavy);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .main-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: none;
-            opacity: 0;
-            z-index: 0;
-        }
-
-        .form-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: none;
-            opacity: 0;
-            z-index: 0;
-        }
-
-        .header-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .header-logo {
-            margin-bottom: 25px;
-        }
-
-        .main-header h1 {
-            font-size: 2.2rem;
-            background: linear-gradient(135deg, #ffffff 0%, #e3f2fd 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 15px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-
-        .main-header .subtitle {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-
-        .time-display {
-            background: var(--accent-gradient);
-            color: white;
-            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            display: inline-block;
-            font-weight: 700;
-            font-size: 1rem;
-            box-shadow: 0 4px 20px rgba(79, 172, 254, 0.4);
-            transition: all 0.3s ease;
-        }
-
-        .time-display:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(79, 172, 254, 0.6);
-        }
-
-        .form-container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(25px);
-            border: 2px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-light);
-            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
             overflow: hidden;
         }
 
-        .form-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: none;
-            opacity: 0.03;
-            z-index: 0;
-        }
-
-        .form-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 25px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .section-header i {
-            font-size: 1.4rem;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .section-header h2 {
-            font-size: 1.3rem;
-            color: var(--text-accent);
-            font-weight: 700;
-            letter-spacing: -0.3px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        @media (max-width: 768px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 700;
-            color: var(--text-accent);
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-            letter-spacing: 0.3px;
-        }
-
-        .form-group select,
-        .form-group input[type="text"] {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 14px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text-primary);
-            backdrop-filter: blur(10px);
-            font-weight: 500;
-        }
-
-        .form-group select option {
-            background: #2c3e50;
+        .header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            padding: 30px;
+            text-align: center;
             color: white;
-            padding: 8px;
         }
 
-        .form-group select:focus,
-        .form-group input[type="text"]:focus {
-            outline: none;
-            border-color: #4facfe;
-            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
-        .number-input-group {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 18px;
-            padding: 18px 12px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border-radius: 15px;
+            padding: 20px;
             text-align: center;
-            transition: all 0.4s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .number-input-group:hover {
-            background: rgba(255, 255, 255, 0.12);
-            transform: translateY(-3px);
-            border-color: rgba(79, 172, 254, 0.3);
-            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.15);
-        }
-
-        .number-input-group label {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-accent);
-            margin-bottom: 10px;
-            display: block;
-            letter-spacing: 0.5px;
-        }
-
-        .number-input {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .number-input button {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: var(--accent-gradient);
-            color: white;
-            border-radius: 50%;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
             cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 12px rgba(79, 172, 254, 0.4);
         }
 
-        .number-input button:hover {
-            transform: scale(1.15);
-            box-shadow: 0 5px 20px rgba(79, 172, 254, 0.6);
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
         }
 
-        .number-input input {
-            width: 60px;
-            text-align: center;
-            font-size: 1.1rem;
+        .stat-card.current { border-left: 5px solid #10b981; }
+        .stat-card.out { border-left: 5px solid #f59e0b; }
+        .stat-card.new { border-left: 5px solid #3b82f6; }
+        .stat-card.move-out { border-left: 5px solid #ef4444; }
+        .stat-card.move-in { border-left: 5px solid #8b5cf6; }
+        .stat-card.absent { border-left: 5px solid #6b7280; }
+        .stat-card.etc { border-left: 5px solid #f97316; }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
             font-weight: 700;
-            padding: 8px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            transition: all 0.3s ease;
+            color: #1f2937;
         }
 
-        .number-input input:focus {
-            border-color: #4facfe;
-            background: rgba(255, 255, 255, 0.15);
+        .stat-card input {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            text-align: center;
+            width: 100%;
             outline: none;
         }
 
-        .individual-section {
-            border-left: 4px solid #ff6b6b;
-        }
-
-        .student-row {
-            background: rgba(255, 255, 255, 0.08);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 18px;
-            padding: 20px;
-            margin-bottom: 15px;
-            position: relative;
-            transition: all 0.4s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .student-row:hover {
-            background: rgba(255, 255, 255, 0.12);
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-light);
-        }
-
-        .student-row.has-data {
-            border-color: #28a745;
-            background: rgba(40, 167, 69, 0.15);
-            box-shadow: 0 4px 20px rgba(40, 167, 69, 0.2);
-        }
-
-        .delete-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: var(--warning-gradient);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 12px rgba(240, 147, 251, 0.4);
-        }
-
-        .delete-btn:hover {
-            transform: rotate(90deg) scale(1.15);
-            box-shadow: 0 5px 20px rgba(240, 147, 251, 0.6);
-        }
-
-        .student-grid {
+        .controls {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 15px;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 15px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
-        @media (max-width: 600px) {
-            .student-grid {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
+        .control-group {
+            display: flex;
+            flex-direction: column;
         }
 
-        .add-btn {
-            background: var(--success-gradient);
-            color: white;
-            border: none;
-            padding: 16px 24px;
-            border-radius: 18px;
-            cursor: pointer;
+        .control-group label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .control-group select {
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
             font-size: 1rem;
-            font-weight: 700;
-            margin: 20px 0;
+            background: white;
             transition: all 0.3s ease;
-            width: 100%;
-            box-shadow: 0 4px 20px rgba(17, 153, 142, 0.4);
-            letter-spacing: 0.3px;
+            outline: none;
         }
 
-        .add-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(17, 153, 142, 0.6);
+        .control-group select:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .students-section {
+            margin-top: 30px;
+        }
+
+        .students-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .students-grid {
+            display: grid;
+            gap: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 10px;
+        }
+
+        .student-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            display: grid;
+            grid-template-columns: 100px 1fr 150px 150px 1fr;
+            gap: 15px;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .student-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .room-number {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #4f46e5;
+            text-align: center;
+            padding: 8px;
+            background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+            border-radius: 8px;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 1rem;
+        }
+
+        .student-status select {
+            padding: 8px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: white;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .student-status select:focus {
+            border-color: #4f46e5;
+        }
+
+        .student-memo input {
+            padding: 8px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            width: 100%;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .student-memo input:focus {
+            border-color: #4f46e5;
+        }
+
+        .submit-section {
+            margin-top: 40px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .submit-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #4f46e5;
         }
 
         .submit-btn {
-            background: var(--accent-gradient);
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
             color: white;
             border: none;
-            padding: 18px 30px;
-            border-radius: 20px;
+            padding: 15px 40px;
+            border-radius: 12px;
             font-size: 1.1rem;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
-            width: 100%;
-            margin-top: 25px;
             transition: all 0.3s ease;
-            box-shadow: var(--shadow-light);
-            letter-spacing: 0.3px;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
         }
 
         .submit-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-heavy);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
         }
 
         .submit-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-            transform: none;
         }
 
-        .reset-btn {
-            background: var(--warning-gradient);
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            border-radius: 16px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(240, 147, 251, 0.4);
-        }
-
-        .reset-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(240, 147, 251, 0.6);
-        }
-
-        .modification-checkbox {
-            background: rgba(255, 193, 7, 0.15);
-            border: 2px solid rgba(255, 193, 7, 0.3);
-            border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 25px;
+        .loading {
+            display: none;
             text-align: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .modification-checkbox label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-accent);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .modification-checkbox label:hover {
-            transform: scale(1.02);
-        }
-
-        .modification-checkbox input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: #ffc107;
-            transform: scale(1.2);
-        }
-
-        .alert {
-            padding: 16px 20px;
-            border-radius: 16px;
-            margin: 20px 0;
-            border: none;
-            font-weight: 600;
-            font-size: 1rem;
-            backdrop-filter: blur(15px);
-            box-shadow: var(--shadow-light);
-            transition: all 0.3s ease;
-        }
-
-        .alert:hover {
-            transform: translateY(-2px);
-        }
-
-        .alert.success {
-            background: rgba(40, 167, 69, 0.15);
-            color: #d4edda;
-            border: 2px solid rgba(40, 167, 69, 0.3);
-        }
-
-        .alert.error {
-            background: rgba(220, 53, 69, 0.15);
-            color: #f8d7da;
-            border: 2px solid rgba(220, 53, 69, 0.3);
-        }
-
-        .alert.warning {
-            background: rgba(255, 193, 7, 0.15);
-            color: #fff3cd;
-            border: 2px solid rgba(255, 193, 7, 0.3);
-        }
-
-        .alert.info {
-            background: rgba(79, 172, 254, 0.15);
-            color: #d1ecf1;
-            border: 2px solid rgba(79, 172, 254, 0.3);
+            padding: 20px;
         }
 
         .spinner {
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top: 2px solid #ffffff;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #4f46e5;
             border-radius: 50%;
-            width: 16px;
-            height: 16px;
             animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-right: 8px;
+            margin: 0 auto 10px;
         }
 
         @keyframes spin {
@@ -615,1309 +302,811 @@
             100% { transform: rotate(360deg); }
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-        }
-
-        .modal-content {
-            background: var(--glass-bg);
-            backdrop-filter: blur(25px);
-            margin: 10% auto;
-            padding: 30px;
-            border-radius: 24px;
-            width: 90%;
-            max-width: 450px;
-            border: 2px solid var(--glass-border);
-            box-shadow: var(--shadow-heavy);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 15px;
-        }
-
-        .modal-header h3 {
-            color: var(--text-accent);
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        .close {
-            color: var(--text-secondary);
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .close:hover {
-            color: #ff4757;
-            background: rgba(255, 71, 87, 0.15);
-            transform: rotate(90deg);
-        }
-
-        .password-input {
-            width: 100%;
-            padding: 14px 18px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 14px;
-            font-size: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
             font-weight: 500;
+            display: none;
         }
 
-        .password-input:focus {
-            outline: none;
-            border-color: #4facfe;
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
         }
 
-        .modal-btn {
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
-            padding: 14px 24px;
-            border-radius: 14px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(79, 172, 254, 0.4);
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
         }
 
-        .modal-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(79, 172, 254, 0.6);
-        }
-
-        /* 스크롤바 스타일링 */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        /* 모바일 최적화 */
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
             }
 
-            .main-header {
-                padding: 25px 20px;
-            }
-
-            .main-header h1 {
-                font-size: 1.8rem;
-            }
-
-            .logo-container {
-                width: 60px;
-                height: 60px;
-            }
-
-            .form-container {
+            .header {
                 padding: 20px;
             }
 
-            .number-input button {
-                width: 28px;
-                height: 28px;
-                font-size: 0.9rem;
+            .header h1 {
+                font-size: 2rem;
             }
 
-            .number-input input {
-                width: 50px;
-                font-size: 1rem;
+            .main-content {
+                padding: 20px;
             }
 
-            .student-row {
-                padding: 16px;
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 10px;
             }
 
-            .modal-content {
-                width: 95%;
-                padding: 25px 20px;
+            .controls {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .student-card {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .students-grid {
+                max-height: 400px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 메인 헤더 -->
-        <div class="main-header">
-            <div class="header-content">
-                <div class="header-logo">
-                    <h1>시대인재 기숙사 인원보고</h1>
-                </div>
-                <p class="subtitle">매일 22:00 ~ 다음날 21:59까지 보고 가능</p>
-                <div class="time-display">
-                    <i class="fas fa-clock"></i> <span id="currentTime"></span>
-                </div>
-            </div>
+        <div class="header">
+            <h1>🏢 시대인재 기숙사 인원보고</h1>
+            <p>실시간 인원 보고 시스템 </p>
         </div>
 
-        <!-- 리셋 버튼 -->
-        <button class="reset-btn" onclick="showResetModal()">
-            <i class="fas fa-undo"></i> 시트 데이터 리셋 (관리자)
-        </button>
-
-        <div id="alertContainer"></div>
-
-        <div class="left-column">
-            <form id="reportForm">
-                <!-- 기본 보고 정보 -->
-                <div class="form-container">
-                    <div class="form-content">
-                        <div class="section-header">
-                            <i class="fas fa-user-tie"></i>
-                            <h2>기본 정보</h2>
-                        </div>
-                        
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="manager">담당자</label>
-                                <select id="manager" name="manager" required>
-                                    <option value="">선택</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="building">동</label>
-                                <select id="building" name="building" required>
-                                    <option value="">선택</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="floor">층</label>
-                                <select id="floor" name="floor" required>
-                                    <option value="">선택</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- 수정 보고 체크박스 -->
-                        <div id="modificationCheckbox" class="modification-checkbox" style="display: none;">
-                            <label>
-                                <input type="checkbox" id="isModification" name="isModification">
-                                <i class="fas fa-edit"></i>
-                                기존 보고 수정
-                            </label>
-                        </div>
-
-                        <div class="stats-grid">
-                            <div class="number-input-group">
-                                <label>현재원</label>
-                                <div class="number-input">
-                                    <button type="button" onclick="decreaseValue('currentCount')">-</button>
-                                    <input type="number" id="currentCount" name="currentCount" value="0" min="0">
-                                    <button type="button" onclick="increaseValue('currentCount')">+</button>
-                                </div>
-                            </div>
-                            <div class="number-input-group">
-                                <label>외박</label>
-                                <div class="number-input">
-                                    <button type="button" onclick="decreaseValue('overnight')">-</button>
-                                    <input type="number" id="overnight" name="overnight" value="0" min="0">
-                                    <button type="button" onclick="increaseValue('overnight')">+</button>
-                                </div>
-                            </div>
-                            <div class="number-input-group">
-                                <label>외출</label>
-                                <div class="number-input">
-                                    <button type="button" onclick="decreaseValue('outing')">-</button>
-                                    <input type="number" id="outing" name="outing" value="0" min="0">
-                                    <button type="button" onclick="increaseValue('outing')">+</button>
-                                </div>
-                            </div>
-                            <div class="number-input-group">
-                                <label>퇴소</label>
-                                <div class="number-input">
-                                    <button type="button" onclick="decreaseValue('checkout')">-</button>
-                                    <input type="number" id="checkout" name="checkout" value="0" min="0">
-                                    <button type="button" onclick="increaseValue('checkout')">+</button>
-                                </div>
-                            </div>
-                            <div class="number-input-group">
-                                <label>신규</label>
-                                <div class="number-input">
-                                    <button type="button" onclick="decreaseValue('newStudent')">-</button>
-                                    <input type="number" id="newStudent" name="newStudent" value="0" min="0">
-                                    <button type="button" onclick="increaseValue('newStudent')">+</button>
-                                </div>
-                            </div>
-                            <div class="number-input-group">
-                                <label>이동OUT</label>
-                                <div class="number-input">
-                                    <button type="button" onclick="decreaseValue('moveOut')">-</button>
-                                    <input type="number" id="moveOut" name="moveOut" value="0" min="0">
-                                    <button type="button" onclick="increaseValue('moveOut')">+</button>
-                                </div>
-                            </div>
-                            <div class="number-input-group">
-                                <label>이동IN</label>
-                                <div class="number-input">
-                                    <button type="button" onclick="decreaseValue('moveIn')">-</button>
-                                    <input type="number" id="moveIn" name="moveIn" value="0" min="0">
-                                    <button type="button" onclick="increaseValue('moveIn')">+</button>
-                                </div>
-                            </div>
-                            <div class="number-input-group">
-                                <label>기타</label>
-                                <div class="number-input">
-                                    <button type="button" onclick="decreaseValue('etc')">-</button>
-                                    <input type="number" id="etc" name="etc" value="0" min="0">
-                                    <button type="button" onclick="increaseValue('etc')">+</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="memo">기타 사항</label>
-                            <input type="text" id="memo" name="memo" placeholder="기타 내용을 입력하세요">
-                        </div>
-                    </div>
+        <div class="main-content">
+            <!-- 인원 현황 카드 -->
+            <div class="stats-grid">
+                <div class="stat-card current">
+                    <h3>현재원</h3>
+                    <input type="number" id="current-count" class="number" value="0" min="0">
                 </div>
-
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <i class="fas fa-paper-plane"></i> 인원보고 제출
-                </button>
-            </form>
-        </div>
-
-        <div class="right-column">
-            <!-- 개별 학생 정보 입력 -->
-            <div class="form-container individual-section">
-                <div class="form-content">
-                    <div class="section-header">
-                        <i class="fas fa-users"></i>
-                        <h2>개별 학생 정보</h2>
-                    </div>
-                    <div id="studentRows">
-                        <!-- 학생 행들이 동적으로 추가될 예정 -->
-                    </div>
-                    <button type="button" class="add-btn" onclick="addStudentRow()">
-                        <i class="fas fa-plus"></i> 학생 추가
-                    </button>
+                <div class="stat-card out">
+                    <h3>외박</h3>
+                    <input type="number" id="out-count" class="number" value="0" min="0">
+                </div>
+                <div class="stat-card new">
+                    <h3>신규</h3>
+                    <input type="number" id="new-count" class="number" value="0" min="0">
+                </div>
+                <div class="stat-card move-out">
+                    <h3>이동-</h3>
+                    <input type="number" id="move-out-count" class="number" value="0" min="0">
+                </div>
+                <div class="stat-card move-in">
+                    <h3>이동+</h3>
+                    <input type="number" id="move-in-count" class="number" value="0" min="0">
+                </div>
+                <div class="stat-card absent">
+                    <h3>등미</h3>
+                    <input type="number" id="absent-count" class="number" value="0" min="0">
+                </div>
+                <div class="stat-card etc">
+                    <h3>퇴소</h3>
+                    <input type="number" id="etc-count" class="number" value="0" min="0">
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- 리셋 모달 -->
-    <div id="resetModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>데이터 리셋</h3>
-                <span class="close" onclick="closeResetModal()">&times;</span>
+            <!-- 선택 컨트롤 -->
+            <div class="controls">
+                <div class="control-group">
+                    <label>담당자</label>
+                    <select id="manager-select">
+                        <option value="">담당자 선택</option>
+                        <option value="이영운">이영운</option>
+                        <option value="김혜정">김혜정</option>
+                        <option value="이시우">이시우</option>
+                        <option value="고승완">고승완</option>
+                        <option value="남인달">남인달</option>
+                        <option value="조영권">조영권</option>
+                        <option value="황민철">황민철</option>
+                        <option value="김건희">김건희</option>
+                        <option value="강지훈">강지훈</option>
+                        <option value="송인수">송인수</option>
+                        <option value="김영현">김영현</option>
+                        <option value="이상민">이상민</option>
+                        <option value="나정우">나정우</option>
+                        <option value="홍성모">홍성모</option>
+                        <option value="진정현">진정현</option>
+                        <option value="원현주">원현주</option>
+                        <option value="김정아">김정아</option>
+                        <option value="김지현">김지현</option>
+                        <option value="김미경">김미경</option>
+                        <option value="유나경">유나경</option>
+                        <option value="이은영">이은영</option>
+                        <option value="최문규">최문규</option>
+                        <option value="윤영호">윤영호</option>
+                        <option value="김석진">김석진</option>
+                        <option value="신규1">신규1</option>
+                        <option value="신규2">신규2</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>동</label>
+                    <select id="building-select">
+                        <option value="">동 선택</option>
+                        <option value="A">A동 (남학생)</option>
+                        <option value="B">B동 (남학생)</option>
+                        <option value="C">C동 (남학생)</option>
+                        <option value="D">D동 (여학생)</option>
+                        <option value="E">E동 (여학생)</option>
+                        <option value="F">F동 (남학생)</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>층</label>
+                    <select id="floor-select">
+                        <option value="">층 선택</option>
+                        <option value="1">1층 (1인실)</option>
+                        <option value="2">2층 (1인실)</option>
+                        <option value="3">3층 (1인실)</option>
+                        <option value="4">4층 (3인실)</option>
+                    </select>
+                </div>
             </div>
-            <div>
-                <label style="color: var(--text-accent); font-size: 1rem; margin-bottom: 10px; display: block; font-weight: 700;">관리자 비밀번호</label>
-                <input type="password" id="resetPassword" class="password-input" placeholder="비밀번호를 입력하세요">
-                <button type="button" class="modal-btn" onclick="executeReset()">
-                    <i class="fas fa-trash"></i> 시트 D,E열 리셋 실행
+
+            <!-- 학생 정보 섹션 -->
+            <div class="students-section" id="students-section" style="display: none;">
+                <div class="students-header">
+                    <h3>학생 현황</h3>
+                    <span id="selected-info"></span>
+                </div>
+                <div class="students-grid" id="students-grid">
+                    <!-- 학생 카드들이 여기에 동적으로 추가됩니다 -->
+                </div>
+            </div>
+
+            <!-- 제출 섹션 -->
+            <div class="submit-section">
+                <div class="submit-options">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="is-modification">
+                        <label for="is-modification">수정보고</label>
+                    </div>
+                </div>
+                <button class="submit-btn" id="submit-btn" onclick="submitReport()">
+                    📋 인원보고 제출
                 </button>
             </div>
+
+            <!-- 로딩 및 메시지 -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>처리 중...</p>
+            </div>
+            <div class="message" id="message"></div>
         </div>
     </div>
 
     <script>
-        // CONFIG 설정 (정확한 호실 범위로 수정)
-        const CONFIG = {
-            SHEET_ID: '1cASz2h4Dd13H6vhdKAPHOFdf5BMsFjaFledqVbzpP8I',
-            SHEET_NAME: 'yulee',
-            API_KEY: 'AIzaSyA1uY-EDvpxvxqyXTDwjNpS2ugYXQ3igtk',
-            
-            // Google Apps Script 웹앱 URL (실제 배포된 URL)
-            WEBAPP_URL: 'https://script.google.com/macros/s/AKfycbyqOma-J5J44BewIq9GeEvYjq0390UA0jm7prZbjjGQ5xjZi-mxojOlxv_I6c7Not67/exec',
-            
-            JANDI_WEBHOOK: 'https://wh.jandi.com/connect-api/webhook/29522216/3d9603c3b428b386c0d640758e236cb4',
-            
-            MANAGERS: [
-                '이영운', '김혜정', '이시우', '고승완', '남인달',
-                '조영권', '황민철', '강지훈', '김건희', '송인수',
-                '김영현', '김미경', '유나경', '진정현', '원현주',
-                '김지현', '김정아', '신규1', '신규2', '신규3',
-                '신규4', '신규5', '신규6', '신규7'
-            ],
-            
-            BUILDINGS: ['A', 'B', 'C', 'D', 'E', 'F'],
-            FLOORS: [1, 2, 3, 4],
-            
-            GENDER_BY_BUILDING: {
-                'A': '남', 'B': '남', 'C': '남', 'F': '남',
-                'D': '여', 'E': '여'
-            },
-            
-            // 정확한 호실 범위 (실제 시트 데이터 기준)
-            ROOM_RANGES: {
-                'A': { 
-                    '1': [101, 160], '2': [201, 262], '3': [301, 362], '4': [401, 432] 
-                },
-                'B': { 
-                    '1': [101, 140], '2': [201, 241], '3': [301, 341], '4': [401, 421] 
-                },
-                'C': { 
-                    '1': [101, 161], '2': [201, 262], '3': [301, 362], '4': [401, 432]
-                },
-                'D': { 
-                    '1': [101, 144], '2': [201, 245], '3': [301, 345], '4': [401, 423] 
-                },
-                'E': { 
-                    '1': [101, 176], '2': [201, 278], '3': [301, 378], '4': [401, 440] 
-                },
-                'F': { 
-                    '1': [101, 132], '2': [201, 233], '3': [301, 333], '4': [401, 417] 
-                }
-            },
-            
-            STATUS_TYPES: [
-                '외박', '외출', '퇴소', '이동+', '이동-', '정상', '신규', '기타'
-            ],
-            
-            REPORT_START_HOUR: 22,
-            REPORT_END_HOUR: 21,
-            REPORT_END_MINUTE: 59,
-            
-            RESET_PASSWORD: '3825'
-        };
-
-        // Utils 클래스
-        const Utils = {
-            isValidReportTime() {
-                const now = new Date();
-                const hour = now.getHours();
-                const minute = now.getMinutes();
-                
-                return hour >= CONFIG.REPORT_START_HOUR || 
-                       (hour < CONFIG.REPORT_END_HOUR) || 
-                       (hour === CONFIG.REPORT_END_HOUR && minute <= CONFIG.REPORT_END_MINUTE);
-            },
-            
-            getReportPeriodId() {
-                const now = new Date();
-                const hour = now.getHours();
-                
-                if (hour < CONFIG.REPORT_START_HOUR) {
-                    now.setDate(now.getDate() - 1);
-                }
-                
-                return now.toISOString().split('T')[0];
-            },
-            
-            getCurrentTimeString() {
-                return new Date().toLocaleString('ko-KR', {
-                    timeZone: 'Asia/Seoul',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            }
-        };
-
-        // SheetsAPI 클래스 (구글 시트 연동 개선)
-        class SheetsAPI {
-            constructor() {
-                this.baseUrl = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}`;
-                this.cache = new Map();
-                this.cacheExpiry = 5 * 60 * 1000;
-            }
-            
-            async readRange(range) {
-                const cacheKey = `read_${range}`;
-                const cached = this.cache.get(cacheKey);
-                
-                if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
-                    return cached.data;
-                }
-                
-                try {
-                    const url = `${this.baseUrl}/values/${CONFIG.SHEET_NAME}!${range}?key=${CONFIG.API_KEY}`;
-                    const response = await fetch(url);
-                    
-                    if (!response.ok) {
-                        throw new Error(`시트 읽기 실패: ${response.status} - ${response.statusText}`);
-                    }
-                    
-                    const data = await response.json();
-                    const result = data.values || [];
-                    
-                    this.cache.set(cacheKey, {
-                        data: result,
-                        timestamp: Date.now()
-                    });
-                    
-                    return result;
-                } catch (error) {
-                    console.error('시트 읽기 오류:', error);
-                    throw error;
-                }
-            }
-            
-            async findStudentByRoom(roomNumber) {
-                try {
-                    const building = roomNumber.charAt(0);
-                    const floor = roomNumber.charAt(1);
-                    const room = parseInt(roomNumber.substring(1));
-                    
-                    // 전체 데이터에서 B열(호실번호) 기준으로 검색
-                    const data = await this.readRange('A1:N2000');
-                    const students = [];
-                    
-                    for (let i = 1; i < data.length; i++) {
-                        const row = data[i];
-                        if (row[1] === roomNumber && row[2] && row[2].trim() !== '미배정') {
-                            students.push({
-                                rowIndex: i + 1,
-                                roomNumber: row[1] || '',
-                                name: row[2] || '',
-                                status: row[3] || '',
-                                memo: row[4] || ''
-                            });
-                        }
-                    }
-                    return students;
-                } catch (error) {
-                    console.error('학생 검색 오류:', error);
-                    throw error;
-                }
-            }
-            
-            // 학생 상태 업데이트 함수 (웹앱 사용)
-            async updateStudentStatus(name, status, memo = '') {
-                try {
-                    console.log(`학생 상태 업데이트 시작: ${name} -> ${status}`);
-                    
-                    // 웹앱 URL이 설정되어 있으면 웹앱 사용
-                    if (CONFIG.WEBAPP_URL && CONFIG.WEBAPP_URL.includes('script.google.com')) {
-                        return await this.updateViaWebApp(name, status, memo);
-                    }
-                    
-                    // 아니면 직접 API 호출 (읽기 전용이지만 시도)
-                    return await this.updateViaDirectAPI(name, status, memo);
-                    
-                } catch (error) {
-                    console.error('학생 상태 업데이트 오류:', error);
-                    // 에러가 나도 로컬 스토리지에 저장
-                    this.saveToLocalStorage(name, status, memo);
-                    throw error;
-                }
-            }
-            
-            // 웹앱을 통한 업데이트
-            async updateViaWebApp(name, status, memo) {
-                try {
-                    const response = await fetch(CONFIG.WEBAPP_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            action: 'updateStudent',
-                            name: name,
-                            status: status === '정상' ? '' : status,
-                            memo: memo || ''
-                        })
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`웹앱 호출 실패: ${response.status}`);
-                    }
-                    
-                    const result = await response.json();
-                    if (result.error) {
-                        throw new Error(result.error);
-                    }
-                    
-                    this.clearCache();
-                    return result;
-                } catch (error) {
-                    console.error('웹앱 업데이트 오류:', error);
-                    throw error;
-                }
-            }
-            
-            // 직접 API를 통한 업데이트 (폴백)
-            async updateViaDirectAPI(name, status, memo) {
-                // 먼저 일반실에서 찾기
-                const data = await this.readRange('A:E');
-                
-                for (let i = 1; i < data.length; i++) {
-                    const row = data[i];
-                    if (row[2] === name && row[2].trim() !== '미배정') {
-                        console.log(`학생 발견: 행 ${i + 1}`);
-                        
-                        // 간단한 방식으로 업데이트 시도
-                        await this.writeRange(`D${i + 1}`, [[status === '정상' ? '' : status]]);
-                        if (memo !== undefined) {
-                            await this.writeRange(`E${i + 1}`, [[memo]]);
-                        }
-                        return { rowIndex: i + 1, name: row[2] };
-                    }
-                }
-                
-                throw new Error(`학생을 찾을 수 없습니다: ${name}`);
-            }
-            
-            // 로컬 스토리지에 백업 저장
-            saveToLocalStorage(name, status, memo) {
-                const updates = JSON.parse(localStorage.getItem('pendingUpdates') || '[]');
-                updates.push({
-                    name,
-                    status,
-                    memo,
-                    timestamp: new Date().toISOString()
-                });
-                localStorage.setItem('pendingUpdates', JSON.stringify(updates));
-                console.log('로컬 스토리지에 백업 저장됨:', { name, status, memo });
-            }
-            
-            async resetAllStatuses() {
-                try {
-                    console.log('모든 상태 리셋 시작...');
-                    
-                    // 웹앱 URL이 설정되어 있으면 웹앱 사용
-                    if (CONFIG.WEBAPP_URL && CONFIG.WEBAPP_URL.includes('script.google.com') && !CONFIG.WEBAPP_URL.includes('YOUR_WEBAPP_ID')) {
-                        const response = await fetch(CONFIG.WEBAPP_URL, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                action: 'resetAll'
-                            })
-                        });
-                        
-                        if (!response.ok) {
-                            throw new Error(`웹앱 호출 실패: ${response.status}`);
-                        }
-                        
-                        const result = await response.json();
-                        if (result.error) {
-                            throw new Error(result.error);
-                        }
-                        
-                        this.clearCache();
-                        console.log('웹앱을 통한 리셋 완료');
-                        return;
-                    }
-                    
-                    // 웹앱이 설정되지 않은 경우
-                    throw new Error('Google Apps Script 웹앱이 설정되지 않았습니다.');
-                    
-                } catch (error) {
-                    console.error('상태 리셋 오류:', error);
-                    throw error;
-                }
-            }
-            
-            async updateCell(row, col, value) {
-                const range = `${this.columnToLetter(col)}${row}`;
-                return await this.writeRange(range, [[value]]);
-            }
-            
-            async writeRange(range, values) {
-                try {
-                    const url = `${this.baseUrl}/values/${CONFIG.SHEET_NAME}!${range}?valueInputOption=RAW&key=${CONFIG.API_KEY}`;
-                    
-                    const response = await fetch(url, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            values: values
-                        })
-                    });
-                    
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        throw new Error(`시트 쓰기 실패: ${response.status} - ${errorText}`);
-                    }
-                    
-                    this.clearCache();
-                    return await response.json();
-                } catch (error) {
-                    console.error('시트 쓰기 오류:', error);
-                    throw error;
-                }
-            }
-            
-            columnToLetter(col) {
-                let letter = '';
-                while (col > 0) {
-                    col--;
-                    letter = String.fromCharCode(65 + (col % 26)) + letter;
-                    col = Math.floor(col / 26);
-                }
-                return letter;
-            }
-            
-            clearCache() {
-                this.cache.clear();
-            }
-        }
-
         // 전역 변수
-        const sheetsAPI = new SheetsAPI();
-        let studentRowCount = 0;
-        let submittedReports = new Set();
+        let sheetsData = [];
+        let currentStudents = [];
+        let lastReportDate = {};
 
-        // 페이지 초기화
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeForm();
-            updateCurrentTime();
-            setInterval(updateCurrentTime, 1000);
-            loadSubmittedReports();
-            
-            // 동/층 변경 시 기존 보고 확인
-            document.getElementById('building').addEventListener('change', checkExistingReport);
-            document.getElementById('floor').addEventListener('change', checkExistingReport);
-            
-            // 초기 학생 행 2개 추가
-            for (let i = 0; i < 2; i++) {
-                addStudentRow();
+        // 기숙사 호실 범위 정의
+        const dormitoryRanges = {
+            'A': {
+                '1': { start: 101, end: 160 },
+                '2': { start: 201, end: 262 },
+                '3': { start: 301, end: 362 },
+                '4': { start: 401, end: 432 }
+            },
+            'B': {
+                '1': { start: 101, end: 140 },
+                '2': { start: 201, end: 241 },
+                '3': { start: 301, end: 341 },
+                '4': { start: 401, end: 421 }
+            },
+            'C': {
+                '1': { start: 101, end: 161 },
+                '2': { start: 201, end: 262 },
+                '3': { start: 301, end: 362 },
+                '4': { start: 401, end: 432 }
+            },
+            'D': {
+                '1': { start: 101, end: 144 },
+                '2': { start: 201, end: 245 },
+                '3': { start: 301, end: 345 },
+                '4': { start: 401, end: 423 }
+            },
+            'E': {
+                '1': { start: 101, end: 176 },
+                '2': { start: 201, end: 278 },
+                '3': { start: 301, end: 378 },
+                '4': { start: 401, end: 440 }
+            },
+            'F': {
+                '1': { start: 101, end: 132 },
+                '2': { start: 201, end: 233 },
+                '3': { start: 301, end: 333 },
+                '4': { start: 401, end: 417 }
             }
-        });
+        };
 
-        function initializeForm() {
-            const managerSelect = document.getElementById('manager');
-            CONFIG.MANAGERS.forEach(manager => {
-                const option = document.createElement('option');
-                option.value = manager;
-                option.textContent = manager;
-                managerSelect.appendChild(option);
-            });
-
-            const buildingSelect = document.getElementById('building');
-            CONFIG.BUILDINGS.forEach(building => {
-                const option = document.createElement('option');
-                option.value = building;
-                option.textContent = building + '동';
-                buildingSelect.appendChild(option);
-            });
-
-            const floorSelect = document.getElementById('floor');
-            CONFIG.FLOORS.forEach(floor => {
-                const option = document.createElement('option');
-                option.value = floor;
-                option.textContent = floor + '층';
-                floorSelect.appendChild(option);
-            });
-        }
-
-        function updateCurrentTime() {
-            document.getElementById('currentTime').textContent = Utils.getCurrentTimeString();
-        }
-
-        function increaseValue(fieldId) {
-            const input = document.getElementById(fieldId);
-            input.value = parseInt(input.value) + 1;
-            input.style.transform = 'scale(1.1)';
-            setTimeout(() => input.style.transform = 'scale(1)', 200);
-        }
-
-        function decreaseValue(fieldId) {
-            const input = document.getElementById(fieldId);
-            const currentValue = parseInt(input.value);
-            if (currentValue > 0) {
-                input.value = currentValue - 1;
-                input.style.transform = 'scale(1.1)';
-                setTimeout(() => input.style.transform = 'scale(1)', 200);
-            }
-        }
-
-        function addStudentRow() {
-            studentRowCount++;
-            const studentRows = document.getElementById('studentRows');
-            
-            const rowDiv = document.createElement('div');
-            rowDiv.className = 'student-row';
-            rowDiv.id = `studentRow${studentRowCount}`;
-            
-            rowDiv.innerHTML = `
-                <button type="button" class="delete-btn" onclick="removeStudentRow(${studentRowCount})" title="삭제">
-                    <i class="fas fa-times"></i>
-                </button>
-                
-                <div class="student-grid">
-                    <div class="form-group">
-                        <label>동</label>
-                        <select name="studentBuilding${studentRowCount}" onchange="updateRoomOptions(${studentRowCount})">
-                            <option value="">선택</option>
-                            ${CONFIG.BUILDINGS.map(b => `<option value="${b}">${b}동</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>층</label>
-                        <select name="studentFloor${studentRowCount}" onchange="updateRoomOptions(${studentRowCount})">
-                            <option value="">선택</option>
-                            ${CONFIG.FLOORS.map(f => `<option value="${f}">${f}층</option>`).join('')}
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="student-grid">
-                    <div class="form-group">
-                        <label>기숙사</label>
-                        <select name="studentRoom${studentRowCount}" onchange="updateStudentName(${studentRowCount})">
-                            <option value="">선택</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>이름</label>
-                        <select name="studentName${studentRowCount}" onchange="checkRowData(${studentRowCount})">
-                            <option value="">선택</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="student-grid">
-                    <div class="form-group">
-                        <label>상태</label>
-                        <select name="studentStatus${studentRowCount}" onchange="checkRowData(${studentRowCount})">
-                            <option value="">선택</option>
-                            ${CONFIG.STATUS_TYPES.map(s => `<option value="${s}">${s}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>메모</label>
-                        <input type="text" name="studentMemo${studentRowCount}" placeholder="메모" onchange="checkRowData(${studentRowCount})">
-                    </div>
-                </div>
-            `;
-            
-            studentRows.appendChild(rowDiv);
-        }
-
-        function removeStudentRow(rowId) {
-            const row = document.getElementById(`studentRow${rowId}`);
-            if (row) {
-                row.style.transform = 'scale(0)';
-                row.style.opacity = '0';
-                setTimeout(() => row.remove(), 300);
-            }
-        }
-
-        function checkRowData(rowId) {
-            const row = document.getElementById(`studentRow${rowId}`);
-            const name = document.querySelector(`select[name="studentName${rowId}"]`).value;
-            const status = document.querySelector(`select[name="studentStatus${rowId}"]`).value;
-            
-            if (name && status) {
-                row.classList.add('has-data');
-            } else {
-                row.classList.remove('has-data');
-            }
-        }
-
-        async function updateRoomOptions(rowId) {
-            const buildingSelect = document.querySelector(`select[name="studentBuilding${rowId}"]`);
-            const floorSelect = document.querySelector(`select[name="studentFloor${rowId}"]`);
-            const roomSelect = document.querySelector(`select[name="studentRoom${rowId}"]`);
-            
-            const building = buildingSelect.value;
-            const floor = floorSelect.value;
-            
-            roomSelect.innerHTML = '<option value="">선택</option>';
-            
-            if (building && floor) {
-                try {
-                    const rooms = generateRoomNumbers(building, floor);
-                    rooms.forEach(room => {
-                        const option = document.createElement('option');
-                        option.value = room;
-                        option.textContent = room;
-                        roomSelect.appendChild(option);
-                    });
-                } catch (error) {
-                    console.error('호실 옵션 업데이트 오류:', error);
-                }
-            }
-        }
-
-        function generateRoomNumbers(building, floor) {
-            const range = CONFIG.ROOM_RANGES[building] && CONFIG.ROOM_RANGES[building][floor];
-            if (!range) return [];
-            
-            const rooms = [];
-            for (let i = range[0]; i <= range[1]; i++) {
-                rooms.push(building + i.toString());
-            }
-            
-            console.log(`${building}동 ${floor}층 호실 생성:`, rooms.length, '개');
-            return rooms;
-        }
-
-        async function updateStudentName(rowId) {
-            const roomSelect = document.querySelector(`select[name="studentRoom${rowId}"]`);
-            const nameSelect = document.querySelector(`select[name="studentName${rowId}"]`);
-            
-            const roomNumber = roomSelect.value;
-            nameSelect.innerHTML = '<option value="">선택</option>';
-            
-            if (roomNumber) {
-                try {
-                    console.log(`${roomNumber} 호실의 학생 조회 중...`);
-                    const students = await sheetsAPI.findStudentByRoom(roomNumber);
-                    
-                    if (students.length > 0) {
-                        students.forEach(student => {
-                            if (student.name.trim() !== '미배정' && student.name.trim() !== '') {
-                                const option = document.createElement('option');
-                                option.value = student.name;
-                                option.textContent = student.name;
-                                option.dataset.rowIndex = student.rowIndex;
-                                nameSelect.appendChild(option);
-                            }
-                        });
-                        
-                        console.log(`${roomNumber}에서 ${students.length}명 발견`);
-                        
-                        if (nameSelect.children.length === 1) {
-                            const option = document.createElement('option');
-                            option.value = '';
-                            option.textContent = '배정된 학생 없음';
-                            option.disabled = true;
-                            nameSelect.appendChild(option);
-                        }
-                    } else {
-                        const option = document.createElement('option');
-                        option.value = '';
-                        option.textContent = '등록된 학생 없음';
-                        option.disabled = true;
-                        nameSelect.appendChild(option);
-                    }
-                } catch (error) {
-                    console.error('학생 이름 조회 오류:', error);
-                    showAlert('학생 정보를 불러오는 중 오류가 발생했습니다.', 'error');
-                }
-            }
-        }
-
-        function checkExistingReport() {
-            const building = document.getElementById('building').value;
-            const floor = document.getElementById('floor').value;
-            
-            if (building && floor) {
-                const reportKey = `${Utils.getReportPeriodId()}_${building}_${floor}`;
-                const modificationCheckbox = document.getElementById('modificationCheckbox');
-                
-                if (submittedReports.has(reportKey)) {
-                    modificationCheckbox.style.display = 'block';
-                    showAlert(`${building}동 ${floor}층에 대한 보고가 이미 제출되었습니다.`, 'warning');
-                } else {
-                    modificationCheckbox.style.display = 'none';
-                    document.getElementById('isModification').checked = false;
-                }
-            }
-        }
-
-        function loadSubmittedReports() {
-            const stored = localStorage.getItem('submittedReports');
-            if (stored) {
-                submittedReports = new Set(JSON.parse(stored));
-            }
-        }
-
-        function saveSubmittedReport(reportKey) {
-            submittedReports.add(reportKey);
-            localStorage.setItem('submittedReports', JSON.stringify([...submittedReports]));
-        }
-
-        function saveReportData(reportData) {
-            const reportDate = Utils.getReportPeriodId();
-            const storedReports = JSON.parse(localStorage.getItem('dailyReports') || '{}');
-            
-            if (!storedReports[reportDate]) {
-                storedReports[reportDate] = {};
-            }
-            
-            const reportKey = `${reportData.building}_${reportData.floor}`;
-            storedReports[reportDate][reportKey] = reportData;
-            
-            localStorage.setItem('dailyReports', JSON.stringify(storedReports));
-        }
-
-        // 리셋 모달 관련 함수들
-        function showResetModal() {
-            document.getElementById('resetModal').style.display = 'block';
-            document.getElementById('resetPassword').value = '';
-        }
-
-        function closeResetModal() {
-            document.getElementById('resetModal').style.display = 'none';
-        }
-
-        async function executeReset() {
-            const password = document.getElementById('resetPassword').value;
-            
-            if (password !== CONFIG.RESET_PASSWORD) {
-                showAlert('비밀번호가 올바르지 않습니다.', 'error');
-                return;
-            }
-            
-            if (!confirm('정말로 모든 학생의 상태 정보를 리셋하시겠습니까?')) {
-                return;
-            }
-            
+        // 구글 시트 데이터 가져오기 (원본 그대로)
+        async function loadSheetsData() {
             try {
-                showAlert('데이터 리셋 중...', 'info');
-                await sheetsAPI.resetAllStatuses();
-                showAlert('모든 학생 상태 정보가 성공적으로 리셋되었습니다.', 'success');
-                closeResetModal();
+                showLoading(true);
+                
+                // 전체 데이터 범위로 확장 (B3:P1500으로 충분히 크게)
+                const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc/values/yulee!B3:P1500?key=AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.values || data.values.length === 0) {
+                    throw new Error('B3:P1500 범위에 데이터가 없습니다.');
+                }
+                
+                // 데이터 형식 변환 (인덱스 열 추가) - 원본 그대로
+                sheetsData = [];
+                
+                // 헤더 (B3 행)
+                sheetsData.push(['인덱스'].concat(data.values[0]));
+                
+                // 데이터 (B4부터)
+                for (let i = 1; i < data.values.length; i++) {
+                    const row = data.values[i];
+                    if (row && row.length > 0) {
+                        sheetsData.push([i + 3].concat(row)); // 실제 시트 행 번호
+                    }
+                }
+                
+                console.log('시트 데이터 로드 완료:', sheetsData.length, '행 (헤더 포함)');
+                console.log('실제 데이터 범위: B3:P' + (data.values.length + 2));
+                
+                // 모든 동별 데이터 확인
+                ['A', 'B', 'C', 'D', 'E', 'F'].forEach(building => {
+                    const buildingRooms = sheetsData.filter(row => {
+                        if (!row[1]) return false;
+                        const roomStr = row[1].toString().trim();
+                        return roomStr.startsWith(building);
+                    });
+                    console.log(`${building}동 데이터:`, buildingRooms.length, '개');
+                    if (buildingRooms.length > 0) {
+                        const firstRoom = buildingRooms[0][1];
+                        const lastRoom = buildingRooms[buildingRooms.length - 1][1];
+                        console.log(`${building}동 범위: ${firstRoom} ~ ${lastRoom}`);
+                    }
+                });
+                
+                showLoading(false);
+                
+                // *** 새로 추가: 보고 히스토리 로드 ***
+                loadReportHistory();
+                
             } catch (error) {
-                console.error('리셋 오류:', error);
-                showAlert('리셋 중 오류가 발생했습니다: ' + error.message, 'error');
+                console.error('시트 데이터 로드 실패:', error);
+                showMessage('시트 데이터를 불러오는데 실패했습니다: ' + error.message, 'error');
+                showLoading(false);
             }
         }
 
-        // 폼 제출 처리 (구글 시트 연동 강화)
-        document.getElementById('reportForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // *** 새로 추가: 보고 히스토리 로드 ***
+        function loadReportHistory() {
+            const today = new Date().toISOString().split('T')[0];
+            const storedHistory = localStorage.getItem('reportHistory');
             
-            if (!Utils.isValidReportTime()) {
-                showAlert('보고 가능 시간이 아닙니다. (22:00 ~ 21:59)', 'error');
-                return;
+            if (storedHistory) {
+                try {
+                    const history = JSON.parse(storedHistory);
+                    
+                    // 오늘 날짜가 아닌 기록들은 삭제
+                    const todayHistory = {};
+                    Object.keys(history).forEach(key => {
+                        if (history[key] === today) {
+                            todayHistory[key] = history[key];
+                        }
+                    });
+                    
+                    lastReportDate = todayHistory;
+                    localStorage.setItem('reportHistory', JSON.stringify(todayHistory));
+                    
+                    console.log('오늘 보고 히스토리:', lastReportDate);
+                } catch (error) {
+                    console.error('보고 히스토리 로드 오류:', error);
+                    lastReportDate = {};
+                }
             }
-            
-            const formData = new FormData(this);
-            const building = formData.get('building');
-            const floor = formData.get('floor');
-            const manager = formData.get('manager');
-            const isModification = formData.get('isModification') === 'on';
-            
-            if (!building || !floor || !manager) {
-                showAlert('담당자, 동, 층을 모두 선택해주세요.', 'error');
-                return;
+        }
+
+        // 선택된 동/층의 학생 데이터 가져오기 (원본 그대로)
+        function getStudentsByFloor(building, floor) {
+            if (!building || !floor || !dormitoryRanges[building] || !dormitoryRanges[building][floor]) {
+                console.error('잘못된 동/층 선택:', building, floor);
+                return [];
             }
+
+            console.log(`${building}동 ${floor}층 학생 데이터 로드 중...`);
             
-            const reportKey = `${Utils.getReportPeriodId()}_${building}_${floor}`;
-            
-            // 기존 보고 확인
-            if (submittedReports.has(reportKey) && !isModification) {
-                showAlert('이미 해당 동/층에 대해 보고하셨습니다.', 'error');
-                return;
-            }
-            
-            // 개별 학생 정보 수집 및 유효성 검사
-            const studentData = [];
-            for (let i = 1; i <= studentRowCount; i++) {
-                const rowElement = document.getElementById(`studentRow${i}`);
-                if (!rowElement) continue;
+            const range = dormitoryRanges[building][floor];
+            const students = [];
+
+            // 호실 범위 내의 모든 호실 처리
+            for (let roomNum = range.start; roomNum <= range.end; roomNum++) {
+                const roomCode = `${building}${roomNum}`;
                 
-                const building = formData.get(`studentBuilding${i}`);
-                const floor = formData.get(`studentFloor${i}`);
-                const room = formData.get(`studentRoom${i}`);
-                const name = formData.get(`studentName${i}`);
-                const status = formData.get(`studentStatus${i}`);
-                const memo = formData.get(`studentMemo${i}`);
+                // 시트에서 해당 호실 찾기
+                const studentRows = [];
                 
-                if ((building || floor || room || name || status) && 
-                    !(building && floor && room && name && status)) {
-                    showAlert(`${i}번째 학생 정보가 불완전합니다.`, 'warning');
+                for (let i = 1; i < sheetsData.length; i++) { // 헤더 제외
+                    const row = sheetsData[i];
+                    if (!row || !row[1]) continue; // 빈 행 건너뛰기
+                    
+                    const sheetRoom = row[1].toString().trim().toUpperCase();
+                    const targetRoom = roomCode.toUpperCase();
+                    
+                    if (sheetRoom === targetRoom) {
+                        studentRows.push({
+                            data: row,
+                            index: i
+                        });
+                    }
+                }
+
+                if (studentRows.length > 0) {
+                    // 해당 호실의 모든 학생 추가 (3인실 대응)
+                    studentRows.forEach(studentRow => {
+                        students.push({
+                            room: studentRow.data[1] || roomCode,
+                            name: studentRow.data[2] || '미배정',
+                            status: studentRow.data[3] || '정상',
+                            date: studentRow.data[4] || '',
+                            memo: studentRow.data[5] || '',
+                            rowIndex: studentRow.index
+                        });
+                    });
+                } else {
+                    // 시트에 없는 호실은 미배정으로 추가
+                    students.push({
+                        room: roomCode,
+                        name: '미배정',
+                        status: '정상',
+                        date: '',
+                        memo: '',
+                        rowIndex: -1
+                    });
+                }
+            }
+
+            console.log(`${building}동 ${floor}층 최종 결과: 전체 ${students.length}명, 실제 학생 ${students.filter(s => s.name !== '미배정').length}명`);
+            
+            return students;
+        }
+
+        // 학생 목록 표시 (원본 그대로)
+        function displayStudents(students) {
+            const studentsGrid = document.getElementById('students-grid');
+            const studentsSection = document.getElementById('students-section');
+            const selectedInfo = document.getElementById('selected-info');
+            
+            const building = document.getElementById('building-select').value;
+            const floor = document.getElementById('floor-select').value;
+            
+            selectedInfo.textContent = `${building}동 ${floor}층`;
+            studentsSection.style.display = 'block';
+            
+            studentsGrid.innerHTML = '';
+            currentStudents = students;
+
+            students.forEach((student, index) => {
+                const studentCard = document.createElement('div');
+                studentCard.className = 'student-card';
+                studentCard.innerHTML = `
+                    <div class="room-number">${student.room}</div>
+                    <div class="student-name">${student.name}</div>
+                    <div class="student-status">
+                        <select onchange="updateStudentStatus(${index}, this.value)">
+                            <option value="정상" ${student.status === '정상' ? 'selected' : ''}>정상</option>
+                            <option value="외박" ${student.status === '외박' ? 'selected' : ''}>외박</option>
+                            <option value="신규" ${student.status === '신규' ? 'selected' : ''}>신규</option>
+                            <option value="이동-" ${student.status === '이동-' ? 'selected' : ''}>이동-</option>
+                            <option value="이동+" ${student.status === '이동+' ? 'selected' : ''}>이동+</option>
+                            <option value="등미" ${student.status === '등미' ? 'selected' : ''}>등미</option>
+                            <option value="퇴소" ${student.status === '퇴소' ? 'selected' : ''}>퇴소</option>
+                            <option value="미배정" ${student.status === '미배정' ? 'selected' : ''}>미배정</option>
+                        </select>
+                    </div>
+                    <div class="student-memo">
+                        <input type="text" value="${student.memo}" placeholder="비고" onchange="updateStudentMemo(${index}, this.value)">
+                    </div>
+                `;
+                studentsGrid.appendChild(studentCard);
+            });
+
+            // 자동 집계 업데이트
+            updateStats();
+        }
+
+        // 학생 상태 업데이트 (원본 그대로)
+        function updateStudentStatus(index, status) {
+            currentStudents[index].status = status;
+            updateStats();
+        }
+
+        // 학생 메모 업데이트 (원본 그대로)
+        function updateStudentMemo(index, memo) {
+            currentStudents[index].memo = memo;
+        }
+
+        // 통계 자동 집계 (미배정 상태 추가)
+        function updateStats() {
+            const stats = {
+                current: 0,
+                out: 0,
+                new: 0,
+                moveOut: 0,
+                moveIn: 0,
+                absent: 0,
+                etc: 0
+            };
+
+            currentStudents.forEach(student => {
+                if (student.name !== '미배정') {
+                    switch (student.status) {
+                        case '정상':
+                            stats.current++;
+                            break;
+                        case '외박':
+                            stats.out++;
+                            break;
+                        case '신규':
+                            stats.new++;
+                            stats.current++;
+                            break;
+                        case '이동-':
+                            stats.moveOut++;
+                            break;
+                        case '이동+':
+                            stats.moveIn++;
+                            stats.current++;
+                            break;
+                        case '등미':
+                            stats.absent++;
+                            break;
+                        case '퇴소':
+                            stats.etc++;
+                            break;
+                        case '미배정':
+                            // 미배정은 통계에 포함하지 않음
+                            break;
+                    }
+                }
+            });
+
+            // 현재원 계산 (정상 + 신규 + 이동+만 포함)
+            stats.current = currentStudents.filter(s => 
+                s.name !== '미배정' && (s.status === '정상' || s.status === '신규' || s.status === '이동+')
+            ).length;
+
+            document.getElementById('current-count').value = stats.current;
+            document.getElementById('out-count').value = stats.out;
+            document.getElementById('new-count').value = stats.new;
+            document.getElementById('move-out-count').value = stats.moveOut;
+            document.getElementById('move-in-count').value = stats.moveIn;
+            document.getElementById('absent-count').value = stats.absent;
+            document.getElementById('etc-count').value = stats.etc;
+        }
+
+        // 보고서 제출 (*** 수정: 중복 제출 체크 강화 ***)
+        async function submitReport() {
+            const manager = document.getElementById('manager-select').value;
+            const building = document.getElementById('building-select').value;
+            const floor = document.getElementById('floor-select').value;
+            const isModification = document.getElementById('is-modification').checked;
+
+            if (!manager || !building || !floor) {
+                showMessage('담당자, 동, 층을 모두 선택해주세요.', 'error');
+                return;
+            }
+
+            // *** 수정: 중복 제출 체크 ***
+            const reportKey = `${building}-${floor}`;
+            const today = new Date().toISOString().split('T')[0];
+            
+            if (!isModification && lastReportDate[reportKey] === today) {
+                showMessage('이미 오늘 보고를 완료했습니다. 수정보고를 선택해주세요.', 'error');
+                return;
+            }
+
+            try {
+                showLoading(true);
+
+                // 구글 시트 업데이트
+                await updateGoogleSheets();
+
+                // 잔디 웹훅 전송
+                await sendToJandi(manager, building, floor, isModification);
+
+                // *** 수정: 제출 완료 처리 ***
+                lastReportDate[reportKey] = today;
+                localStorage.setItem('reportHistory', JSON.stringify(lastReportDate));
+                showMessage('인원보고가 성공적으로 제출되었습니다.', 'success');
+                
+                showLoading(false);
+            } catch (error) {
+                console.error('제출 실패:', error);
+                showMessage('제출 중 오류가 발생했습니다.', 'error');
+                showLoading(false);
+            }
+        }
+
+        // 구글 시트 업데이트 (*** 수정: E열에 메모 저장 ***)
+        async function updateGoogleSheets() {
+            try {
+                // 실제 Apps Script 웹앱 URL
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbxaXVyYcaOL-GYYkmqOKaWwubOSzKctrAwERV04fTPr5sBSPqsxGPhfVsuZqVOMw7d4vQ/exec';
+                
+                // 업데이트할 학생 데이터 준비
+                const updates = [];
+                
+                currentStudents.forEach(student => {
+                    if (student.name !== '미배정' && student.rowIndex >= 0) {
+                        // 행 번호 계산: rowIndex는 sheetsData 배열 인덱스이고, 실제 시트 행은 rowIndex + 3
+                        const actualSheetRow = student.rowIndex + 3;
+                        
+                        updates.push({
+                            room: student.room,
+                            status: student.status,
+                            memo: student.memo, // *** 수정: E열에 메모 저장 ***
+                            rowIndex: actualSheetRow - 1 // Apps Script는 0-based 인덱스 사용
+                        });
+                    }
+                });
+
+                if (updates.length === 0) {
+                    console.log('업데이트할 학생 데이터가 없습니다.');
                     return;
                 }
-                
-                if (building && floor && room && name && status && name.trim() !== '미배정') {
-                    studentData.push({ name, status, room, memo: memo || '' });
-                }
-            }
-            
-            const submitBtn = document.getElementById('submitBtn');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.disabled = true;
-            
-            try {
-                submitBtn.innerHTML = '<div class="spinner"></div> 처리 중...';
-                
-                await submitReport(formData, reportKey, isModification, studentData);
-                
-                submitBtn.innerHTML = '<i class="fas fa-check"></i> 완료!';
-                showAlert(`인원보고가 성공적으로 ${isModification ? '수정' : '제출'}되었습니다.`, 'success');
-                
-                saveSubmittedReport(reportKey);
-                
-                setTimeout(() => {
-                    this.reset();
-                    studentRowCount = 0;
-                    document.getElementById('studentRows').innerHTML = '';
-                    document.getElementById('modificationCheckbox').style.display = 'none';
-                    for (let i = 0; i < 2; i++) {
-                        addStudentRow();
+
+                console.log('Apps Script로 전송할 데이터:', updates);
+
+                // Apps Script 웹앱 호출
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'updateStudents',
+                        updates: updates
+                    }),
+                    mode: 'no-cors' // CORS 문제 해결
+                });
+
+                // no-cors 모드에서는 응답을 읽을 수 없으므로 성공으로 간주
+                console.log('Apps Script 호출 완료 (no-cors 모드)');
+
+                // 로컬 데이터 동기화
+                currentStudents.forEach(student => {
+                    if (student.rowIndex >= 0 && sheetsData[student.rowIndex]) {
+                        sheetsData[student.rowIndex][4] = student.status; // D열
+                        sheetsData[student.rowIndex][5] = student.memo; // *** 수정: E열에 메모 저장 ***
                     }
-                    submitBtn.innerHTML = originalText;
-                }, 2000);
-                
+                });
+
+                console.log('구글 시트 업데이트 요청 전송 완료');
+
             } catch (error) {
-                console.error('제출 오류:', error);
-                showAlert('제출 중 오류가 발생했습니다: ' + error.message, 'error');
-                submitBtn.innerHTML = originalText;
-            } finally {
-                submitBtn.disabled = false;
-            }
-        });
-
-        async function submitReport(formData, reportKey, isModification, studentData) {
-            const reportData = {
-                timestamp: Utils.getCurrentTimeString(),
-                manager: formData.get('manager'),
-                building: formData.get('building'),
-                floor: formData.get('floor'),
-                currentCount: parseInt(formData.get('currentCount')) || 0,
-                overnight: parseInt(formData.get('overnight')) || 0,
-                outing: parseInt(formData.get('outing')) || 0,
-                checkout: parseInt(formData.get('checkout')) || 0,
-                newStudent: parseInt(formData.get('newStudent')) || 0,
-                moveIn: parseInt(formData.get('moveIn')) || 0,
-                moveOut: parseInt(formData.get('moveOut')) || 0,
-                etc: parseInt(formData.get('etc')) || 0,
-                memo: formData.get('memo') || '',
-                students: studentData,
-                isModification: isModification
-            };
-            
-            console.log('보고 데이터:', reportData);
-            
-            // 구글 시트에 학생 상태 업데이트
-            await updateSheetsWithReport(reportData);
-            
-            // Jandi 알림 전송
-            await sendJandiNotification(reportData);
-        }
-
-        async function updateSheetsWithReport(reportData) {
-            console.log('=== 구글 시트 업데이트 시작 ===');
-            console.log('업데이트할 학생 수:', reportData.students.length);
-            console.log('보고 데이터:', reportData);
-            
-            if (reportData.students.length === 0) {
-                console.log('개별 학생 정보가 없음. 집계 정보만 저장.');
-                saveReportData(reportData);
-                return;
-            }
-            
-            // 개별 학생 상태 업데이트
-            const updateResults = [];
-            
-            for (let i = 0; i < reportData.students.length; i++) {
-                const student = reportData.students[i];
-                console.log(`\n[${i+1}/${reportData.students.length}] ${student.name} 업데이트 시작`);
-                console.log(`- 호실: ${student.room}`);
-                console.log(`- 상태: ${student.status}`);
-                console.log(`- 메모: ${student.memo || '없음'}`);
+                console.error('구글시트 업데이트 오류:', error);
                 
+                // 백업: 직접 API 호출 시도
                 try {
-                    const result = await sheetsAPI.updateStudentStatus(student.name, student.status, student.memo);
-                    updateResults.push({ 
-                        success: true, 
-                        student: student.name, 
-                        result,
-                        status: student.status 
+                    await updateSheetsDirectly();
+                } catch (directError) {
+                    console.error('직접 API 호출도 실패:', directError);
+                    
+                    // 로컬 데이터만 업데이트
+                    currentStudents.forEach(student => {
+                        if (student.rowIndex >= 0 && sheetsData[student.rowIndex]) {
+                            sheetsData[student.rowIndex][4] = student.status;
+                            sheetsData[student.rowIndex][5] = student.memo; // *** 수정: E열에 메모 ***
+                        }
                     });
-                    console.log(`✓ ${student.name} 업데이트 성공:`, result);
-                } catch (error) {
-                    console.error(`✗ ${student.name} 업데이트 실패:`, error.message);
-                    updateResults.push({ 
-                        success: false, 
-                        student: student.name, 
-                        error: error.message,
-                        status: student.status 
-                    });
-                }
-                
-                // 요청 간 딜레이 (API 제한 방지)
-                if (i < reportData.students.length - 1) {
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    showMessage('구글시트 업데이트에 실패했지만 로컬 데이터는 저장되었습니다.', 'error');
                 }
             }
-            
-            // 결과 요약
-            const successCount = updateResults.filter(r => r.success).length;
-            const failCount = updateResults.filter(r => !r.success).length;
-            
-            console.log('\n=== 업데이트 결과 요약 ===');
-            console.log(`성공: ${successCount}명, 실패: ${failCount}명`);
-            
-            if (successCount > 0) {
-                console.log('성공한 업데이트:');
-                updateResults.filter(r => r.success).forEach(r => {
-                    console.log(`- ${r.student}: ${r.status}`);
-                });
-            }
-            
-            if (failCount > 0) {
-                console.log('실패한 업데이트:');
-                updateResults.filter(r => !r.success).forEach(r => {
-                    console.log(`- ${r.student}: ${r.error}`);
-                });
-                
-                const failedStudents = updateResults.filter(r => !r.success).map(r => r.student).join(', ');
-                showAlert(`일부 학생 업데이트 실패: ${failedStudents}`, 'warning');
-            }
-            
-            // 웹앱이 설정되지 않은 경우 안내
-            if (failCount === reportData.students.length && CONFIG.WEBAPP_URL.includes('YOUR_WEBAPP_ID')) {
-                showAlert('Google Apps Script 웹앱을 설정해주세요. 현재는 로컬에만 저장됩니다.', 'warning');
-            }
-            
-            // 로컬 스토리지에 보고 데이터 저장
-            saveReportData(reportData);
-            
-            console.log('=== 구글 시트 업데이트 완료 ===');
         }
 
-        async function sendJandiNotification(reportData) {
-            const message = createJandiMessage(reportData);
+        // 백업용 직접 API 호출 (*** 수정: E열에 메모 저장 ***)
+        async function updateSheetsDirectly() {
+            const updates = [];
             
+            currentStudents.forEach(student => {
+                if (student.name !== '미배정' && student.rowIndex >= 0) {
+                    const actualSheetRow = student.rowIndex + 3;
+                    
+                    // D열 (상태) 업데이트
+                    updates.push({
+                        range: `yulee!D${actualSheetRow}`,
+                        values: [[student.status]]
+                    });
+                    
+                    // *** 수정: E열에 메모 저장 (날짜 대신) ***
+                    updates.push({
+                        range: `yulee!E${actualSheetRow}`,
+                        values: [[student.memo]]
+                    });
+                }
+            });
+
+            if (updates.length > 0) {
+                const batchUpdateUrl = `https://sheets.googleapis.com/v4/spreadsheets/1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc/values:batchUpdate?key=AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY`;
+                
+                const response = await fetch(batchUpdateUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        valueInputOption: 'USER_ENTERED',
+                        data: updates
+                    })
+                });
+
+                if (response.ok) {
+                    console.log('직접 API 호출로 업데이트 성공');
+                    showMessage('구글시트 업데이트 완료', 'success');
+                } else {
+                    throw new Error('직접 API 호출 실패');
+                }
+            }
+        }
+
+        // 잔디 웹훅 전송 (원본 그대로)
+        async function sendToJandi(manager, building, floor, isModification) {
+            const webhookUrl = 'https://wh.jandi.com/connect-api/webhook/29522216/3d9603c3b428b386c0d640758e236cb4';
+         
+            const stats = {
+                current: parseInt(document.getElementById('current-count').value),
+                out: parseInt(document.getElementById('out-count').value),
+                new: parseInt(document.getElementById('new-count').value),
+                moveOut: parseInt(document.getElementById('move-out-count').value),
+                moveIn: parseInt(document.getElementById('move-in-count').value),
+                absent: parseInt(document.getElementById('absent-count').value),
+                etc: parseInt(document.getElementById('etc-count').value)
+            };
+
+            // 특별 상태 학생들 정보 수집 (미배정 추가)
+            const specialStudents = {
+                외박: currentStudents.filter(s => s.status === '외박' && (s.name !== '미배정' || s.memo.trim())),
+                신규: currentStudents.filter(s => s.status === '신규' && (s.name !== '미배정' || s.memo.trim())),
+                '이동-': currentStudents.filter(s => s.status === '이동-' && (s.name !== '미배정' || s.memo.trim())),
+                '이동+': currentStudents.filter(s => s.status === '이동+' && (s.name !== '미배정' || s.memo.trim())),
+                등미: currentStudents.filter(s => s.status === '등미' && (s.name !== '미배정' || s.memo.trim())),
+                퇴소: currentStudents.filter(s => s.status === '퇴소' && (s.name !== '미배정' || s.memo.trim())),
+                미배정: currentStudents.filter(s => s.status === '미배정' && (s.name !== '미배정' || s.memo.trim()))
+            };
+
+            let message = `${isModification ? '🔄 수정보고' : '📋 인원보고'}\n\n`;
+            message += `👤 담당자: ${manager}\n`;
+            message += `🏢 위치: ${building}동 ${floor}층\n\n`;
+            message += `📊 인원 현황\n`;
+            message += `• 현재원: ${stats.current}명\n`;
+            message += `• 외박: ${stats.out}명\n`;
+            message += `• 신규: ${stats.new}명\n`;
+            message += `• 이동-: ${stats.moveOut}명\n`;
+            message += `• 이동+: ${stats.moveIn}명\n`;
+            message += `• 등미: ${stats.absent}명\n`;
+            message += `• 퇴소: ${stats.etc}명\n\n`;
+
+            // 특별 상태 학생 상세 정보
+            Object.keys(specialStudents).forEach(status => {
+                if (specialStudents[status].length > 0) {
+                    message += `📝 ${status} 학생 목록:\n`;
+                    specialStudents[status].forEach(student => {
+                        message += `   • ${student.room}`;
+                        if (student.name !== '미배정') {
+                            message += ` ${student.name}`;
+                        }
+                        if (student.memo) {
+                            message += ` (${student.memo})`;
+                        }
+                        message += '\n';
+                    });
+                    message += '\n';
+                }
+            });
+
             try {
-                const response = await fetch(CONFIG.JANDI_WEBHOOK, {
+                const response = await fetch(webhookUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         body: message,
-                        connectColor: reportData.isModification ? '#FFA500' : '#4facfe'
+                        connectColor: isModification ? '#ff9500' : '#4f46e5'
                     })
                 });
-                
+
                 if (!response.ok) {
-                    throw new Error('Jandi 알림 전송 실패');
+                    throw new Error('잔디 전송 실패');
                 }
-                
-                console.log('Jandi 알림 전송 완료');
+
+                console.log('잔디 전송 완료');
             } catch (error) {
-                console.error('Jandi 알림 오류:', error);
-                // Jandi 오류는 전체 프로세스를 중단하지 않음
+                console.error('잔디 전송 오류:', error);
+                throw error;
             }
         }
 
-        function createJandiMessage(reportData) {
-            const modificationText = reportData.isModification ? '[🔄 수정보고] ' : '';
-            let message = `${modificationText}🏠 기숙사 인원보고\n\n`;
-            message += `📅 ${reportData.timestamp}\n`;
-            message += `👤 ${reportData.manager}\n`;
-            message += `🏢 ${reportData.building}동 ${reportData.floor}층\n\n`;
-            
-            message += `📊 인원 현황:\n`;
-            if (reportData.currentCount > 0) message += `👥 현재원: ${reportData.currentCount}명\n`;
-            if (reportData.overnight > 0) message += `🌙 외박: ${reportData.overnight}명\n`;
-            if (reportData.outing > 0) message += `🚶 외출: ${reportData.outing}명\n`;
-            if (reportData.checkout > 0) message += `🚪 퇴소: ${reportData.checkout}명\n`;
-            if (reportData.newStudent > 0) message += `🆕 신규: ${reportData.newStudent}명\n`;
-            if (reportData.moveIn > 0) message += `➕ 이동(입): ${reportData.moveIn}명\n`;
-            if (reportData.moveOut > 0) message += `➖ 이동(출): ${reportData.moveOut}명\n`;
-            if (reportData.etc > 0) message += `❓ 기타: ${reportData.etc}명\n`;
-            
-            if (reportData.students.length > 0) {
-                message += `\n👥 개별 학생 (${reportData.students.length}명):\n`;
-                
-                const groupedByStatus = {};
-                reportData.students.forEach(student => {
-                    if (!groupedByStatus[student.status]) {
-                        groupedByStatus[student.status] = [];
-                    }
-                    groupedByStatus[student.status].push(student);
-                });
-                
-                Object.entries(groupedByStatus).forEach(([status, students]) => {
-                    const statusEmoji = {
-                        '외박': '🌙', '외출': '🚶', '퇴소': '🚪',
-                        '이동+': '➕', '이동-': '➖', '정상': '✅',
-                        '신규': '🆕', '기타': '❓'
-                    };
-                    
-                    message += `\n${statusEmoji[status] || '📝'} ${status} (${students.length}명):\n`;
-                    students.forEach(student => {
-                        message += `   • ${student.name} (${student.room})`;
-                        if (student.memo && student.memo.trim()) {
-                            message += ` - ${student.memo}`;
-                        }
-                        message += '\n';
-                    });
-                });
-            }
-            
-            if (reportData.memo) {
-                message += `\n📝 기타사항: ${reportData.memo}`;
-            }
-            
-            return message;
+        // 로딩 표시/숨김 (원본 그대로)
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('submit-btn').disabled = show;
         }
 
-        function showAlert(message, type = 'info') {
-            const alertContainer = document.getElementById('alertContainer');
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert ${type}`;
-            
-            const iconMap = {
-                'success': 'check-circle',
-                'error': 'exclamation-circle',
-                'warning': 'exclamation-triangle',
-                'info': 'info-circle'
-            };
-            
-            alertDiv.innerHTML = `
-                <i class="fas fa-${iconMap[type] || 'info-circle'}"></i>
-                ${message}
-            `;
-            
-            alertContainer.appendChild(alertDiv);
+        // 메시지 표시 (원본 그대로)
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
             
             setTimeout(() => {
-                if (alertDiv.parentNode) {
-                    alertDiv.style.opacity = '0';
-                    alertDiv.style.transform = 'translateY(-20px)';
-                    setTimeout(() => alertDiv.parentNode.removeChild(alertDiv), 300);
-                }
+                messageEl.style.display = 'none';
             }, 5000);
-            
-            alertDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        // 모달 외부 클릭 시 닫기
-        window.onclick = function(event) {
-            const modal = document.getElementById('resetModal');
-            if (event.target === modal) {
-                closeResetModal();
+        // 이벤트 리스너 등록 (원본 그대로)
+        document.getElementById('building-select').addEventListener('change', function() {
+            const building = this.value;
+            const floor = document.getElementById('floor-select').value;
+            
+            if (building && floor) {
+                const students = getStudentsByFloor(building, floor);
+                displayStudents(students);
+            } else {
+                document.getElementById('students-section').style.display = 'none';
             }
-        }
+        });
+
+        document.getElementById('floor-select').addEventListener('change', function() {
+            const building = document.getElementById('building-select').value;
+            const floor = this.value;
+            
+            if (building && floor) {
+                const students = getStudentsByFloor(building, floor);
+                displayStudents(students);
+            } else {
+                document.getElementById('students-section').style.display = 'none';
+            }
+        });
+
+        // 통계 수동 입력 이벤트 (원본 그대로)
+        ['current-count', 'out-count', 'new-count', 'move-out-count', 'move-in-count', 'absent-count', 'etc-count'].forEach(id => {
+            document.getElementById(id).addEventListener('input', function() {
+                // 수동 입력 시 자동 집계 비활성화 표시 (선택사항)
+                console.log(`${id} 수동 변경: ${this.value}`);
+            });
+        });
+
+        // 페이지 로드 시 초기화 (원본 그대로)
+        window.addEventListener('load', function() {
+            loadSheetsData();
+        });
     </script>
 </body>
 </html>
