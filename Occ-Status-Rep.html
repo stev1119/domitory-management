@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시대인재 기숙사 인원보고</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card.current { border-left: 5px solid #10b981; }
+        .stat-card.out { border-left: 5px solid #f59e0b; }
+        .stat-card.new { border-left: 5px solid #3b82f6; }
+        .stat-card.move-out { border-left: 5px solid #ef4444; }
+        .stat-card.move-in { border-left: 5px solid #8b5cf6; }
+        .stat-card.absent { border-left: 5px solid #6b7280; }
+        .stat-card.etc { border-left: 5px solid #f97316; }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .stat-card input {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            text-align: center;
+            width: 100%;
+            outline: none;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 15px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .control-group select {
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .control-group select:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .students-section {
+            margin-top: 30px;
+        }
+
+        .students-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .students-grid {
+            display: grid;
+            gap: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 10px;
+        }
+        .students-header h3 {
+    font-size: 1.5rem;  /* ✅ 크기 증가 */
+    font-weight: 800;   /* ✅ 두껍게 */
+}
+
+.students-header span {
+    font-size: 1.3rem;  /* ✅ 크기 증가 */
+    font-weight: 700;   /* ✅ 두껍게 */
+}
+
+        .student-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            display: grid;
+            grid-template-columns: 100px 1fr 150px 150px 1fr;
+            gap: 15px;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .student-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+         /* 상태별 카드 배경색 */
+.student-card.status-외박 {
+    background: #fee2e2;
+    border-left: 5px solid #ef4444;
+}
+.student-card.status-미배정 {
+    background: #fef9c3;
+    border-left: 5px solid #eab308;
+}
+.student-card.status-신규 {
+    background: #fff7ed;
+    border-left: 5px solid #f97316;
+}
+.student-card.status-이동- {
+    background: #eff6ff;
+    border-left: 5px solid #3b82f6;
+}
+.student-card.status-이동\+ {
+    background: #f0fdf4;
+    border-left: 5px solid #22c55e;
+}
+.student-card.status-등미 {
+    background: #f3e8ff;
+    border-left: 5px solid #a855f7;
+}
+.student-card.status-퇴소 {
+    background: #ecfdf5;
+    border-left: 5px solid #10b981;
+}
+        .room-number {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #4f46e5;
+            text-align: center;
+            padding: 8px;
+            background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+            border-radius: 8px;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 1.4rem;
+        }
+
+        .student-status select {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: white;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .student-status select:focus {
+            border-color: #4f46e5;
+        }
+
+        .student-memo input {
+            padding: 8px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            width: 100%;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .student-memo input:focus {
+            border-color: #4f46e5;
+        }
+
+        .submit-section {
+            margin-top: 40px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .submit-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #4f46e5;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+ .refresh-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            margin-top: 15px;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+    /* 스티키 요약바 */
+        .sticky-summary {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(79, 70, 229, 0.97);
+            color: white;
+            padding: 10px 20px;
+            display: none;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .sticky-summary span {
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        .sticky-summary .sticky-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            background: none;
+            padding: 0;
+            margin-right: 4px;
+        }
+        /* 검색 필터 바 */
+        .filter-bar {
+            display: none;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-bar input {
+            padding: 8px 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            flex: 1;
+            min-width: 160px;
+            transition: border-color 0.2s;
+        }
+        .filter-bar input:focus { border-color: #4f46e5; }
+        .filter-bar select {
+            padding: 8px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: white;
+            outline: none;
+            cursor: pointer;
+        }
+        .filter-bar select:focus { border-color: #4f46e5; }
+        .filter-count {
+            font-size: 0.85rem;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+        /* 제출 확인 모달 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: white;
+            border-radius: 16px;
+            padding: 28px 32px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .modal-box h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #1f2937;
+        }
+        .modal-summary {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: #374151;
+        }
+        .modal-summary strong { color: #4f46e5; }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .modal-cancel {
+            padding: 10px 22px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+        .modal-cancel:hover { background: #f3f4f6; }
+        .modal-confirm {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        /* 제출 이력 */
+        .history-section {
+            margin-top: 20px;
+            padding: 16px 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+        .history-section h4 {
+            font-size: 0.85rem;
+            color: #6b7280;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .history-list { display: flex; flex-direction: column; gap: 6px; }
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: #374151;
+            padding: 6px 10px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #f0f0f0;
+        }
+        .history-item .h-badge {
+            background: #eef2ff;
+            color: #4f46e5;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.78rem;
+            white-space: nowrap;
+        }
+        .history-item .h-time { color: #9ca3af; margin-left: auto; white-space: nowrap; }
+        .history-empty { font-size: 0.82rem; color: #9ca3af; text-align: center; padding: 6px 0; }
+        /* 변경된 카드 하이라이트 */
+        .student-card.modified {
+            box-shadow: 0 0 0 2.5px #4f46e5, 0 4px 15px rgba(79,70,229,0.15);
+        }
+        .changed-badge {
+            display: none;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #4f46e5;
+            background: #eef2ff;
+            border-radius: 10px;
+            padding: 2px 7px;
+            white-space: nowrap;
+        }
+        /* 이동 메모 자동완성 */
+        .move-helper {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .move-helper.visible { display: flex; }
+        .move-helper input {
+            padding: 5px 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            width: 90px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .move-helper input:focus { border-color: #4f46e5; }
+        .move-helper .helper-label {
+            font-size: 0.78rem;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+        .move-helper .arrow-icon {
+            color: #4f46e5;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .move-helper .btn-apply-memo {
+            padding: 5px 12px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .move-helper .btn-apply-memo:hover { opacity: 0.85; }
+       
+       
+
+        
+/* Jandi 미리보기 */
+        .jandi-preview {
+            background: #1e1e2e;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+            font-size: 0.82rem;
+            line-height: 1.9;
+            color: #e0e0e0;
+            font-family: monospace;
+            max-height: 260px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            border-left: 4px solid #4f46e5;
+        }
+        .preview-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.88rem;
+            color: #6b7280;
+            font-weight: 600;
+        }
+        .preview-toggle:hover { color: #4f46e5; }
+        .preview-arrow {
+            display: inline-block;
+            transition: transform 0.2s;
+            font-size: 0.75rem;
+        }
+        /* 기억하기 버튼 영역 */
+        .memory-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: #f0f9ff;
+            border-radius: 10px;
+            border: 1px dashed #93c5fd;
+        }
+        .memory-bar .memory-info {
+            flex: 1;
+            font-size: 0.82rem;
+            color: #374151;
+        }
+        .memory-bar .memory-info strong {
+            color: #4f46e5;
+            font-weight: 700;
+        }
+        .memory-bar .memory-info.empty {
+            color: #9ca3af;
+            font-style: italic;
+        }
+        .btn-remember {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .btn-remember:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn-reset-memory {
+            padding: 8px 14px;
+            background: white;
+            color: #6b7280;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .btn-reset-memory:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+            background: #fef2f2;
+        }
+        .preview-arrow.open { transform: rotate(90deg); }
+        .student-card.modified .changed-badge { display: inline-block; }
+        
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 10px;
+            }
+
+            .controls {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .student-card {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .students-grid {
+                max-height: 400px;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+<div class="modal-overlay" id="confirm-modal">
+<div class="modal-box">
+            <h3>◆인원보고 제출 확인◆</h3>
+            <div class="modal-summary" id="modal-summary-content"></div>
+            <div class="preview-toggle" onclick="toggleJandiPreview()">
+                <span class="preview-arrow" id="preview-arrow">▶</span>
+                <span>Jandi 전송 메시지 미리보기</span>
+            </div>
+            <div class="jandi-preview" id="jandi-preview" style="display:none;"></div>
+            <div class="modal-actions">
+                <button class="modal-cancel" onclick="closeModal()">취소</button>
+                <button class="modal-confirm" onclick="confirmSubmit()">제출하기</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>시대인재 기숙사 인원보고</h1>
+            <p>기숙사 동,층별 인원현황 보고 </p>
+        </div>
+
+        <div class="main-content">
+<div class="sticky-summary" id="sticky-summary">
+                <span class="sticky-title" id="sticky-location">-</span>
+                <span id="s-current">현재원 0</span>
+                <span id="s-out">외박 0</span>
+                <span id="s-new">신규 0</span>
+                <span id="s-moveout">이동- 0</span>
+                <span id="s-movein">이동+ 0</span>
+                <span id="s-absent">등미 0</span>
+                <span id="s-etc">퇴소 0</span>
+            </div>
+            
+            <!-- 인원 현황 카드 -->
+            <div class="stats-grid">
+                <div class="stat-card current">
+                    <h3>현재원</h3>
+                    <div class="number" id="current-count">0</div>
+</div>
+                <div class="stat-card out">
+                    <h3>외박</h3>
+                   <div class="number" id="out-count">0</div>
+</div>
+                <div class="stat-card new">
+                    <h3>신규</h3>
+                   <div class="number" id="new-count">0</div>
+</div>
+                <div class="stat-card move-out">
+                    <h3>이동-</h3>
+                    <div class="number" id="move-out-count">0</div>
+                </div>
+                <div class="stat-card move-in">
+                    <h3>이동+</h3>
+                    <div class="number" id="move-in-count">0</div>
+</div>
+                <div class="stat-card absent">
+                    <h3>등미</h3>
+                    <div class="number" id="absent-count">0</div>
+</div>
+                <div class="stat-card etc">
+                    <h3>퇴소</h3>
+                    <div class="number" id="etc-count">0</div>
+</div>
+            </div>
+
+            <!-- 선택 컨트롤 -->
+            <div class="controls">
+                <div class="control-group">
+                    <label>담당자</label>
+                    <select id="manager-select">
+                        <option value="">담당자 선택</option>
+                        <option value="이영운">이영운</option>
+                        <option value="김혜정">김혜정</option>
+                        <option value="이시우">이시우</option>
+                        <option value="고승완">고승완</option>
+                        <option value="남인달">남인달</option>
+                        <option value="조영권">조영권</option>
+                        <option value="황민철">황민철</option>
+                        <option value="김건희">김건희</option>
+                        <option value="진정현">진정현</option>
+                        <option value="원현주">원현주</option>
+                        <option value="김정아">김정아</option>
+                        <option value="김미경">김미경</option>
+                        <option value="유나경">유나경</option>
+                        <option value="김영현">김영현</option>
+                        <option value="나정우">나정우</option>
+                        <option value="김석진">김석진</option>
+                        <option value="최문규">최문규</option>                       
+                        <option value="이은영">이은영</option>
+                        <option value="이윤민">이윤민</option>
+                        <option value="최금주">최금주</option>
+                        <option value="김정민">김정민</option>
+                        <option value="이광헌">이광헌</option>
+                        <option value="김성홍">김성홍</option>
+                        <option value="신규1">신규1</option>
+                        <option value="신규2">신규2</option>
+                        <option value="신규3">신규3</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>동</label>
+                    <select id="building-select">
+                        <option value="">동 선택</option>
+                        <option value="A">A동 (남학생)</option>
+                        <option value="B">B동 (남학생)</option>
+                        <option value="C">C동 (남학생)</option>
+                        <option value="D">D동 (남학생)</option>
+                        <option value="E">E동 (여학생)</option>
+                        <option value="F">F동 (여학생)</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>층</label>
+                    <select id="floor-select">
+                        <option value="">층 선택</option>
+                        <option value="1">1층 (1인실)</option>
+                        <option value="2">2층 (1인실)</option>
+                        <option value="3">3층 (1인실)</option>
+                        <option value="4">4층 (3인실)</option>
+                    </select>
+                </div>
+            </div>
+<!-- 기억하기 영역 -->
+            <div class="memory-bar">
+                <div class="memory-info empty" id="memory-info">
+                    ★기억된 설정 없음 — 담당자·동·층 선택 후 기억하기를 눌러주세요
+                </div>
+                <button class="btn-remember" onclick="saveMemory()">☆기억하기</button>
+                <button class="btn-reset-memory" onclick="resetMemory()">● 초기화</button>
+            </div>
+            <!-- 학생 정보 섹션 -->
+            <div class="students-section" id="students-section" style="display: none;">
+                <div class="students-header">
+                    <h3>학생 현황</h3>
+                    <span id="selected-info"></span>
+                </div>
+<div class="filter-bar" id="filter-bar">
+                    <input type="text" id="search-input" placeholder="이름 또는 호실 검색..." oninput="applyFilter()">
+                    <select id="status-filter" onchange="applyFilter()">
+                        <option value="">전체 상태</option>
+                        <option value="정상">정상</option>
+                        <option value="외박">외박</option>
+                        <option value="신규">신규</option>
+                        <option value="이동-">이동-</option>
+                        <option value="이동+">이동+</option>
+                        <option value="등미">등미</option>
+                        <option value="퇴소">퇴소</option>
+                        <option value="미배정">미배정</option>
+                    </select>
+                    <span class="filter-count" id="filter-count"></span>
+                </div>
+                
+                <div class="students-grid" id="students-grid">
+                    <!-- 학생 카드들이 여기에 동적으로 추가됩니다 -->
+                </div>
+            </div>
+
+            <!-- 제출 섹션 -->
+            <div class="submit-section">
+                <div class="submit-options">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="is-modification">
+                        <label for="is-modification">수정보고</label>
+                    </div>
+                </div>
+                <button class="submit-btn" id="submit-btn" onclick="submitReport()">
+                     인원보고 제출
+                </button>
+            </div>
+<div class="history-section">
+                    <h4>◆오늘 제출 이력◆</h4>
+                    <div class="history-list" id="history-list">
+                        <div class="history-empty">아직 제출 이력이 없습니다</div>
+                    </div>
+                </div>
+            
+<button class="refresh-btn" onclick="location.reload()">
+    🔄 새로고침
+</button>
+            <!-- 로딩 및 메시지 -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>처리 중...</p>
+            </div>
+            <div class="message" id="message"></div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let sheetsData = [];
+       
+    
+        let currentStudents = [];
+        let lastReportDate = {};
+
+        // 기숙사 호실 범위 정의
+        const dormitoryRanges = {
+            'A': {
+                '1': { start: 101, end: 160 },
+                '2': { start: 201, end: 262 },
+                '3': { start: 301, end: 362 },
+                '4': { start: 401, end: 432 }
+            },
+            'B': {
+                '1': { start: 101, end: 140 },
+                '2': { start: 201, end: 241 },
+                '3': { start: 301, end: 341 },
+                '4': { start: 401, end: 421 }
+            },
+            'C': {
+                '1': { start: 101, end: 161 },
+                '2': { start: 201, end: 262 },
+                '3': { start: 301, end: 362 },
+                '4': { start: 401, end: 432 }
+            },
+            'D': {
+                '2': { start: 201, end: 244 },
+                '3': { start: 301, end: 345 },
+                '4': { start: 401, end: 445 },
+                '5': { start: 501, end: 523 }
+            },
+            'E': {
+                '2': { start: 201, end: 276 },
+                '3': { start: 301, end: 378 },
+                '4': { start: 401, end: 478 },
+                '5': { start: 501, end: 540 }
+            },
+            'F': {
+                '2': { start: 201, end: 232 },
+                '3': { start: 301, end: 333 },
+                '4': { start: 401, end: 433 },
+                '5': { start: 501, end: 517 }
+            }
+        };
+
+        // 구글 시트 데이터 가져오기 (B3부터 시작) - 원본 그대로
+        async function loadSheetsData() {
+            try {
+                showLoading(true);
+                
+                // 전체 데이터 범위로 확장 (B3:P1500으로 충분히 크게)
+                const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc/values/yulee!B3:P1500?key=AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.values || data.values.length === 0) {
+                    throw new Error('B3:P1500 범위에 데이터가 없습니다.');
+                }
+                
+                // 데이터 형식 변환 (인덱스 열 추가) - 원본 그대로
+                sheetsData = [];
+                
+                // 헤더 (B3 행)
+                sheetsData.push(['인덱스'].concat(data.values[0]));
+                
+                // 데이터 (B4부터)
+                for (let i = 1; i < data.values.length; i++) {
+                    const row = data.values[i];
+                    if (row && row.length > 0) {
+                        sheetsData.push([i + 3].concat(row)); // 실제 시트 행 번호
+                    }
+                }
+                
+                console.log('시트 데이터 로드 완료:', sheetsData.length, '행 (헤더 포함)');
+                sessionStorage.setItem('sheetsCache', JSON.stringify(sheetsData));
+                console.log('실제 데이터 범위: B3:P' + (data.values.length + 2));
+                
+                // 모든 동별 데이터 확인
+                ['A', 'B', 'C', 'D', 'E', 'F'].forEach(building => {
+                    const buildingRooms = sheetsData.filter(row => {
+                        if (!row[1]) return false;
+                        const roomStr = row[1].toString().trim();
+                        return roomStr.startsWith(building);
+                    });
+                    console.log(`${building}동 데이터:`, buildingRooms.length, '개');
+                    if (buildingRooms.length > 0) {
+                        const firstRoom = buildingRooms[0][1];
+                        const lastRoom = buildingRooms[buildingRooms.length - 1][1];
+                        console.log(`${building}동 범위: ${firstRoom} ~ ${lastRoom}`);
+                    }
+                });
+                
+                showLoading(false);
+                loadMemory();
+                
+            } catch (error) {
+                console.error('시트 데이터 로드 실패:', error);
+                showMessage('시트 데이터를 불러오는데 실패했습니다: ' + error.message, 'error');
+                showLoading(false);
+            }
+        }
+
+        // 선택된 동/층의 학생 데이터 가져오기 (원본 그대로)
+        function getStudentsByFloor(building, floor) {
+            if (!building || !floor || !dormitoryRanges[building] || !dormitoryRanges[building][floor]) {
+                console.error('잘못된 동/층 선택:', building, floor);
+                return [];
+            }
+
+            console.log(`${building}동 ${floor}층 학생 데이터 로드 중...`);
+            
+            const range = dormitoryRanges[building][floor];
+            const students = [];
+
+            // 호실 범위 내의 모든 호실 처리
+            for (let roomNum = range.start; roomNum <= range.end; roomNum++) {
+                const roomCode = `${building}${roomNum}`;
+                
+                // 시트에서 해당 호실 찾기
+                const studentRows = [];
+                
+                for (let i = 1; i < sheetsData.length; i++) { // 헤더 제외
+                    const row = sheetsData[i];
+                    if (!row || !row[1]) continue; // 빈 행 건너뛰기
+                    
+                    const sheetRoom = row[1].toString().trim().toUpperCase();
+                    const targetRoom = roomCode.toUpperCase();
+                    
+                    if (sheetRoom === targetRoom) {
+                        studentRows.push({
+                            data: row,
+                            index: i
+                        });
+                    }
+                }
+
+                if (studentRows.length > 0) {
+                    // 해당 호실의 모든 학생 추가 (3인실 대응)
+                    studentRows.forEach(studentRow => {
+                       students.push({
+                            room: studentRow.data[1] || roomCode,
+                            name: studentRow.data[2] || '미배정',
+                            status: studentRow.data[3] || '정상',
+                            date: studentRow.data[4] || '',
+                            memo: studentRow.data[5] || '',
+                            rowIndex: studentRow.index
+                        });
+                        });
+                } else {
+                    // 시트에 없는 호실은 미배정으로 추가
+                    students.push({
+                        room: roomCode,
+                        name: '미배정',
+                        status: '정상',
+                        date: '',
+                        memo: '',
+                        rowIndex: -1
+                    });
+                }
+            }
+
+            console.log(`${building}동 ${floor}층 최종 결과: 전체 ${students.length}명, 실제 학생 ${students.filter(s => s.name !== '미배정').length}명`);
+            
+            return students;
+        }
+
+        // 학생 목록 표시 (원본 그대로)
+        function displayStudents(students) {
+            const studentsGrid = document.getElementById('students-grid');
+            const studentsSection = document.getElementById('students-section');
+            const selectedInfo = document.getElementById('selected-info');
+            
+            const building = document.getElementById('building-select').value;
+            const floor = document.getElementById('floor-select').value;
+            
+            selectedInfo.textContent = `${building}동 ${floor}층`;
+            studentsSection.style.display = 'block';
+            
+            studentsGrid.innerHTML = '';
+            currentStudents = students;
+
+            document.getElementById('filter-bar').style.display = 'flex';
+            document.getElementById('search-input').value = '';
+            document.getElementById('status-filter').value = '';
+            document.getElementById('filter-count').textContent = `총 ${students.length}명`;
+
+            students.forEach((student, index) => {
+                const studentCard = document.createElement('div');
+                studentCard.className = 'student-card';
+                studentCard.innerHTML = `
+                    <div class="room-number">${student.room}</div>
+                  <div class="student-name">${student.name} <span class="changed-badge">변경됨</span></div>
+                    <div class="student-status">
+                        <select onchange="updateStudentStatus(${index}, this.value)">
+                            <option value="정상" ${student.status === '정상' ? 'selected' : ''}>정상</option>
+                            <option value="외박" ${student.status === '외박' ? 'selected' : ''}>외박</option>
+                            <option value="신규" ${student.status === '신규' ? 'selected' : ''}>신규</option>
+                            <option value="이동-" ${student.status === '이동-' ? 'selected' : ''}>이동-</option>
+                            <option value="이동+" ${student.status === '이동+' ? 'selected' : ''}>이동+</option>
+                            <option value="등미" ${student.status === '등미' ? 'selected' : ''}>등미</option>
+                            <option value="퇴소" ${student.status === '퇴소' ? 'selected' : ''}>퇴소</option>
+                            <option value="미배정" ${student.status === '미배정' ? 'selected' : ''}>미배정</option>
+                        </select>
+                    </div>
+                   <div class="student-memo">
+                        <input type="text" id="memo-input-${index}" value="${student.memo}" placeholder="비고" oninput="updateStudentMemo(${index}, this.value)">
+                        <div class="move-helper" id="move-helper-${index}"></div>
+                    </div>
+                `;
+                // 초기 상태에 따라 배경색 적용
+if (student.status !== '정상') {
+    studentCard.classList.add('status-' + student.status);
+}
+                // 초기 로드 시 이동+/이동- 일 때만 헬퍼 표시
+                setTimeout(() => {
+                    if (student.status === '이동+' || student.status === '이동-') {
+                        renderMoveHelper(index, student.status);
+                    }
+                }, 0);
+                studentsGrid.appendChild(studentCard);
+            });
+
+            // 자동 집계 업데이트
+            updateStats();
+        }
+
+        // 학생 상태 업데이트 (원본 그대로)
+function updateStudentStatus(index, status) {
+            currentStudents[index].status = status;
+            updateStats();
+            applyStatusColor(event.target, status);
+
+            // 변경 하이라이트
+            const cards = document.querySelectorAll('#students-grid .student-card');
+            if (cards[index]) cards[index].classList.add('modified');
+
+            // 이동 헬퍼 / 빠른 버튼 전환
+            renderMoveHelper(index, status);
+
+            
+}
+
+        // 학생 메모 업데이트 (원본 그대로)
+        function updateStudentMemo(index, memo) {
+            currentStudents[index].memo = memo;
+        }
+function applyStatusColor(select, status) {
+    const colors = {
+        '정상': '#1f2937',
+        '외박': '#ef4444',
+        '퇴소': '#10b981',
+        '미배정': '#f59e0b',
+        '이동-': '#3b82f6',
+        '이동+': '#3b82f6',
+        '신규': '#f97316',
+        '등미': '#a855f7'
+    };
+    select.style.color = colors[status] || '#1f2937';
+
+    // 부모 카드 찾아서 배경색 클래스 변경
+    const card = select.closest('.student-card');
+    if (card) {
+        card.className = 'student-card'; // 기존 상태 클래스 초기화
+        if (status !== '정상') {
+            card.classList.add('status-' + status);
+        }
+    }
+}
+        // 통계 자동 집계 (원본 그대로)
+        function updateStats() {
+            const stats = {
+                current: 0,
+                out: 0,
+                new: 0,
+                moveOut: 0,
+                moveIn: 0,
+                absent: 0,
+                etc: 0
+            };
+
+            currentStudents.forEach(student => {
+                // 이동- 는 이름 없어도 카운트 (나머지는 기존 그대로)
+                if (student.status === '이동-') {
+                    stats.moveOut++;
+                    return;
+                }
+
+                if (student.name !== '미배정') {
+                    switch (student.status) {
+                        case '정상':
+                            stats.current++;
+                            break;
+                        case '외박':
+                            stats.out++;
+                            break;
+                        case '신규':
+                            stats.new++;
+                            stats.current++;
+                            break;
+                        case '이동+':
+                            stats.moveIn++;
+                            stats.current++;
+                            break;
+                        case '등미':
+                            stats.absent++;
+                            break;
+                        case '퇴소':
+                            stats.etc++;
+                            break;
+                    }
+                }
+            });
+
+            // 현재원 계산 (정상 + 신규 + 이동+만 포함)
+            stats.current = currentStudents.filter(s => 
+                s.name !== '미배정' && (s.status === '정상' || s.status === '신규' || s.status === '이동+')
+            ).length;
+
+        // 기존 (전부 .value)
+
+// 수정 (이동- 만 .value, 나머지는 .textContent)
+document.getElementById('current-count').textContent = stats.current;
+document.getElementById('out-count').textContent = stats.out;
+document.getElementById('new-count').textContent = stats.new;
+document.getElementById('move-out-count').textContent = stats.moveOut;  // 이동- 유지
+document.getElementById('move-in-count').textContent = stats.moveIn;
+document.getElementById('absent-count').textContent = stats.absent;
+document.getElementById('etc-count').textContent = stats.etc;
+            updateStickyBar();
+        }
+
+        // 보고서 제출 (원본 그대로)
+       async function submitReport() {
+            const manager  = document.getElementById('manager-select').value;
+            const building = document.getElementById('building-select').value;
+            const floor    = document.getElementById('floor-select').value;
+            const isModification = document.getElementById('is-modification').checked;
+
+            if (!manager || !building || !floor) {
+                showMessage('담당자, 동, 층을 모두 선택해주세요.', 'error');
+                return;
+            }
+
+            const reportKey = `${building}-${floor}`;
+            const today = new Date().toDateString();
+            const currentHour = new Date().getHours();
+
+            if (!isModification && lastReportDate[reportKey] === today && currentHour < 22) {
+                showMessage('이미 오늘 보고를 완료했습니다. 수정보고를 선택해주세요.', 'error');
+                return;
+            }
+
+            const current = document.getElementById('current-count').textContent;
+            const out     = document.getElementById('out-count').textContent;
+            const newC    = document.getElementById('new-count').textContent;
+            const moveOut = document.getElementById('move-out-count').textContent;
+            const moveIn  = document.getElementById('move-in-count').textContent;
+            const absent  = document.getElementById('absent-count').textContent;
+            const etc     = document.getElementById('etc-count').textContent;
+
+            document.getElementById('modal-summary-content').innerHTML = `
+                <strong>${building}동 ${floor}층</strong> · 담당: <strong>${manager}</strong>${isModification ? ' · 🔄 수정보고' : ''}<br>
+                현재원 <strong>${current}</strong>명 &nbsp;|&nbsp; 외박 <strong>${out}</strong>명 &nbsp;|&nbsp; 신규 <strong>${newC}</strong>명<br>
+                이동- <strong>${moveOut}</strong>명 &nbsp;|&nbsp; 이동+ <strong>${moveIn}</strong>명 &nbsp;|&nbsp; 등미 <strong>${absent}</strong>명 &nbsp;|&nbsp; 퇴소 <strong>${etc}</strong>명
+            `;
+const previewText = buildJandiPreviewText(manager, building, floor, isModification);
+            document.getElementById('jandi-preview').textContent = previewText;
+            document.getElementById('jandi-preview').style.display = 'none';
+            document.getElementById('preview-arrow').classList.remove('open');
+            document.getElementById('confirm-modal').classList.add('active');
+            document.getElementById('confirm-modal').classList.add('active');
+
+
+        }
+        // 구글 시트 업데이트 - 수정된 버전
+        async function updateGoogleSheets() {
+            try {
+                // 실제 Apps Script 웹앱 URL
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbx4p5ROFUsWe09qYu98MEmEQoMuf8U09u677KDta7ahJhZVVyEkFASLONJWZdvjQJSnow/exec';
+                
+                // 업데이트할 학생 데이터 준비
+                const updates = [];
+                
+                currentStudents.forEach(student => {
+                    if (student.rowIndex >= 0) {
+                        // rowIndex는 sheetsData 배열 인덱스
+                        // sheetsData[0]는 헤더, sheetsData[1]부터 실제 데이터
+                        // sheetsData[i][0]은 실제 시트 행 번호를 저장하고 있음
+                        const actualSheetRow = sheetsData[student.rowIndex][0]; // 실제 시트 행 번호
+                        
+                        updates.push({
+                            room: student.room,
+                            status: student.status,
+                            memo: student.memo || '', // 빈 문자열도 전송
+                            rowIndex: actualSheetRow - 1 // Apps Script는 0-based 인덱스 사용
+                        });
+                        
+                        console.log(`준비된 업데이트: ${student.room} -> 행 ${actualSheetRow} (상태: ${student.status}, 메모: ${student.memo})`);
+                    }
+                });
+
+                if (updates.length === 0) {
+                    console.log('업데이트할 학생 데이터가 없습니다.');
+                    return;
+                }
+
+                console.log('Apps Script로 전송할 데이터:', updates);
+
+                // Apps Script 웹앱 호출 - CORS 해결을 위해 fetch 방식 변경
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain',
+                    },
+                    body: JSON.stringify({
+                        action: 'updateStudents',
+                        updates: updates
+                    })
+                });
+
+                console.log('Apps Script 응답 상태:', response.status);
+                
+                if (response.ok) {
+                    try {
+                        const result = await response.text();
+                        console.log('Apps Script 응답:', result);
+                        
+                        // 응답이 JSON인지 확인
+                        try {
+                            const jsonResult = JSON.parse(result);
+                            if (jsonResult.success) {
+                                console.log('구글 시트 업데이트 성공');
+                            } else {
+                                console.error('Apps Script 오류:', jsonResult.message);
+                            }
+                        } catch (parseError) {
+                            console.log('JSON 파싱 실패, 텍스트 응답:', result);
+                        }
+                    } catch (textError) {
+                        console.log('응답 텍스트 읽기 실패:', textError);
+                    }
+                }
+
+                // 로컬 데이터 동기화
+                currentStudents.forEach(student => {
+                    if (student.rowIndex >= 0 && sheetsData[student.rowIndex]) {
+                        sheetsData[student.rowIndex][4] = student.status; // D열 (상태)
+                        sheetsData[student.rowIndex][5] = new Date().toISOString().split('T')[0]; // E열 (날짜)
+                        sheetsData[student.rowIndex][6] = student.memo; // F열 (메모)
+                    }
+                });
+
+                console.log('구글 시트 업데이트 요청 전송 완료');
+
+            } catch (error) {
+                console.error('구글시트 업데이트 오류:', error);
+                
+                // 백업: 직접 API 호출 시도
+                try {
+                    await updateSheetsDirectly();
+                } catch (directError) {
+                    console.error('직접 API 호출도 실패:', directError);
+                    
+                    // 로컬 데이터만 업데이트
+                    currentStudents.forEach(student => {
+                        if (student.rowIndex >= 0 && sheetsData[student.rowIndex]) {
+                            sheetsData[student.rowIndex][4] = student.status;
+                            sheetsData[student.rowIndex][6] = student.memo;
+                        }
+                    });
+                    
+                    showMessage('구글시트 업데이트에 실패했지만 로컬 데이터는 저장되었습니다.', 'error');
+                }
+            }
+        }
+
+        // 백업용 직접 API 호출 - 수정된 버전
+        async function updateSheetsDirectly() {
+            const updates = [];
+            
+            currentStudents.forEach(student => {
+                if (student.rowIndex >= 0) {
+                    const actualSheetRow = sheetsData[student.rowIndex][0]; // 실제 시트 행 번호
+                    
+                    // D열 (상태) 업데이트
+                    updates.push({
+                        range: `yulee!D${actualSheetRow}`,
+                        values: [[student.status]]
+                    });
+                    
+                    // E열 (날짜) 업데이트
+                    const today = new Date().toISOString().split('T')[0];
+                    updates.push({
+                        range: `yulee!E${actualSheetRow}`,
+                        values: [[today]]
+                    });
+                    
+                    // F열 (메모) 업데이트 - 빈 문자열도 업데이트
+                    updates.push({
+                        range: `yulee!F${actualSheetRow}`,
+                        values: [[student.memo || '']]
+                    });
+                }
+            });
+
+            if (updates.length > 0) {
+                const batchUpdateUrl = `https://sheets.googleapis.com/v4/spreadsheets/1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc/values:batchUpdate?key=AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY`;
+                
+                const response = await fetch(batchUpdateUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        valueInputOption: 'USER_ENTERED',
+                        data: updates
+                    })
+                });
+
+                if (response.ok) {
+                    console.log('직접 API 호출로 업데이트 성공');
+                    showMessage('구글시트 업데이트 완료', 'success');
+                } else {
+                    throw new Error('직접 API 호출 실패');
+                }
+            }
+        }
+
+        // 잔디 웹훅 전송 - 시간 표시 추가
+        async function sendToJandi(manager, building, floor, isModification) {
+           // const webhookUrl = 'https://wh.jandi.com/connect-api/webhook/29522216/3d9603c3b428b386c0d640758e236cb4';
+              const webhookUrl = 'https://wh.jandi.com/connect-api/webhook/29522216/6d39892bb9a7a85d3f3d7842cf283ebb';
+            const stats = {
+current: parseInt(document.getElementById('current-count').textContent),
+out: parseInt(document.getElementById('out-count').textContent),
+new: parseInt(document.getElementById('new-count').textContent),
+moveOut: parseInt(document.getElementById('move-out-count').textContent), // 이동- 만 .value 유지
+moveIn: parseInt(document.getElementById('move-in-count').textContent),
+absent: parseInt(document.getElementById('absent-count').textContent),
+etc: parseInt(document.getElementById('etc-count').textContent)
+            };
+            // 특별 상태 학생들 정보 수집 (이름이 없어도 비고가 있으면 포함)
+            const specialStudents = {
+                외박: currentStudents.filter(s => s.status === '외박' && (s.name !== '미배정' || s.memo.trim())),
+                신규: currentStudents.filter(s => s.status === '신규' && (s.name !== '미배정' || s.memo.trim())),
+                '이동-': currentStudents.filter(s => s.status === '이동-' && (s.name !== '미배정' || s.memo.trim())),
+                '이동+': currentStudents.filter(s => s.status === '이동+' && (s.name !== '미배정' || s.memo.trim())),
+                등미: currentStudents.filter(s => s.status === '등미' && (s.name !== '미배정' || s.memo.trim())),
+                퇴소: currentStudents.filter(s => s.status === '퇴소' && (s.name !== '미배정' || s.memo.trim())),
+                정상: currentStudents.filter(s => s.status === '정상' && s.memo && s.memo.trim())
+            };
+
+            // 현재 시간 포맷팅 (한국 시간)
+            const now = new Date();
+            const timeString = now.toLocaleString('ko-KR', {
+                timeZone: 'Asia/Seoul',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+
+            let message = `${isModification ? '🔄 수정보고' : '◆ 인원보고◆'}\n\n`;
+            message += `◆ 보고시간: ${timeString}\n`;
+            message += `◆ 담당자: ${manager}\n`;
+            message += `◆ 위치: ${building}동 ${floor}층\n\n`;
+            message += `▶ 인원 현황 ◀\n`;
+            message += `• 현재원: ${stats.current}명\n`;
+            message += `• 외박: ${stats.out}명\n`;
+            message += `• 신규: ${stats.new}명\n`;
+            message += `• 이동-: ${stats.moveOut}명\n`;
+            message += `• 이동+: ${stats.moveIn}명\n`;
+            message += `• 등미: ${stats.absent}명\n`;
+            message += `• 퇴소: ${stats.etc}명\n\n`;
+
+            // 특별 상태 학생 상세 정보
+            Object.keys(specialStudents).forEach(status => {
+                if (specialStudents[status].length > 0) {
+                    message += `▶ ${status} 학생 목록:\n`;
+                    specialStudents[status].forEach(student => {
+                        message += `   • ${student.room}`;
+                        if (student.name !== '미배정') {
+                            message += ` ${student.name}`;
+                        }
+                        if (student.memo) {
+                            message += ` (${student.memo})`;
+                        }
+                        message += '\n';
+                    });
+                    message += '\n';
+                }
+            });
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        body: message,
+                        connectColor: isModification ? '#ff9500' : '#4f46e5'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('잔디 전송 실패');
+                }
+
+                console.log('잔디 전송 완료');
+            } catch (error) {
+                console.error('잔디 전송 오류:', error);
+                throw error;
+            }
+        }
+
+        // 로딩 표시/숨김 (원본 그대로)
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('submit-btn').disabled = show;
+        }
+
+        // 메시지 표시 (원본 그대로)
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
+            
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 5000);
+        }
+
+        // 이벤트 리스너 등록 (원본 그대로)
+document.getElementById('building-select').addEventListener('change', function() {
+    const building = this.value;
+    const floorSelect = document.getElementById('floor-select');
+
+    // D, E, F동은 2~5층 / A, B, C동은 1~4층으로 옵션 변경
+    if (['D', 'E', 'F'].includes(building)) {
+        floorSelect.innerHTML = `
+            <option value="">층 선택</option>
+            <option value="2">2층 (1인실)</option>
+            <option value="3">3층 (1인실)</option>
+            <option value="4">4층 (1인실)</option>
+            <option value="5">5층 (3인실)</option>
+        `;
+    } else {
+        floorSelect.innerHTML = `
+            <option value="">층 선택</option>
+            <option value="1">1층 (1인실)</option>
+            <option value="2">2층 (1인실)</option>
+            <option value="3">3층 (1인실)</option>
+            <option value="4">4층 (3인실)</option>
+        `;
+    }
+
+    // 학생 목록 초기화
+    document.getElementById('students-section').style.display = 'none';
+});
+
+        document.getElementById('floor-select').addEventListener('change', function() {
+            const building = document.getElementById('building-select').value;
+            const floor = this.value;
+            
+            if (building && floor) {
+                const students = getStudentsByFloor(building, floor);
+                displayStudents(students);
+            } else {
+                document.getElementById('students-section').style.display = 'none';
+            }
+        });
+
+        // 통계 수동 입력 이벤트 (원본 그대로)
+        ['current-count', 'out-count', 'new-count', 'move-out-count', 'move-in-count', 'absent-count', 'etc-count'].forEach(id => {
+            document.getElementById(id).addEventListener('input', function() {
+                // 수동 입력 시 자동 집계 비활성화 표시 (선택사항)
+                console.log(`${id} 수동 변경: ${this.value}`);
+            });
+        });
+
+        // 페이지 로드 시 초기화 (원본 그대로)
+        window.addEventListener('load', function() {
+            loadSheetsData();
+           
+renderHistory();
+            window.addEventListener('scroll', () => {
+                const summary = document.getElementById('sticky-summary');
+                const statsGrid = document.querySelector('.stats-grid');
+                if (!statsGrid) return;
+                const statsBottom = statsGrid.getBoundingClientRect().bottom;
+                const studentsVisible = document.getElementById('students-section').style.display !== 'none';
+                if (statsBottom < 0 && studentsVisible) {
+                    summary.style.display = 'flex';
+                } else {
+                    summary.style.display = 'none';
+                }
+            });
+            
+            // 어제 보고 데이터 복원 (22시 이후)
+            const currentHour = new Date().getHours();
+            if (currentHour >= 22) {
+                // localStorage에서 어제 보고 데이터 복원
+                const yesterdayData = localStorage.getItem('yesterdayReports');
+                if (yesterdayData) {
+                    lastReportDate = JSON.parse(yesterdayData);
+                }
+            }
+        });
+
+        // 매일 22시에 어제 데이터 저장 (원본 그대로)
+        setInterval(() => {
+            const now = new Date();
+            if (now.getHours() === 22 && now.getMinutes() === 0) {
+                localStorage.setItem('yesterdayReports', JSON.stringify(lastReportDate));
+            }
+        }, 600000); // 1분마다 체크
+
+        // ── 담당자·동·층 수동 기억 ──
+        function saveMemory() {
+            const manager  = document.getElementById('manager-select').value;
+            const building = document.getElementById('building-select').value;
+            const floor    = document.getElementById('floor-select').value;
+
+            if (!manager && !building && !floor) {
+                alert('담당자, 동, 층 중 하나 이상을 먼저 선택해주세요.');
+                return;
+            }
+
+            const saved = { manager, building, floor };
+            localStorage.setItem('dormMemory', JSON.stringify(saved));
+            renderMemoryInfo(saved);
+            showMessage('설정이 기억되었습니다.', 'success');
+        }
+
+        function resetMemory() {
+            if (!confirm('기억된 설정을 초기화할까요?')) return;
+            localStorage.removeItem('dormMemory');
+            renderMemoryInfo(null);
+            showMessage('기억된 설정이 초기화되었습니다.', 'success');
+        }
+
+        function renderMemoryInfo(saved) {
+            const el = document.getElementById('memory-info');
+            if (!saved || (!saved.manager && !saved.building && !saved.floor)) {
+                el.className = 'memory-info empty';
+                el.innerHTML = '★기억된 설정 없음 — 담당자·동·층 선택 후 기억하기를 눌러주세요';
+                return;
+            }
+            const managerText  = saved.manager  ? `<strong>${saved.manager}</strong>` : '담당자 미설정';
+            const buildingText = saved.building ? `<strong>${saved.building}동</strong>` : '동 미설정';
+            const floorText    = saved.floor    ? `<strong>${saved.floor}층</strong>`   : '층 미설정';
+            el.className = 'memory-info';
+            el.innerHTML = `♥기억된 설정: ${managerText} · ${buildingText} · ${floorText}`;
+        }
+
+        function loadMemory() {
+            const raw = localStorage.getItem('dormMemory');
+            if (!raw) return;
+
+            const saved = JSON.parse(raw);
+
+            // 담당자 복원
+            if (saved.manager) {
+                document.getElementById('manager-select').value = saved.manager;
+            }
+
+            // 동 복원 + 층 옵션 갱신
+            if (saved.building) {
+                const buildingSelect = document.getElementById('building-select');
+                buildingSelect.value = saved.building;
+
+                // 동에 맞는 층 옵션 업데이트 (기존 change 이벤트 로직과 동일)
+                const floorSelect = document.getElementById('floor-select');
+                if (['D', 'E', 'F'].includes(saved.building)) {
+                    floorSelect.innerHTML = `
+                        <option value="">층 선택</option>
+                        <option value="2">2층 (1인실)</option>
+                        <option value="3">3층 (1인실)</option>
+                        <option value="4">4층 (1인실)</option>
+                        <option value="5">5층 (3인실)</option>
+                    `;
+                } else {
+                    floorSelect.innerHTML = `
+                        <option value="">층 선택</option>
+                        <option value="1">1층 (1인실)</option>
+                        <option value="2">2층 (1인실)</option>
+                        <option value="3">3층 (1인실)</option>
+                        <option value="4">4층 (3인실)</option>
+                    `;
+                }
+
+                // 층 복원
+                if (saved.floor) {
+                    document.getElementById('floor-select').value = saved.floor;
+
+                    // 학생 목록 자동 로드
+                    const students = getStudentsByFloor(saved.building, saved.floor);
+                    displayStudents(students);
+                }
+            }
+
+            renderMemoryInfo(saved);
+        }
+// ── Jandi 미리보기 ──
+        function buildJandiPreviewText(manager, building, floor, isModification) {
+            const current = document.getElementById('current-count').textContent;
+            const out     = document.getElementById('out-count').textContent;
+            const newC    = document.getElementById('new-count').textContent;
+            const moveOut = document.getElementById('move-out-count').textContent;
+            const moveIn  = document.getElementById('move-in-count').textContent;
+            const absent  = document.getElementById('absent-count').textContent;
+            const etc     = document.getElementById('etc-count').textContent;
+
+            const now = new Date();
+            const timeString = now.toLocaleString('ko-KR', {
+                timeZone: 'Asia/Seoul',
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', hour12: false
+            });
+
+            const specialStudents = {
+                '외박':  currentStudents.filter(s => s.status === '외박'  && (s.name !== '미배정' || s.memo.trim())),
+                '신규':  currentStudents.filter(s => s.status === '신규'  && (s.name !== '미배정' || s.memo.trim())),
+                '이동-': currentStudents.filter(s => s.status === '이동-' && (s.name !== '미배정' || s.memo.trim())),
+                '이동+': currentStudents.filter(s => s.status === '이동+' && (s.name !== '미배정' || s.memo.trim())),
+                '등미':  currentStudents.filter(s => s.status === '등미'  && (s.name !== '미배정' || s.memo.trim())),
+                '퇴소':  currentStudents.filter(s => s.status === '퇴소'  && (s.name !== '미배정' || s.memo.trim())),
+                '정상':  currentStudents.filter(s => s.status === '정상'  && s.memo && s.memo.trim())
+            };
+
+            let msg = `${isModification ? '🔄 수정보고' : '◆ 인원보고◆'}\n\n`;
+            msg += `◆ 보고시간: ${timeString}\n`;
+            msg += `◆ 담당자: ${manager}\n`;
+            msg += `◆ 위치: ${building}동 ${floor}층\n\n`;
+            msg += `▶ 인원 현황 ◀\n`;
+            msg += `• 현재원: ${current}명\n`;
+            msg += `• 외박: ${out}명\n`;
+            msg += `• 신규: ${newC}명\n`;
+            msg += `• 이동-: ${moveOut}명\n`;
+            msg += `• 이동+: ${moveIn}명\n`;
+            msg += `• 등미: ${absent}명\n`;
+            msg += `• 퇴소: ${etc}명\n\n`;
+
+            Object.keys(specialStudents).forEach(status => {
+                if (specialStudents[status].length > 0) {
+                    msg += `▶ ${status} 학생 목록:\n`;
+                    specialStudents[status].forEach(student => {
+                        msg += `   • ${student.room}`;
+                        if (student.name !== '미배정') msg += ` ${student.name}`;
+                        if (student.memo) msg += ` (${student.memo})`;
+                        msg += '\n';
+                    });
+                    msg += '\n';
+                }
+            });
+
+            return msg;
+        }
+
+        function toggleJandiPreview() {
+            const preview = document.getElementById('jandi-preview');
+            const arrow   = document.getElementById('preview-arrow');
+            const isOpen  = preview.style.display !== 'none';
+
+            if (isOpen) {
+                preview.style.display = 'none';
+                arrow.classList.remove('open');
+            } else {
+                preview.style.display = 'block';
+                arrow.classList.add('open');
+            }
+        }
+// ── 같은 층 이동 매칭 ──
+        function findSameFloorMatch(index, status) {
+            const matchList = document.getElementById(`match-list-${index}`);
+            if (!matchList) return;
+
+            const targetStatus = status === '이동+' ? '이동-' : '이동+';
+
+            // currentStudents 에서 반대 상태 학생 찾기
+            const candidates = currentStudents
+                .map((s, i) => ({ ...s, localIndex: i }))
+                .filter(s =>
+                    s.localIndex !== index &&
+                    s.status === targetStatus &&
+                    s.name !== '미배정'
+                );
+
+            matchList.innerHTML = '';
+
+            if (candidates.length === 0) {
+                matchList.innerHTML = `
+                    <div class="match-label">🔗 같은 층 ${targetStatus} 학생</div>
+                    <div class="match-none">같은 층에 ${targetStatus} 학생이 없습니다</div>
+                `;
+            } else {
+                matchList.innerHTML = `
+                    <div class="match-label">🔗 같은 층 ${targetStatus} 학생 — 클릭하면 양쪽 메모 자동완성</div>
+                `;
+                candidates.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = 'match-item';
+                    item.innerHTML = `
+                        <span class="match-room">${c.room}</span>
+                        <span class="match-name">${c.name}</span>
+                        <button class="match-btn" onclick="applySameFloorMatch(${index}, ${c.localIndex})">연결하기</button>
+                    `;
+                    matchList.appendChild(item);
+                });
+            }
+
+            matchList.classList.add('visible');
+        }
+
+        function applySameFloorMatch(myIndex, otherIndex) {
+            const me    = currentStudents[myIndex];
+            const other = currentStudents[otherIndex];
+
+            let myMemo, otherMemo;
+
+            if (me.status === '이동+') {
+                // 나: 도착(이동+), 상대: 출발(이동-)
+                myMemo    = `${other.room} ${other.name} → ${me.room}로 이동`;
+                otherMemo = `${other.room} ${other.name} → ${me.room}로 이동`;
+            } else {
+                // 나: 출발(이동-), 상대: 도착(이동+)
+                myMemo    = `${me.room} ${me.name} → ${other.room}로 이동`;
+                otherMemo = `${me.room} ${me.name} → ${other.room}로 이동`;
+            }
+
+            // 내 메모 적용
+            const myInput = document.getElementById(`memo-input-${myIndex}`);
+            if (myInput) {
+                myInput.value = myMemo;
+                updateStudentMemo(myIndex, myMemo);
+            }
+
+            // 상대 메모 적용
+            const otherInput = document.getElementById(`memo-input-${otherIndex}`);
+            if (otherInput) {
+                otherInput.value = otherMemo;
+                updateStudentMemo(otherIndex, otherMemo);
+            }
+
+            // 양쪽 카드 하이라이트
+            const cards = document.querySelectorAll('#students-grid .student-card');
+            if (cards[myIndex])    cards[myIndex].classList.add('modified');
+            if (cards[otherIndex]) cards[otherIndex].classList.add('modified');
+
+            // 상대 카드로 스크롤
+            if (cards[otherIndex]) {
+                cards[otherIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            // 매칭 목록 · 헬퍼 숨기기
+            const myMatch = document.getElementById(`match-list-${myIndex}`);
+            if (myMatch) myMatch.classList.remove('visible');
+            const myHelper = document.getElementById(`move-helper-${myIndex}`);
+            if (myHelper) myHelper.classList.remove('visible');
+
+            showMessage(`✅ ${other.room} ${other.name}과 연결되었습니다.`, 'success');
+        }
+        
+    
+// ── 이동 메모 자동완성 ──
+function renderMoveHelper(index, status) {
+            const helper = document.getElementById(`move-helper-${index}`);
+            if (!helper) return;
+
+            // 이동+/이동- 가 아닌 모든 상태는 헬퍼 완전 초기화
+            if (status !== '이동+' && status !== '이동-') {
+                helper.innerHTML = '';
+                helper.classList.remove('visible');
+                return;
+            }
+
+            if (status === '이동+') {
+                const room = currentStudents[index].room;
+                const name = currentStudents[index].name !== '미배정' ? currentStudents[index].name : '';
+                helper.innerHTML = `
+                    <span class="helper-label">이동(前)호실</span>
+                    <input type="text" id="from-room-${index}" placeholder="예: B403" maxlength="6"
+                        oninput="this.value=this.value.toUpperCase()"
+                        onkeydown="if(event.key==='Enter') applyMoveMemo(${index})">
+                    <span class="arrow-icon">→</span>
+                    <span class="helper-label">${room} ${name}</span>
+                    <button class="btn-apply-memo" onclick="applyMoveMemo(${index})">메모 적용</button>
+                `;
+                helper.classList.add('visible');
+
+            } else if (status === '이동-') {
+                const room = currentStudents[index].room;
+                helper.innerHTML = `
+                    <span class="helper-label">${room}</span>
+                    <input type="text" id="move-name-${index}" placeholder="이름" maxlength="10"
+                        onkeydown="if(event.key==='Enter') document.getElementById('from-room-${index}').focus()">
+                    <span class="arrow-icon">→</span>
+                    <input type="text" id="from-room-${index}" placeholder="이동할호실" maxlength="6"
+                        oninput="this.value=this.value.toUpperCase()"
+                        onkeydown="if(event.key==='Enter') applyMoveMemo(${index})">
+                    <button class="btn-apply-memo" onclick="applyMoveMemo(${index})">메모 적용</button>
+                `;
+                helper.classList.add('visible');
+            }
+        }
+
+        function applyMoveMemo(index) {
+            const student   = currentStudents[index];
+            const roomInput = document.getElementById(`from-room-${index}`);
+            if (!roomInput) return;
+
+            const otherRoom = roomInput.value.trim().toUpperCase();
+            if (!otherRoom) {
+                alert('호실을 입력해주세요. 예: B403');
+                return;
+            }
+
+            let memoText = '';
+            if (student.status === '이동+') {
+                // 이동+: 출발호실 입력 → "B403 홍길동 → B401로 이동"
+                memoText = `${otherRoom} ${student.name} → ${student.room}로 이동`;
+            } else {
+                // 이동-/미배정: 출발호실 + 이름 입력 → "B403 홍길동 → B401로 이동"
+                const nameInput = document.getElementById(`move-name-${index}`);
+                const moveName  = nameInput ? nameInput.value.trim() : '';
+                memoText = `${student.room} ${moveName} → ${otherRoom}`.trim();
+            }
+            const memoInput = document.getElementById(`memo-input-${index}`);
+            if (memoInput) {
+                memoInput.value = memoText;
+                updateStudentMemo(index, memoText);
+            }
+
+            // 적용 후 헬퍼 숨기기
+            const helper = document.getElementById(`move-helper-${index}`);
+            if (helper) helper.classList.remove('visible');
+        }
+
+        // ── 빠른 메모 버튼 ──
+        
+// ── 검색/상태 필터 ──
+        function applyFilter() {
+            const searchVal = document.getElementById('search-input').value.trim().toLowerCase();
+            const statusVal = document.getElementById('status-filter').value;
+            const cards = document.querySelectorAll('#students-grid .student-card');
+            let visible = 0;
+            cards.forEach((card, i) => {
+                const student = currentStudents[i];
+                if (!student) return;
+                const matchSearch = !searchVal ||
+                    student.name.toLowerCase().includes(searchVal) ||
+                    student.room.toLowerCase().includes(searchVal);
+                const matchStatus = !statusVal || student.status === statusVal;
+                card.style.display = (matchSearch && matchStatus) ? '' : 'none';
+                if (matchSearch && matchStatus) visible++;
+            });
+            const total = cards.length;
+            document.getElementById('filter-count').textContent =
+                (searchVal || statusVal) ? `${visible} / ${total}명 표시 중` : `총 ${total}명`;
+        }
+
+        // ── 스티키 요약바 업데이트 ──
+        function updateStickyBar() {
+            const building = document.getElementById('building-select').value;
+            const floor = document.getElementById('floor-select').value;
+            if (!building || !floor) return;
+            document.getElementById('sticky-location').textContent = `${building}동 ${floor}층`;
+            document.getElementById('s-current').textContent  = `현재원 ${document.getElementById('current-count').textContent}`;
+            document.getElementById('s-out').textContent      = `외박 ${document.getElementById('out-count').textContent}`;
+            document.getElementById('s-new').textContent      = `신규 ${document.getElementById('new-count').textContent}`;
+            document.getElementById('s-moveout').textContent  = `이동- ${document.getElementById('move-out-count').textContent}`;
+            document.getElementById('s-movein').textContent   = `이동+ ${document.getElementById('move-in-count').textContent}`;
+            document.getElementById('s-absent').textContent   = `등미 ${document.getElementById('absent-count').textContent}`;
+            document.getElementById('s-etc').textContent      = `퇴소 ${document.getElementById('etc-count').textContent}`;
+        }
+
+        // ── 모달 열기/닫기/확정 ──
+        function closeModal() {
+            document.getElementById('confirm-modal').classList.remove('active');
+        }
+
+        async function confirmSubmit() {
+            closeModal();
+            const manager  = document.getElementById('manager-select').value;
+            const building = document.getElementById('building-select').value;
+            const floor    = document.getElementById('floor-select').value;
+            const isModification = document.getElementById('is-modification').checked;
+            const reportKey = `${building}-${floor}`;
+            const today = new Date().toDateString();
+            try {
+                showLoading(true);
+                await updateGoogleSheets();
+                await sendToJandi(manager, building, floor, isModification);
+                lastReportDate[reportKey] = today;
+                addHistory(building, floor, manager, isModification);
+                showMessage('인원보고가 성공적으로 제출되었습니다.', 'success');
+                showLoading(false);
+            } catch (error) {
+                console.error('제출 실패:', error);
+                showMessage('제출 중 오류가 발생했습니다.', 'error');
+                showLoading(false);
+            }
+        }
+
+        // ── 제출 이력 ──
+        function addHistory(building, floor, manager, isModification) {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
+            const current = document.getElementById('current-count').textContent;
+            const item = { building, floor, manager, isModification, timeStr, current };
+            const stored = JSON.parse(sessionStorage.getItem('submitHistory') || '[]');
+            stored.unshift(item);
+            if (stored.length > 10) stored.pop();
+            sessionStorage.setItem('submitHistory', JSON.stringify(stored));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const stored = JSON.parse(sessionStorage.getItem('submitHistory') || '[]');
+            const list = document.getElementById('history-list');
+            if (stored.length === 0) {
+                list.innerHTML = '<div class="history-empty">아직 제출 이력이 없습니다</div>';
+                return;
+            }
+            list.innerHTML = stored.map(item => `
+                <div class="history-item">
+                    <span class="h-badge">${item.building}동 ${item.floor}층</span>
+                    <span>${item.manager}</span>
+                    <span style="color:#6b7280">${item.isModification ? '🔄 수정' : '✅ 정상'}</span>
+                    <span>현재원 ${item.current}명</span>
+                    <span class="h-time">${item.timeStr}</span>
+                </div>
+            `).join('');
+        }
+        
+    </script>
+        <!-- 개발자 도구 방지 코드 -->
+    <script>
+        // F12 키 방지
+        document.addEventListener('keydown', function(e) {
+            // F12 키
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl+Shift+I (개발자 도구)
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl+Shift+J (콘솔)
+            if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl+Shift+C (요소 검사)
+            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl+U (소스 보기)
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Mac용: Cmd+Option+I
+            if (e.metaKey && e.altKey && e.key === 'i') {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Mac용: Cmd+Option+J
+            if (e.metaKey && e.altKey && e.key === 'j') {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Mac용: Cmd+Option+C
+            if (e.metaKey && e.altKey && e.key === 'c') {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        // 우클릭 방지 (선택사항)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+          </script>
+</body>
+</html>
