@@ -1467,13 +1467,12 @@ etc: parseInt(document.getElementById('etc-count').textContent)
             };
             // 특별 상태 학생들 정보 수집 (이름이 없어도 비고가 있으면 포함)
             const specialStudents = {
-                외박: currentStudents.filter(s => s.status === '외박' && (s.name !== '미배정' || s.memo.trim())),
                 신규: currentStudents.filter(s => s.status === '신규' && (s.name !== '미배정' || s.memo.trim())),
                 '이동-': currentStudents.filter(s => s.status === '이동-' && (s.name !== '미배정' || s.memo.trim())),
                 '이동+': currentStudents.filter(s => s.status === '이동+' && (s.name !== '미배정' || s.memo.trim())),
                 등미: currentStudents.filter(s => s.status === '등미' && (s.name !== '미배정' || s.memo.trim())),
                 퇴소: currentStudents.filter(s => s.status === '퇴소' && (s.name !== '미배정' || s.memo.trim())),
-                정상: currentStudents.filter(s => s.status === '정상' && s.memo && s.memo.trim())
+                정상: currentStudents.filter(s => s.status === '정상' && (s.name !== '미배정' || s.memo.trim()))
             };
 
             // 현재 시간 포맷팅 (한국 시간)
@@ -1748,14 +1747,13 @@ renderHistory();
                 hour: '2-digit', minute: '2-digit', hour12: false
             });
 
-            const specialStudents = {
-                '외박':  currentStudents.filter(s => s.status === '외박'  && (s.name !== '미배정' || s.memo.trim())),
+                   const specialStudents = {
                 '신규':  currentStudents.filter(s => s.status === '신규'  && (s.name !== '미배정' || s.memo.trim())),
                 '이동-': currentStudents.filter(s => s.status === '이동-' && (s.name !== '미배정' || s.memo.trim())),
                 '이동+': currentStudents.filter(s => s.status === '이동+' && (s.name !== '미배정' || s.memo.trim())),
                 '등미':  currentStudents.filter(s => s.status === '등미'  && (s.name !== '미배정' || s.memo.trim())),
                 '퇴소':  currentStudents.filter(s => s.status === '퇴소'  && (s.name !== '미배정' || s.memo.trim())),
-                '정상':  currentStudents.filter(s => s.status === '정상'  && s.memo && s.memo.trim())
+                '정상':  currentStudents.filter(s => s.status === '정상'  && (s.name !== '미배정' || s.memo.trim()))
             };
 
             let msg = `${isModification ? '🔄 수정보고' : '◆ 인원보고◆'}\n\n`;
