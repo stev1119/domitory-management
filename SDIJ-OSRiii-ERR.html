@@ -825,7 +825,7 @@
                         <option value="박길훈">박길훈</option>
                         <option value="김인걸">김인걸</option>
                         <option value="오순주">오순주</option>
-                        <option value="신규2">신규2</option>
+                        <option value="신규1">신규1</option>
                     </select>
                 </div>
                 <div class="control-group">
@@ -1308,7 +1308,7 @@ document.getElementById('etc-count').textContent = stats.etc;
             document.getElementById('confirm-modal').classList.add('active');
         }
         // 구글 시트 업데이트 - 수정된 버전
-        sync function updateGoogleSheets(students) {
+        async function updateGoogleSheets(students) {
             try {
                 // 실제 Apps Script 웹앱 URL
                 const scriptUrl = 'https://script.google.com/macros/s/AKfycbx4p5ROFUsWe09qYu98MEmEQoMuf8U09u677KDta7ahJhZVVyEkFASLONJWZdvjQJSnow/exec';
