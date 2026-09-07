@@ -924,6 +924,7 @@
     
         let currentStudents = [];
         let lastReportDate = {};
+        let pendingReport = null; // ★ 제출 시점의 담당자/동/층/인원수/학생명단을 통째로 저장
 
         // 기숙사 호실 범위 정의
         const dormitoryRanges = {
@@ -1284,22 +1285,30 @@ document.getElementById('etc-count').textContent = stats.etc;
             const absent  = document.getElementById('absent-count').textContent;
             const etc     = document.getElementById('etc-count').textContent;
 
+            // ★ 제출 시점 스냅샷: 라벨뿐 아니라 인원수/학생명단까지 통째로 고정
+            pendingReport = {
+                manager,
+                building,
+                floor,
+                isModification,
+                reportKey,
+                stats: { current, out, new: newC, moveOut, moveIn, absent, etc },
+                students: JSON.parse(JSON.stringify(currentStudents))
+            };
+
             document.getElementById('modal-summary-content').innerHTML = `
                 <strong>${building}동 ${floor}층</strong> · 담당: <strong>${manager}</strong>${isModification ? ' · 🔄 수정보고' : ''}<br>
                 현재원 <strong>${current}</strong>명 &nbsp;|&nbsp; 외박 <strong>${out}</strong>명 &nbsp;|&nbsp; 신규 <strong>${newC}</strong>명<br>
                 이동- <strong>${moveOut}</strong>명 &nbsp;|&nbsp; 이동+ <strong>${moveIn}</strong>명 &nbsp;|&nbsp; 등미 <strong>${absent}</strong>명 &nbsp;|&nbsp; 퇴소 <strong>${etc}</strong>명
             `;
-const previewText = buildJandiPreviewText(manager, building, floor, isModification);
+            const previewText = buildJandiPreviewText(pendingReport);
             document.getElementById('jandi-preview').textContent = previewText;
             document.getElementById('jandi-preview').style.display = 'none';
             document.getElementById('preview-arrow').classList.remove('open');
             document.getElementById('confirm-modal').classList.add('active');
-            document.getElementById('confirm-modal').classList.add('active');
-
-
         }
         // 구글 시트 업데이트 - 수정된 버전
-        async function updateGoogleSheets() {
+        sync function updateGoogleSheets(students) {
             try {
                 // 실제 Apps Script 웹앱 URL
                 const scriptUrl = 'https://script.google.com/macros/s/AKfycbx4p5ROFUsWe09qYu98MEmEQoMuf8U09u677KDta7ahJhZVVyEkFASLONJWZdvjQJSnow/exec';
@@ -1382,8 +1391,9 @@ const previewText = buildJandiPreviewText(manager, building, floor, isModificati
                 console.error('구글시트 업데이트 오류:', error);
                 
                 // 백업: 직접 API 호출 시도
+                                // 백업: 직접 API 호출 시도
                 try {
-                    await updateSheetsDirectly();
+                    await updateSheetsDirectly(students);
                 } catch (directError) {
                     console.error('직접 API 호출도 실패:', directError);
                     
@@ -1401,10 +1411,10 @@ const previewText = buildJandiPreviewText(manager, building, floor, isModificati
         }
 
         // 백업용 직접 API 호출 - 수정된 버전
-        async function updateSheetsDirectly() {
+        async function updateSheetsDirectly(students) {
             const updates = [];
             
-            currentStudents.forEach(student => {
+            students.forEach(student => {
                 if (student.rowIndex >= 0) {
                     const actualSheetRow = sheetsData[student.rowIndex][0]; // 실제 시트 행 번호
                     
@@ -1453,71 +1463,11 @@ const previewText = buildJandiPreviewText(manager, building, floor, isModificati
         }
 
         // 잔디 웹훅 전송 - 시간 표시 추가
-        async function sendToJandi(manager, building, floor, isModification) {
-           // const webhookUrl = 'https://wh.jandi.com/connect-api/webhook/29522216/3d9603c3b428b386c0d640758e236cb4';
+             async function sendToJandi(report) {
               const webhookUrl = 'https://wh.jandi.com/connect-api/webhook/29522216/6d39892bb9a7a85d3f3d7842cf283ebb';
-            const stats = {
-current: parseInt(document.getElementById('current-count').textContent),
-out: parseInt(document.getElementById('out-count').textContent),
-new: parseInt(document.getElementById('new-count').textContent),
-moveOut: parseInt(document.getElementById('move-out-count').textContent), // 이동- 만 .value 유지
-moveIn: parseInt(document.getElementById('move-in-count').textContent),
-absent: parseInt(document.getElementById('absent-count').textContent),
-etc: parseInt(document.getElementById('etc-count').textContent)
-            };
-            // 특별 상태 학생들 정보 수집 (이름이 없어도 비고가 있으면 포함)
-            const specialStudents = {
-                외박: currentStudents.filter(s => s.status === '외박' && (s.name !== '미배정' || s.memo.trim())),
-                신규: currentStudents.filter(s => s.status === '신규' && (s.name !== '미배정' || s.memo.trim())),
-                '이동-': currentStudents.filter(s => s.status === '이동-' && (s.name !== '미배정' || s.memo.trim())),
-                '이동+': currentStudents.filter(s => s.status === '이동+' && (s.name !== '미배정' || s.memo.trim())),
-                등미: currentStudents.filter(s => s.status === '등미' && (s.name !== '미배정' || s.memo.trim())),
-                퇴소: currentStudents.filter(s => s.status === '퇴소' && (s.name !== '미배정' || s.memo.trim())),
-                정상: currentStudents.filter(s => s.status === '정상' && s.memo && s.memo.trim())
-            };
 
-            // 현재 시간 포맷팅 (한국 시간)
-            const now = new Date();
-            const timeString = now.toLocaleString('ko-KR', {
-                timeZone: 'Asia/Seoul',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            });
-
-            let message = `${isModification ? '🔄 수정보고' : '◆ 인원보고◆'}\n\n`;
-            message += `◆ 보고시간: ${timeString}\n`;
-            message += `◆ 담당자: ${manager}\n`;
-            message += `◆ 위치: ${building}동 ${floor}층\n\n`;
-            message += `▶ 인원 현황 ◀\n`;
-            message += `• 현재원: ${stats.current}명\n`;
-            message += `• 외박: ${stats.out}명\n`;
-            message += `• 신규: ${stats.new}명\n`;
-            message += `• 이동-: ${stats.moveOut}명\n`;
-            message += `• 이동+: ${stats.moveIn}명\n`;
-            message += `• 등미: ${stats.absent}명\n`;
-            message += `• 퇴소: ${stats.etc}명\n\n`;
-
-            // 특별 상태 학생 상세 정보
-            Object.keys(specialStudents).forEach(status => {
-                if (specialStudents[status].length > 0) {
-                    message += `▶ ${status} 학생 목록:\n`;
-                    specialStudents[status].forEach(student => {
-                        message += `   • ${student.room}`;
-                        if (student.name !== '미배정') {
-                            message += ` ${student.name}`;
-                        }
-                        if (student.memo) {
-                            message += ` (${student.memo})`;
-                        }
-                        message += '\n';
-                    });
-                    message += '\n';
-                }
-            });
+            // ★ DOM/currentStudents를 다시 읽지 않고, 제출 시점 스냅샷(report)만 사용
+            const message = buildJandiPreviewText(report);
 
             try {
                 const response = await fetch(webhookUrl, {
@@ -1527,7 +1477,7 @@ etc: parseInt(document.getElementById('etc-count').textContent)
                     },
                     body: JSON.stringify({
                         body: message,
-                        connectColor: isModification ? '#ff9500' : '#4f46e5'
+                        connectColor: report.isModification ? '#ff9500' : '#4f46e5'
                     })
                 });
 
@@ -1732,14 +1682,8 @@ renderHistory();
             renderMemoryInfo(saved);
         }
 // ── Jandi 미리보기 ──
-        function buildJandiPreviewText(manager, building, floor, isModification) {
-            const current = document.getElementById('current-count').textContent;
-            const out     = document.getElementById('out-count').textContent;
-            const newC    = document.getElementById('new-count').textContent;
-            const moveOut = document.getElementById('move-out-count').textContent;
-            const moveIn  = document.getElementById('move-in-count').textContent;
-            const absent  = document.getElementById('absent-count').textContent;
-            const etc     = document.getElementById('etc-count').textContent;
+        function buildJandiPreviewText(report) {
+            const { manager, building, floor, isModification, stats, students } = report;
 
             const now = new Date();
             const timeString = now.toLocaleString('ko-KR', {
@@ -1749,13 +1693,13 @@ renderHistory();
             });
 
             const specialStudents = {
-                '외박':  currentStudents.filter(s => s.status === '외박'  && (s.name !== '미배정' || s.memo.trim())),
-                '신규':  currentStudents.filter(s => s.status === '신규'  && (s.name !== '미배정' || s.memo.trim())),
-                '이동-': currentStudents.filter(s => s.status === '이동-' && (s.name !== '미배정' || s.memo.trim())),
-                '이동+': currentStudents.filter(s => s.status === '이동+' && (s.name !== '미배정' || s.memo.trim())),
-                '등미':  currentStudents.filter(s => s.status === '등미'  && (s.name !== '미배정' || s.memo.trim())),
-                '퇴소':  currentStudents.filter(s => s.status === '퇴소'  && (s.name !== '미배정' || s.memo.trim())),
-                '정상':  currentStudents.filter(s => s.status === '정상'  && s.memo && s.memo.trim())
+                '외박':  students.filter(s => s.status === '외박'  && (s.name !== '미배정' || s.memo.trim())),
+                '신규':  students.filter(s => s.status === '신규'  && (s.name !== '미배정' || s.memo.trim())),
+                '이동-': students.filter(s => s.status === '이동-' && (s.name !== '미배정' || s.memo.trim())),
+                '이동+': students.filter(s => s.status === '이동+' && (s.name !== '미배정' || s.memo.trim())),
+                '등미':  students.filter(s => s.status === '등미'  && (s.name !== '미배정' || s.memo.trim())),
+                '퇴소':  students.filter(s => s.status === '퇴소'  && (s.name !== '미배정' || s.memo.trim())),
+                '정상':  students.filter(s => s.status === '정상'  && s.memo && s.memo.trim())
             };
 
             let msg = `${isModification ? '🔄 수정보고' : '◆ 인원보고◆'}\n\n`;
@@ -1763,13 +1707,13 @@ renderHistory();
             msg += `◆ 담당자: ${manager}\n`;
             msg += `◆ 위치: ${building}동 ${floor}층\n\n`;
             msg += `▶ 인원 현황 ◀\n`;
-            msg += `• 현재원: ${current}명\n`;
-            msg += `• 외박: ${out}명\n`;
-            msg += `• 신규: ${newC}명\n`;
-            msg += `• 이동-: ${moveOut}명\n`;
-            msg += `• 이동+: ${moveIn}명\n`;
-            msg += `• 등미: ${absent}명\n`;
-            msg += `• 퇴소: ${etc}명\n\n`;
+            msg += `• 현재원: ${stats.current}명\n`;
+            msg += `• 외박: ${stats.out}명\n`;
+            msg += `• 신규: ${stats.new}명\n`;
+            msg += `• 이동-: ${stats.moveOut}명\n`;
+            msg += `• 이동+: ${stats.moveIn}명\n`;
+            msg += `• 등미: ${stats.absent}명\n`;
+            msg += `• 퇴소: ${stats.etc}명\n\n`;
 
             Object.keys(specialStudents).forEach(status => {
                 if (specialStudents[status].length > 0) {
@@ -2009,22 +1953,26 @@ function renderMoveHelper(index, status) {
             document.getElementById('confirm-modal').classList.remove('active');
         }
 
-        async function confirmSubmit() {
+                async function confirmSubmit() {
             closeModal();
-            const manager  = document.getElementById('manager-select').value;
-            const building = document.getElementById('building-select').value;
-            const floor    = document.getElementById('floor-select').value;
-            const isModification = document.getElementById('is-modification').checked;
-            const reportKey = `${building}-${floor}`;
+
+            // ★ submitReport()에서 만들어 둔 스냅샷만 사용 — 그 사이 층을 바꿔도 영향 없음
+            const report = pendingReport;
+            if (!report) {
+                showMessage('제출할 보고 데이터가 없습니다. 다시 시도해주세요.', 'error');
+                return;
+            }
+
             const today = new Date().toDateString();
             try {
                 showLoading(true);
-                await updateGoogleSheets();
-                await sendToJandi(manager, building, floor, isModification);
-                lastReportDate[reportKey] = today;
-                addHistory(building, floor, manager, isModification);
+                await updateGoogleSheets(report.students);
+                await sendToJandi(report);
+                lastReportDate[report.reportKey] = today;
+                addHistory(report.building, report.floor, report.manager, report.isModification, report.stats.current);
                 showMessage('인원보고가 성공적으로 제출되었습니다.', 'success');
                 showLoading(false);
+                pendingReport = null;
             } catch (error) {
                 console.error('제출 실패:', error);
                 showMessage('제출 중 오류가 발생했습니다.', 'error');
@@ -2033,10 +1981,9 @@ function renderMoveHelper(index, status) {
         }
 
         // ── 제출 이력 ──
-        function addHistory(building, floor, manager, isModification) {
+        function addHistory(building, floor, manager, isModification, current) {
             const now = new Date();
             const timeStr = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
-            const current = document.getElementById('current-count').textContent;
             const item = { building, floor, manager, isModification, timeStr, current };
             const stored = JSON.parse(sessionStorage.getItem('submitHistory') || '[]');
             stored.unshift(item);
