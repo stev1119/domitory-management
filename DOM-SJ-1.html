@@ -2616,6 +2616,7 @@ let finalMemo = memo;
             const birthDate = row[11] || '';
             const gender = row[12] || '';
             const dormTeacher = row[13] || '';   // N열: 기숙사 선생님
+           const enrollDate = row[18] || '';    // S열: 입소일
             const school = row[14] || '';
             const classroom = row[15] || '';
            const qColumnData = row[16] || '';
@@ -2665,6 +2666,8 @@ let finalMemo = memo;
     <div class="detail-label">기숙사 선생님</div>
     <div class="detail-value">${dormTeacher}</div>
 </div>
+<div class="detail-label">반</div>
+<div class="detail-value">${classroom}</div>
                         <div class="detail-item">
                             <div class="detail-label">출신고교</div>
                             <div class="detail-value">${school}</div>
