@@ -2592,7 +2592,7 @@ function showExitedStudentDetail(exitedDataStr) {
         const list = [];
         for (let c = start; c <= end; c++) {
             const v = (row[c] || '').toString().trim();
-            if (v) list.push({ label: headerRow[c] || `${defaultLabel} ${c - start + 1}`, value: v });
+            if (v) list.push({ label: `${defaultLabel} ${c - start + 1}`, value: v });
         }
         return list;
     };
