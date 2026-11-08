@@ -1028,6 +1028,13 @@ let afSheetData = [];
 let exitedStudentsData = [];  // 퇴소학생 데이터 추가
 let reportData = {};
 let searchTimeout;
+let historyMap = {};  // 이름 → 상담/건강 기록
+
+// 새 시트(B열=0 기준) 열 위치
+const COUNSEL_START = 36; // AL
+const COUNSEL_END   = 55; // BE
+const HEALTH_START  = 56; // BF
+const HEALTH_END    = 70; // BT
 
         // 기숙사 정보 정의
         const buildingInfo = {
@@ -1302,7 +1309,7 @@ await loadExitedStudentsData();
                 console.log('시트 데이터 로드 시도 중...');
                 
                 // 방법 1: 공개 시트 CSV 방식
-                const csvUrl = `https://docs.google.com/spreadsheets/d/1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc/export?format=csv&gid=0`;
+               const csvUrl = `https://docs.google.com/spreadsheets/d/1an0zN3-clDXzco8U5Satq46_Sop4ypXkbHn1ePnFOIo/export?format=csv&gid=0`;
                 
                 try {
                     console.log('CSV 방식으로 시도 중...');
@@ -1339,7 +1346,7 @@ await loadExitedStudentsData();
                 }
                 
                 // 방법 2: Google Sheets API 방식 (올바른 범위)
-                const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc/values/yulee!B3:AN1000?key=AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY`;
+                const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/1an0zN3-clDXzco8U5Satq46_Sop4ypXkbHn1ePnFOIo/values/yulee!B3:AN1000?key=AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY`;
                 
                 console.log('API 방식으로 시도 중... (범위: B3:P1000)');
                 const response = await fetch(apiUrl);
@@ -1509,64 +1516,71 @@ async function loadAFSheetData() {
 }
         // 퇴소학생 시트 데이터 로드
 // 퇴소학생 시트 데이터 로드
+// 퇴소학생 + 상담/건강 기록 시트 로드
 async function loadExitedStudentsData() {
     try {
-        console.log('퇴소학생 시트 데이터 로드 시작...');
-        
-        // API 방식으로 시도 (퇴소학생 시트의 GID 확인 필요)
-        const spreadsheetId = '1NuB6N-kdJUXfQgYh3VM6TIfbIIMQj6NvvCNU4TGSJYw';
-        const sheetName = 'IF';  // 시트 이름
-        const range = 'B:Z';  // B열부터 Z열까지 모든 데이터
+        console.log('상담/건강/퇴소 시트 로드 시작...');
+
+        const spreadsheetId = '1YDcSNa2PpV0_m1QFTgSgBldIh2eDeOpUl5gl8bScNAY';
+        const sheetName = 'IF';      // ★ 새 시트의 탭 이름 확인
+        const range = 'B:BT';        // AL~BT까지 포함하도록 확장
         const apiKey = 'AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY';
-        
+
         const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetName}!${range}?key=${apiKey}`;
-        
-        console.log('퇴소학생 API 호출:', apiUrl);
         const response = await fetch(apiUrl);
-        
-        if (response.ok) {
-            const data = await response.json();
-            
-            if (data.values && data.values.length > 0) {
-                exitedStudentsData = [];
-                
-                // 첫 번째 행은 헤더로 가정
-                const headers = data.values[0];
-                console.log('퇴소학생 시트 헤더:', headers);
-                
-                // 헤더 다음 행부터 데이터 처리
-                for (let i = 1; i < data.values.length; i++) {
-                    const row = data.values[i];
-                    
-                    // B열(인덱스 0)과 C열(인덱스 1)에서 이름 확인
-                    const nameB = row[0] || '';
-                    const nameC = row[1] || '';
-                    
-                    // 이름이 있는 행만 저장
-                    if (nameB.trim() || nameC.trim()) {
-                        exitedStudentsData.push({
-                            rowIndex: i + 1,  // 실제 시트 행 번호
-                            name: nameB.trim() || nameC.trim(),
-                            fullRow: row,
-                            headers: headers
-                        });
-                    }
-                }
-                
-                console.log('퇴소학생 시트 로드 성공:', exitedStudentsData.length, '행');
-                console.log('첫 3개 샘플:', exitedStudentsData.slice(0, 3));
-                return true;
-            } else {
-                console.warn('퇴소학생 시트에 데이터가 없습니다.');
-                return false;
-            }
-        } else {
-            console.error('퇴소학생 시트 API 호출 실패:', response.status);
+
+        if (!response.ok) {
+            console.error('시트 API 호출 실패:', response.status);
             return false;
         }
-        
+
+        const data = await response.json();
+        if (!data.values || data.values.length === 0) return false;
+
+        exitedStudentsData = [];
+        historyMap = {};
+
+        const headers = data.values[0];
+
+        for (let i = 1; i < data.values.length; i++) {
+            const row = data.values[i];
+            const name = ((row[0] || '').trim() || (row[1] || '').trim());
+            if (!name) continue;
+
+            exitedStudentsData.push({
+                rowIndex: i + 1,
+                name: name,
+                fullRow: row,
+                headers: headers
+            });
+
+            // 상담기록 (AL~BE)
+            const counsel = [];
+            for (let c = COUNSEL_START; c <= COUNSEL_END; c++) {
+                if (row[c] && row[c].trim()) {
+                    counsel.push({ label: headers[c] || `상담 ${c - COUNSEL_START + 1}`, value: row[c] });
+                }
+            }
+
+            // 건강기록 (BF~BT)
+            const health = [];
+            for (let c = HEALTH_START; c <= HEALTH_END; c++) {
+                if (row[c] && row[c].trim()) {
+                    health.push({ label: headers[c] || `건강 ${c - HEALTH_START + 1}`, value: row[c] });
+                }
+            }
+
+            // 동명이인이면 기록을 합침
+            if (!historyMap[name]) historyMap[name] = { counsel: [], health: [] };
+            historyMap[name].counsel.push(...counsel);
+            historyMap[name].health.push(...health);
+        }
+
+        console.log('시트 로드 성공:', exitedStudentsData.length, '행');
+        return true;
+
     } catch (error) {
-        console.error('퇴소학생 시트 로드 실패:', error);
+        console.error('시트 로드 실패:', error);
         return false;
     }
 }
@@ -2377,8 +2391,9 @@ function showExitedStudentDetail(exitedDataStr) {
         
         // 헤더와 데이터를 매칭하여 표시
         let detailsHtml = '';
-        for (let i = 0; i < headers.length && i < row.length; i++) {
-            if (row[i] && row[i].trim()) {
+for (let i = 0; i < headers.length && i < row.length; i++) {
+    if (i >= COUNSEL_START && i <= HEALTH_END) continue;   // ← 추가
+    if (row[i] && row[i].trim()) {
                 detailsHtml += `
                     <div class="detail-item">
                         <div class="detail-label">${headers[i] || `항목 ${i + 1}`}</div>
@@ -2396,6 +2411,7 @@ function showExitedStudentDetail(exitedDataStr) {
                 </div>
                 <div class="student-details">
                     ${detailsHtml}
+                    ${buildHistoryHtml(getHistoryByName(exitedData.name))}
                     <div class="detail-item" style="grid-column: 1 / -1; margin-top: 15px;">
                         <div class="detail-label">비고</div>
                         <div class="detail-value" style="background: #fee2e2; padding: 12px; border-radius: 8px; color: #991b1b; font-weight: 600;">
@@ -2586,11 +2602,7 @@ function showExitedStudentDetail(exitedDataStr) {
             const memo = row[5] || '';
            // ===== 상담 내용 추가 (R~V열 = 인덱스 17~21) =====
 // R~AC열 = 인덱스 17~28 (yulee시트 R열 = IF시트 AL열, 12개)
-    const counselData = [
-        row[17]||'', row[18]||'', row[19]||'', row[20]||'',
-        row[21]||'', row[22]||'', row[23]||'', row[24]||'',
-        row[25]||'', row[26]||'', row[27]||'', row[28]||''
-    ].filter(c => c && c.trim() !== '');
+    const historyHtml = buildHistoryHtml(getHistoryByName(name));
            
 let finalMemo = memo;
     if (additionalNote && additionalNote !== 'null') {
@@ -2603,7 +2615,7 @@ let finalMemo = memo;
             const lifeTeacher = row[10] || '';  // 생활담임은 K열로 이동
             const birthDate = row[11] || '';
             const gender = row[12] || '';
-            const enrollDate = row[13] || '';
+            const dormTeacher = row[13] || '';   // N열: 기숙사 선생님
             const school = row[14] || '';
             const classroom = row[15] || '';
            const qColumnData = row[16] || '';
@@ -2650,9 +2662,9 @@ let finalMemo = memo;
                             <div class="detail-value">${lifeTeacher}</div>
                         </div>
                         <div class="detail-item">
-                            <div class="detail-label">입소일</div>
-                            <div class="detail-value">${enrollDate}</div>
-                        </div>
+    <div class="detail-label">기숙사 선생님</div>
+    <div class="detail-value">${dormTeacher}</div>
+</div>
                         <div class="detail-item">
                             <div class="detail-label">출신고교</div>
                             <div class="detail-value">${school}</div>
@@ -2673,30 +2685,71 @@ let finalMemo = memo;
             <div class="detail-value" style="background: ${additionalNote && additionalNote !== 'null' ? '#fef3c7' : 'transparent'}; padding: ${additionalNote && additionalNote !== 'null' ? '8px' : '0'}; border-radius: 6px;">${finalMemo}</div>
         </div>
     ` : ''}
-     <!-- ===== 상담 내용 섹션 추가 ===== -->
-                ${counselData.length > 0 ? `
-                    <div class="detail-item" style="grid-column: 1 / -1; margin-top: 15px;">
-                        <div class="detail-label" style="font-size: 1.1rem; font-weight: 700; color: #4f46e5; margin-bottom: 10px;">
-                            ◆ 상담 기록 (${counselData.length}건)
-                        </div>
-                        <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 15px; border-radius: 12px; border-left: 4px solid #3b82f6;">
-                            ${counselData.map((counsel, index) => `
-                                <div style="margin-bottom: ${index < counselData.length - 1 ? '12px' : '0'}; padding-bottom: ${index < counselData.length - 1 ? '12px' : '0'}; border-bottom: ${index < counselData.length - 1 ? '1px solid #cbd5e1' : 'none'};">
-                                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 600; margin-bottom: 4px;">
-                                        ${index + 1}차 상담
-                                    </div>
-                                    <div style="font-size: 0.9rem; color: #1e293b; line-height: 1.6; white-space: pre-wrap;">
-                                        ${counsel}
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                ` : ''}
+      ${historyHtml}
             </div>
         </div>
     `;
 }
+
+// HTML 특수문자 처리
+function escHtml(s) {
+    return String(s || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+// 이름으로 상담/건강 기록 찾기
+function getHistoryByName(name) {
+    return historyMap[(name || '').trim()] || { counsel: [], health: [] };
+}
+
+// 상담기록 + 건강기록 HTML 생성
+function buildHistoryHtml(hist) {
+    let html = '';
+
+    // 상담기록 (AL~BE)
+    if (hist.counsel.length > 0) {
+        const n = hist.counsel.length;
+        html += `
+        <div class="detail-item" style="grid-column: 1 / -1; margin-top: 15px;">
+            <div class="detail-label" style="font-size: 1.1rem; font-weight: 700; color: #4f46e5; margin-bottom: 10px;">
+                ◆ 상담 기록 (${n}건)
+            </div>
+            <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 15px; border-radius: 12px; border-left: 4px solid #3b82f6;">
+                ${hist.counsel.map((c, i) => `
+                    <div style="margin-bottom: ${i < n - 1 ? '12px' : '0'}; padding-bottom: ${i < n - 1 ? '12px' : '0'}; border-bottom: ${i < n - 1 ? '1px solid #cbd5e1' : 'none'};">
+                        <div style="font-size: 0.75rem; color: #64748b; font-weight: 600; margin-bottom: 4px;">${escHtml(c.label)}</div>
+                        <div style="font-size: 0.9rem; color: #1e293b; line-height: 1.6; white-space: pre-wrap;">${escHtml(c.value)}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>`;
+    }
+
+    // 건강기록 (BF~BT)
+    if (hist.health.length > 0) {
+        const n = hist.health.length;
+        html += `
+        <div class="detail-item" style="grid-column: 1 / -1; margin-top: 15px;">
+            <div class="detail-label" style="font-size: 1.1rem; font-weight: 700; color: #059669; margin-bottom: 10px;">
+                ◆ 건강 기록 (${n}건)
+            </div>
+            <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); padding: 15px; border-radius: 12px; border-left: 4px solid #10b981;">
+                ${hist.health.map((h, i) => `
+                    <div style="margin-bottom: ${i < n - 1 ? '12px' : '0'}; padding-bottom: ${i < n - 1 ? '12px' : '0'}; border-bottom: ${i < n - 1 ? '1px solid #bbf7d0' : 'none'};">
+                        <div style="font-size: 0.75rem; color: #047857; font-weight: 600; margin-bottom: 4px;">${escHtml(h.label)}</div>
+                        <div style="font-size: 0.9rem; color: #1e293b; line-height: 1.6; white-space: pre-wrap;">${escHtml(h.value)}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>`;
+    }
+
+    return html;
+}
+
+        
         // 상태 CSS 클래스 반환
         function getStatusClass(status) {
             switch (status) {
