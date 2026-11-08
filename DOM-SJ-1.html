@@ -1302,7 +1302,7 @@ await loadExitedStudentsData();
                 console.log('시트 데이터 로드 시도 중...');
                 
                 // 방법 1: 공개 시트 CSV 방식
-                const csvUrl = `https://docs.google.com/spreadsheets/d/1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc/export?format=csv&gid=0`;
+                const csvUrl = `https://docs.google.com/spreadsheets/d/1CWN4IWZXXFTWiRspTc5Xl3ymTYdQvuSMf-XEI4YCKNc/export?format=csv&gid=0`;
                 
                 try {
                     console.log('CSV 방식으로 시도 중...');
@@ -1317,14 +1317,14 @@ await loadExitedStudentsData();
                         
                         // 헤더 (B3:P3)
                         if (allData.length > 2 && allData[2].length > 1) {
-                            const header = allData[2].slice(1, 29); // B3:P3 (B열=1번 인덱스부터 P열=15번 인덱스까지)
+                            const header = allData[2].slice(1, 56); // B3:P3 (B열=1번 인덱스부터 P열=15번 인덱스까지)
                             sheetsData.push(['인덱스'].concat(header)); // 인덱스 열 추가
                         }
                         
                         // 데이터 (B4부터)
                         for (let i = 3; i < allData.length; i++) {
                             if (allData[i].length > 1) {
-                                const row = allData[i].slice(1, 29); // B열:P열
+                                const row = allData[i].slice(1, 56); // B열:P열
                                 if (row.some(cell => cell && cell.trim() !== '')) { // 빈 행이 아닌 경우만
                                     sheetsData.push([i].concat(row)); // 행 번호와 함께 추가
                                 }
@@ -1339,7 +1339,7 @@ await loadExitedStudentsData();
                 }
                 
                 // 방법 2: Google Sheets API 방식 (올바른 범위)
-                const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc/values/yulee!B3:AN1000?key=AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY`;
+                const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/1CWN4IWZXXFTWiRspTc5Xl3ymTYdQvuSMf-XEI4YCKNc/values/yulee!B3:BD1000?key=AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY`;
                 
                 console.log('API 방식으로 시도 중... (범위: B3:P1000)');
                 const response = await fetch(apiUrl);
@@ -2586,11 +2586,18 @@ function showExitedStudentDetail(exitedDataStr) {
             const memo = row[5] || '';
            // ===== 상담 내용 추가 (R~V열 = 인덱스 17~21) =====
 // R~AC열 = 인덱스 17~28 (yulee시트 R열 = IF시트 AL열, 12개)
-    const counselData = [
-        row[17]||'', row[18]||'', row[19]||'', row[20]||'',
-        row[21]||'', row[22]||'', row[23]||'', row[24]||'',
-        row[25]||'', row[26]||'', row[27]||'', row[28]||''
-    ].filter(c => c && c.trim() !== '');
+    // 상담내역 S~AL열 = row[18]~row[37], 건강기록 AM~BD열 = row[38]~row[55]
+    const headerRow = sheetsData[0] || [];
+    const pickRecords = (start, end, defaultLabel) => {
+        const list = [];
+        for (let c = start; c <= end; c++) {
+            const v = (row[c] || '').toString().trim();
+            if (v) list.push({ label: headerRow[c] || `${defaultLabel} ${c - start + 1}`, value: v });
+        }
+        return list;
+    };
+    const counselData = pickRecords(18, 37, '상담');
+    const healthData = pickRecords(38, 55, '건강');
            
 let finalMemo = memo;
     if (additionalNote && additionalNote !== 'null') {
@@ -2606,6 +2613,7 @@ let finalMemo = memo;
             const enrollDate = row[13] || '';
             const school = row[14] || '';
             const classroom = row[15] || '';
+           const classroom = row[17] || '';
            const qColumnData = row[16] || '';
 
             const statusClass = getStatusClass(status);
@@ -2629,6 +2637,10 @@ let finalMemo = memo;
                             <div class="detail-label">그룹</div>
                             <div class="detail-value">${group}</div>
                         </div>
+                        <div class="detail-item">
+    <div class="detail-label">반</div>
+    <div class="detail-value">${classroom}</div>
+</div>
                         <div class="detail-item">
                             <div class="detail-label">생년월일</div>
                             <div class="detail-value">${birthDate}</div>
@@ -2674,25 +2686,39 @@ let finalMemo = memo;
         </div>
     ` : ''}
      <!-- ===== 상담 내용 섹션 추가 ===== -->
+                          <!-- ===== 상담 기록 ===== -->
                 ${counselData.length > 0 ? `
                     <div class="detail-item" style="grid-column: 1 / -1; margin-top: 15px;">
                         <div class="detail-label" style="font-size: 1.1rem; font-weight: 700; color: #4f46e5; margin-bottom: 10px;">
                             ◆ 상담 기록 (${counselData.length}건)
                         </div>
                         <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 15px; border-radius: 12px; border-left: 4px solid #3b82f6;">
-                            ${counselData.map((counsel, index) => `
+                            ${counselData.map((item, index) => `
                                 <div style="margin-bottom: ${index < counselData.length - 1 ? '12px' : '0'}; padding-bottom: ${index < counselData.length - 1 ? '12px' : '0'}; border-bottom: ${index < counselData.length - 1 ? '1px solid #cbd5e1' : 'none'};">
-                                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 600; margin-bottom: 4px;">
-                                        ${index + 1}차 상담
-                                    </div>
-                                    <div style="font-size: 0.9rem; color: #1e293b; line-height: 1.6; white-space: pre-wrap;">
-                                        ${counsel}
-                                    </div>
+                                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 600; margin-bottom: 4px;">${item.label}</div>
+                                    <div style="font-size: 0.9rem; color: #1e293b; line-height: 1.6; white-space: pre-wrap;">${item.value}</div>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
                 ` : ''}
+
+                <!-- ===== 건강 기록 ===== -->
+                ${healthData.length > 0 ? `
+                    <div class="detail-item" style="grid-column: 1 / -1; margin-top: 15px;">
+                        <div class="detail-label" style="font-size: 1.1rem; font-weight: 700; color: #059669; margin-bottom: 10px;">
+                            ◆ 건강 기록 (${healthData.length}건)
+                        </div>
+                        <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); padding: 15px; border-radius: 12px; border-left: 4px solid #10b981;">
+                            ${healthData.map((item, index) => `
+                                <div style="margin-bottom: ${index < healthData.length - 1 ? '12px' : '0'}; padding-bottom: ${index < healthData.length - 1 ? '12px' : '0'}; border-bottom: ${index < healthData.length - 1 ? '1px solid #bbf7d0' : 'none'};">
+                                    <div style="font-size: 0.75rem; color: #047857; font-weight: 600; margin-bottom: 4px;">${item.label}</div>
+                                    <div style="font-size: 0.9rem; color: #1e293b; line-height: 1.6; white-space: pre-wrap;">${item.value}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}     
             </div>
         </div>
     `;
