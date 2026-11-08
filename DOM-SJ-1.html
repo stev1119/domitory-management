@@ -2612,9 +2612,9 @@ let finalMemo = memo;
             const gender = row[12] || '';
             const enrollDate = row[13] || '';
             const school = row[14] || '';
-            const classroom = row[15] || '';
-           const classroom = row[17] || '';
-           const qColumnData = row[16] || '';
+            const dormTeacher = row[15] || '';   // P열: 기숙사 선생님
+            const qColumnData = row[16] || '';   // Q열: 부담임선생님
+            const classroom = row[17] || '';     // R열: 반
 
             const statusClass = getStatusClass(status);
 
@@ -2667,7 +2667,7 @@ let finalMemo = memo;
                         </div>
                         <div class="detail-item">
                             <div class="detail-label">기숙사 선생님</div>
-                            <div class="detail-value">${classroom}</div>
+                            <div class="detail-value">${dormTeacher}</div>
                         </div>
                         <div class="detail-item">
                            <div class="detail-label">반</div>
@@ -2763,7 +2763,7 @@ let finalMemo = memo;
         // 5분마다 자동 새로고침
         setInterval(refreshData, 300 * 60 * 1000);
     </script>
-    </script>
+
     
     <!-- 개발자 도구 방지 코드 -->
     <script>
