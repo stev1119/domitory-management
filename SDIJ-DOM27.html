@@ -668,7 +668,7 @@
 .triple-row {
     grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: 7fr 2fr 1fr;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 2fr) minmax(0, 1fr);
     gap: 10px;
     margin-top: 15px;
     align-items: start;
@@ -2652,12 +2652,14 @@ function showExitedStudentDetail(exitedDataStr) {
 
     const showTriple = counselData.length > 0 || healthData.length > 0 || finalMemo || special;
 
-    return `
+        return `
         <div class="student-info-card">
             <div class="student-info-header">
                 <div class="student-room">${room}</div>
                 <div class="student-status ${statusClass}">${status}</div>
             </div>
+
+            <!-- ① 위쪽: 기존 배열 + 반, 휴대폰 -->
             <div class="student-details">
                 <div class="detail-item"><div class="detail-label">이름</div><div class="detail-value">${name}</div></div>
                 <div class="detail-item"><div class="detail-label">성별</div><div class="detail-value">${gender}</div></div>
@@ -2673,27 +2675,27 @@ function showExitedStudentDetail(exitedDataStr) {
                 ${qColumnData ? `<div class="detail-item"><div class="detail-label">부담임선생님</div><div class="detail-value">${qColumnData}</div></div>` : ''}
                 <div class="detail-item"><div class="detail-label">반</div><div class="detail-value">${className}</div></div>
                 <div class="detail-item"><div class="detail-label">휴대폰</div><div class="detail-value">${mobile}</div></div>
+            </div>
 
-                ${showTriple ? `
-                <div class="triple-row">
-                    <div class="triple-box counsel">
-                        <div class="triple-title" style="color:#2563eb;">◆ 상담 (${counselData.length}건)</div>
-                        ${itemHtml(counselData) || '<div class="triple-item">내용 없음</div>'}
-                    </div>
-                    <div class="triple-box health">
-                        <div class="triple-title" style="color:#059669;">◆ 건강 (${healthData.length}건)</div>
-                        ${itemHtml(healthData) || '<div class="triple-item">내용 없음</div>'}
-                    </div>
-                    <div class="triple-box memo">
-                        <div class="triple-title" style="color:#b45309;">◆ 메모</div>
-                        ${finalMemo ? `<div class="triple-item"><div class="triple-label">비고</div>${finalMemo}</div>` : ''}
-                        ${special ? `<div class="triple-item"><div class="triple-label">특이사항</div>${special}</div>` : ''}
-                    </div>
-                </div>` : ''}
+            <!-- ② 하단: 상담 7 : 건강 2 : 메모 1 -->
+            <div class="triple-row">
+                <div class="triple-box counsel">
+                    <div class="triple-title" style="color:#2563eb;">◆ 상담내역 (${counselData.length}건)</div>
+                    ${itemHtml(counselData) || '<div class="triple-item">내용 없음</div>'}
+                </div>
+                <div class="triple-box health">
+                    <div class="triple-title" style="color:#059669;">◆ 건강관련 (${healthData.length}건)</div>
+                    ${itemHtml(healthData) || '<div class="triple-item">내용 없음</div>'}
+                </div>
+                <div class="triple-box memo">
+                    <div class="triple-title" style="color:#b45309;">◆ 메모</div>
+                    ${finalMemo ? `<div class="triple-item"><div class="triple-label">비고</div>${finalMemo}</div>` : ''}
+                    ${special ? `<div class="triple-item"><div class="triple-label">특이사항</div>${special}</div>` : ''}
+                    ${(!finalMemo && !special) ? '<div class="triple-item">내용 없음</div>' : ''}
+                </div>
             </div>
         </div>
     `;
-}
         // 상태 CSS 클래스 반환
         function getStatusClass(status) {
             switch (status) {
