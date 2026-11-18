@@ -550,7 +550,7 @@
             transform: translate(-50%, -50%);
             background: white;
             border-radius: 20px;
-            max-width: 800px;
+            max-width: 1200px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
@@ -665,11 +665,32 @@
     white-space: pre-wrap;
     word-wrap: break-word;
 }
-
+.triple-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 7fr 2fr 1fr;
+    gap: 10px;
+    margin-top: 15px;
+    align-items: start;
+}
+.triple-box {
+    min-width: 0;
+    padding: 12px;
+    border-radius: 12px;
+    word-break: break-word;
+}
+.triple-box.counsel { background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-left: 4px solid #3b82f6; }
+.triple-box.health  { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-left: 4px solid #10b981; }
+.triple-box.memo    { background: #fef3c7; border-left: 4px solid #f59e0b; }
+.triple-title { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+.triple-item { font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid #cbd5e1; }
+.triple-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.triple-label { font-size: 0.72rem; color: #64748b; font-weight: 600; margin-bottom: 2px; }
         /* 반응형 디자인 */
         @media (max-width: 768px) {
             .dashboard-container {
                 padding: 15px;
+                .triple-row { grid-template-columns: 1fr; }
             }
 
             .header h1 {
@@ -1317,14 +1338,14 @@ await loadExitedStudentsData();
                         
                         // 헤더 (B3:P3)
                         if (allData.length > 2 && allData[2].length > 1) {
-                            const header = allData[2].slice(1, 29); // B3:P3 (B열=1번 인덱스부터 P열=15번 인덱스까지)
+                            const header = allData[2].slice(1, 52); // B3:P3 (B열=1번 인덱스부터 P열=15번 인덱스까지)
                             sheetsData.push(['인덱스'].concat(header)); // 인덱스 열 추가
                         }
                         
                         // 데이터 (B4부터)
                         for (let i = 3; i < allData.length; i++) {
                             if (allData[i].length > 1) {
-                                const row = allData[i].slice(1, 29); // B열:P열
+                                const row = allData[i].slice(1, 52); // B열:P열
                                 if (row.some(cell => cell && cell.trim() !== '')) { // 빈 행이 아닌 경우만
                                     sheetsData.push([i].concat(row)); // 행 번호와 함께 추가
                                 }
@@ -1339,7 +1360,7 @@ await loadExitedStudentsData();
                 }
                 
                 // 방법 2: Google Sheets API 방식 (올바른 범위)
-                const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc/values/yulee!B3:AN1000?key=AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY`;
+                const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc/values/yulee!B3:AZ1000?key=AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY`;
                 
                 console.log('API 방식으로 시도 중... (범위: B3:P1000)');
                 const response = await fetch(apiUrl);
@@ -2580,119 +2601,95 @@ function showExitedStudentDetail(exitedDataStr) {
 
         // 학생 정보 카드 생성
        function createStudentCard(row, additionalNote = null) {
-            const room = row[1] || '';
-            const name = row[2] || '';
-            const status = row[3] || '정상';
-            const memo = row[5] || '';
-           // ===== 상담 내용 추가 (R~V열 = 인덱스 17~21) =====
-// R~AC열 = 인덱스 17~28 (yulee시트 R열 = IF시트 AL열, 12개)
-    const counselData = [
-        row[17]||'', row[18]||'', row[19]||'', row[20]||'',
-        row[21]||'', row[22]||'', row[23]||'', row[24]||'',
-        row[25]||'', row[26]||'', row[27]||'', row[28]||''
-    ].filter(c => c && c.trim() !== '');
-           
-let finalMemo = memo;
+    const room = row[1] || '';
+    const name = row[2] || '';
+    const status = row[3] || '정상';
+    const memo = row[5] || '';
+    const parentPhone = row[6] || '';
+    const phone = row[7] || '';
+    const librarySeats = row[8] || '';
+    const group = row[9] || '';
+    const lifeTeacher = row[10] || '';
+    const birthDate = row[11] || '';
+    const gender = row[12] || '';
+    const enrollDate = row[13] || '';
+    const school = row[14] || '';
+    const classroom = row[15] || '';
+    const qColumnData = row[16] || '';
+
+    // ★ 새로 추가된 열
+    const className = row[17] || '';   // R열 반
+    const mobile = row[18] || '';      // S열 휴대폰
+    const special = row[19] || '';     // T열 특이사항
+
+    // U~AL열 (row[20]~row[37]) 상담내역1~18
+    const counselData = [];
+    for (let i = 20; i <= 37; i++) {
+        if (row[i] && row[i].trim() !== '') {
+            counselData.push({ label: `상담내역${i - 19}`, text: row[i] });
+        }
+    }
+
+    // AM~AZ열 (row[38]~row[51]) 건강관련1~14
+    const healthData = [];
+    for (let i = 38; i <= 51; i++) {
+        if (row[i] && row[i].trim() !== '') {
+            healthData.push({ label: `건강관련${i - 37}`, text: row[i] });
+        }
+    }
+
+    let finalMemo = memo;
     if (additionalNote && additionalNote !== 'null') {
         finalMemo = memo ? `${memo} | ◆ ${additionalNote}` : `◆ ${additionalNote}`;
     }
-            const parentPhone = row[6] || '';
-            const phone = row[7] || '';
-            const librarySeats = row[8] || '';
-            const group = row[9] || '';  // 그룹 정보 추가 (J열)
-            const lifeTeacher = row[10] || '';  // 생활담임은 K열로 이동
-            const birthDate = row[11] || '';
-            const gender = row[12] || '';
-            const enrollDate = row[13] || '';
-            const school = row[14] || '';
-            const classroom = row[15] || '';
-           const qColumnData = row[16] || '';
 
-            const statusClass = getStatusClass(status);
+    const statusClass = getStatusClass(status);
+    const itemHtml = (list) => list.map(d => `
+        <div class="triple-item">
+            <div class="triple-label">${d.label}</div>
+            <div>${d.text}</div>
+        </div>`).join('');
 
-            return `
-                <div class="student-info-card">
-                    <div class="student-info-header">
-                        <div class="student-room">${room}</div>
-                        <div class="student-status ${statusClass}">${status}</div>
+    const showTriple = counselData.length > 0 || healthData.length > 0 || finalMemo || special;
+
+    return `
+        <div class="student-info-card">
+            <div class="student-info-header">
+                <div class="student-room">${room}</div>
+                <div class="student-status ${statusClass}">${status}</div>
+            </div>
+            <div class="student-details">
+                <div class="detail-item"><div class="detail-label">이름</div><div class="detail-value">${name}</div></div>
+                <div class="detail-item"><div class="detail-label">성별</div><div class="detail-value">${gender}</div></div>
+                <div class="detail-item"><div class="detail-label">그룹</div><div class="detail-value">${group}</div></div>
+                <div class="detail-item"><div class="detail-label">생년월일</div><div class="detail-value">${birthDate}</div></div>
+                <div class="detail-item"><div class="detail-label">본인연락처</div><div class="detail-value">${phone}</div></div>
+                <div class="detail-item"><div class="detail-label">학부모연락처</div><div class="detail-value">${parentPhone}</div></div>
+                <div class="detail-item"><div class="detail-label">라이브러리 좌석</div><div class="detail-value">${librarySeats}</div></div>
+                <div class="detail-item"><div class="detail-label">담임선생님</div><div class="detail-value">${lifeTeacher}</div></div>
+                <div class="detail-item"><div class="detail-label">입소일</div><div class="detail-value">${enrollDate}</div></div>
+                <div class="detail-item"><div class="detail-label">출신고교</div><div class="detail-value">${school}</div></div>
+                <div class="detail-item"><div class="detail-label">기숙사 선생님</div><div class="detail-value">${classroom}</div></div>
+                ${qColumnData ? `<div class="detail-item"><div class="detail-label">부담임선생님</div><div class="detail-value">${qColumnData}</div></div>` : ''}
+                <div class="detail-item"><div class="detail-label">반</div><div class="detail-value">${className}</div></div>
+                <div class="detail-item"><div class="detail-label">휴대폰</div><div class="detail-value">${mobile}</div></div>
+
+                ${showTriple ? `
+                <div class="triple-row">
+                    <div class="triple-box counsel">
+                        <div class="triple-title" style="color:#2563eb;">◆ 상담 (${counselData.length}건)</div>
+                        ${itemHtml(counselData) || '<div class="triple-item">내용 없음</div>'}
                     </div>
-                    <div class="student-details">
-                        <div class="detail-item">
-                            <div class="detail-label">이름</div>
-                            <div class="detail-value">${name}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">성별</div>
-                            <div class="detail-value">${gender}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">그룹</div>
-                            <div class="detail-value">${group}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">생년월일</div>
-                            <div class="detail-value">${birthDate}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">본인연락처</div>
-                            <div class="detail-value">${phone}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">학부모연락처</div>
-                            <div class="detail-value">${parentPhone}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">라이브러리 좌석</div>
-                            <div class="detail-value">${librarySeats}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">담임선생님</div>
-                            <div class="detail-value">${lifeTeacher}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">입소일</div>
-                            <div class="detail-value">${enrollDate}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">출신고교</div>
-                            <div class="detail-value">${school}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">기숙사 선생님</div>
-                            <div class="detail-value">${classroom}</div>
-                        </div>
-                        ${qColumnData ? `
-                    <div class="detail-item">
-                        <div class="detail-label">부담임선생님</div>
-                        <div class="detail-value">${qColumnData}</div>
+                    <div class="triple-box health">
+                        <div class="triple-title" style="color:#059669;">◆ 건강 (${healthData.length}건)</div>
+                        ${itemHtml(healthData) || '<div class="triple-item">내용 없음</div>'}
                     </div>
-                ` : ''}
-                       ${finalMemo ? `
-        <div class="detail-item" style="grid-column: 1 / -1;">
-            <div class="detail-label">비고</div>
-            <div class="detail-value" style="background: ${additionalNote && additionalNote !== 'null' ? '#fef3c7' : 'transparent'}; padding: ${additionalNote && additionalNote !== 'null' ? '8px' : '0'}; border-radius: 6px;">${finalMemo}</div>
-        </div>
-    ` : ''}
-     <!-- ===== 상담 내용 섹션 추가 ===== -->
-                ${counselData.length > 0 ? `
-                    <div class="detail-item" style="grid-column: 1 / -1; margin-top: 15px;">
-                        <div class="detail-label" style="font-size: 1.1rem; font-weight: 700; color: #4f46e5; margin-bottom: 10px;">
-                            ◆ 상담 기록 (${counselData.length}건)
-                        </div>
-                        <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 15px; border-radius: 12px; border-left: 4px solid #3b82f6;">
-                            ${counselData.map((counsel, index) => `
-                                <div style="margin-bottom: ${index < counselData.length - 1 ? '12px' : '0'}; padding-bottom: ${index < counselData.length - 1 ? '12px' : '0'}; border-bottom: ${index < counselData.length - 1 ? '1px solid #cbd5e1' : 'none'};">
-                                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 600; margin-bottom: 4px;">
-                                        ${index + 1}차 상담
-                                    </div>
-                                    <div style="font-size: 0.9rem; color: #1e293b; line-height: 1.6; white-space: pre-wrap;">
-                                        ${counsel}
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
+                    <div class="triple-box memo">
+                        <div class="triple-title" style="color:#b45309;">◆ 메모</div>
+                        ${finalMemo ? `<div class="triple-item"><div class="triple-label">비고</div>${finalMemo}</div>` : ''}
+                        ${special ? `<div class="triple-item"><div class="triple-label">특이사항</div>${special}</div>` : ''}
                     </div>
-                ` : ''}
+                </div>` : ''}
             </div>
         </div>
     `;
