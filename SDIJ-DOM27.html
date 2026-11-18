@@ -2595,7 +2595,7 @@ function showExitedStudentDetail(exitedDataStr) {
     document.getElementById('modalTitle').textContent = title;
     const modalStudentsGrid = document.getElementById('modalStudentsGrid');
     
-    modalStudentsGrid.innerHTML = students.map(row => createStudentCard(row, additionalNote)).join('');
+    modalStudentsGrid.innerHTML = students.map(row => (row, additionalNote)).join('');
     document.getElementById('studentModal').style.display = 'block';
 }
 
@@ -2652,14 +2652,14 @@ function showExitedStudentDetail(exitedDataStr) {
 
     const showTriple = counselData.length > 0 || healthData.length > 0 || finalMemo || special;
 
-        return `
+           return `
         <div class="student-info-card">
             <div class="student-info-header">
                 <div class="student-room">${room}</div>
                 <div class="student-status ${statusClass}">${status}</div>
             </div>
 
-            <!-- ① 위쪽: 기존 배열 + 반, 휴대폰 -->
+            <!-- ① 위쪽: 기존 항목 배열 + 반, 휴대폰, 비고(F열) -->
             <div class="student-details">
                 <div class="detail-item"><div class="detail-label">이름</div><div class="detail-value">${name}</div></div>
                 <div class="detail-item"><div class="detail-label">성별</div><div class="detail-value">${gender}</div></div>
@@ -2675,9 +2675,14 @@ function showExitedStudentDetail(exitedDataStr) {
                 ${qColumnData ? `<div class="detail-item"><div class="detail-label">부담임선생님</div><div class="detail-value">${qColumnData}</div></div>` : ''}
                 <div class="detail-item"><div class="detail-label">반</div><div class="detail-value">${className}</div></div>
                 <div class="detail-item"><div class="detail-label">휴대폰</div><div class="detail-value">${mobile}</div></div>
+                ${finalMemo ? `
+                <div class="detail-item" style="grid-column: 1 / -1;">
+                    <div class="detail-label">비고</div>
+                    <div class="detail-value" style="background: ${additionalNote && additionalNote !== 'null' ? '#fef3c7' : 'transparent'}; padding: ${additionalNote && additionalNote !== 'null' ? '8px' : '0'}; border-radius: 6px;">${finalMemo}</div>
+                </div>` : ''}
             </div>
 
-            <!-- ② 하단: 상담 7 : 건강 2 : 메모 1 -->
+            <!-- ② 하단: 상담내역 7 : 건강관련 2 : 특이사항 1 -->
             <div class="triple-row">
                 <div class="triple-box counsel">
                     <div class="triple-title" style="color:#2563eb;">◆ 상담내역 (${counselData.length}건)</div>
@@ -2688,10 +2693,8 @@ function showExitedStudentDetail(exitedDataStr) {
                     ${itemHtml(healthData) || '<div class="triple-item">내용 없음</div>'}
                 </div>
                 <div class="triple-box memo">
-                    <div class="triple-title" style="color:#b45309;">◆ 메모</div>
-                    ${finalMemo ? `<div class="triple-item"><div class="triple-label">비고</div>${finalMemo}</div>` : ''}
-                    ${special ? `<div class="triple-item"><div class="triple-label">특이사항</div>${special}</div>` : ''}
-                    ${(!finalMemo && !special) ? '<div class="triple-item">내용 없음</div>' : ''}
+                    <div class="triple-title" style="color:#b45309;">◆ 특이사항</div>
+                    ${special ? `<div class="triple-item">${special}</div>` : '<div class="triple-item">내용 없음</div>'}
                 </div>
             </div>
         </div>
