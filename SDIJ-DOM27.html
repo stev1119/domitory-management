@@ -665,29 +665,29 @@
     white-space: pre-wrap;
     word-wrap: break-word;
 }
-.triple-row {
-    grid-column: 1 / -1;
+.info-row {
     display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 2fr) minmax(0, 1fr);
     gap: 10px;
     margin-top: 15px;
     align-items: start;
 }
-.triple-box {
+.info-box {
     min-width: 0;
     padding: 12px;
     border-radius: 12px;
     word-break: break-word;
 }
-.triple-box.counsel { background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-left: 4px solid #3b82f6; }
-.triple-box.health  { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-left: 4px solid #10b981; }
-.triple-box.memo    { background: #fef3c7; border-left: 4px solid #f59e0b; }
-.triple-title { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
-.triple-item { font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid #cbd5e1; }
-.triple-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.triple-label { font-size: 0.72rem; color: #64748b; font-weight: 600; margin-bottom: 2px; }
+.info-box.counsel { background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-left: 4px solid #3b82f6; }
+.info-box.rule    { background: linear-gradient(135deg, #fef2f2, #fee2e2); border-left: 4px solid #ef4444; }
+.info-box.move    { background: #fef3c7; border-left: 4px solid #f59e0b; }
+.info-box.health  { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-left: 4px solid #10b981; }
+.info-title { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+.info-item { font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid #cbd5e1; }
+.info-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.info-label { font-size: 0.72rem; color: #64748b; font-weight: 600; margin-bottom: 2px; }
         /* 반응형 디자인 */
         @media (max-width: 768px) {
+            .info-row { grid-template-columns: 1fr !important; }
             .dashboard-container {
                 padding: 15px;
                             }
@@ -1338,14 +1338,14 @@ await loadExitedStudentsData();
                         
                         // 헤더 (B3:P3)
                         if (allData.length > 2 && allData[2].length > 1) {
-                            const header = allData[2].slice(1, 52); // B3:P3 (B열=1번 인덱스부터 P열=15번 인덱스까지)
+                            const header = allData[2].slice(1, 78); // B3:P3 (B열=1번 인덱스부터 P열=15번 인덱스까지)
                             sheetsData.push(['인덱스'].concat(header)); // 인덱스 열 추가
                         }
                         
                         // 데이터 (B4부터)
                         for (let i = 3; i < allData.length; i++) {
                             if (allData[i].length > 1) {
-                                const row = allData[i].slice(1, 52); // B열:P열
+                                const row = allData[i].slice(1, 78); // B열:P열
                                 if (row.some(cell => cell && cell.trim() !== '')) { // 빈 행이 아닌 경우만
                                     sheetsData.push([i].concat(row)); // 행 번호와 함께 추가
                                 }
@@ -1360,7 +1360,7 @@ await loadExitedStudentsData();
                 }
                 
                 // 방법 2: Google Sheets API 방식 (올바른 범위)
-                const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc/values/yulee!B3:AZ1000?key=AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY`;
+                const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc/values/yulee!B3:BZ1000?key=AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY`;
                 
                 console.log('API 방식으로 시도 중... (범위: B3:P1000)');
                 const response = await fetch(apiUrl);
@@ -2600,7 +2600,7 @@ function showExitedStudentDetail(exitedDataStr) {
 }
 
         // 학생 정보 카드 생성
-       function createStudentCard(row, additionalNote = null) {
+ function createStudentCard(row, additionalNote = null) {
     const room = row[1] || '';
     const name = row[2] || '';
     const status = row[3] || '정상';
@@ -2617,26 +2617,26 @@ function showExitedStudentDetail(exitedDataStr) {
     const classroom = row[15] || '';
     const qColumnData = row[16] || '';
 
-    // ★ 새로 추가된 열
     const className = row[17] || '';   // R열 반
-    const mobile = row[18] || '';      // S열 휴대폰
-    const special = row[19] || '';     // T열 특이사항
+    const mobile = row[18] || '';      // S열 휴대폰소지여부
+    const roomMove = row[19] || '';    // T열 호실이동내역
 
-    // U~AL열 (row[20]~row[37]) 상담내역1~18
-    const counselData = [];
-    for (let i = 20; i <= 37; i++) {
-        if (row[i] && row[i].trim() !== '') {
-            counselData.push({ label: `상담내역${i - 19}`, text: row[i] });
+    // 열 범위에서 값이 있는 것만 모으는 함수
+    const collect = (start, end, labelName) => {
+        const list = [];
+        for (let i = start; i <= end; i++) {
+            if (row[i] && row[i].toString().trim() !== '') {
+                list.push({ label: `${labelName}${i - start + 1}`, text: row[i] });
+            }
         }
-    }
+        return list;
+    };
 
-    // AM~AZ열 (row[38]~row[51]) 건강관련1~14
-    const healthData = [];
-    for (let i = 38; i <= 51; i++) {
-        if (row[i] && row[i].trim() !== '') {
-            healthData.push({ label: `건강관련${i - 37}`, text: row[i] });
-        }
-    }
+    const counselData = collect(20, 37, '상담내역');   // U~AL
+    const healthData  = collect(38, 51, '건강관련');   // AM~AZ
+    const ruleData    = collect(52, 77, '기숙사 규칙 위반'); // BA~BZ
+    const moveData    = (roomMove && roomMove.toString().trim() !== '')
+        ? [{ label: '호실이동내역', text: roomMove }] : [];
 
     let finalMemo = memo;
     if (additionalNote && additionalNote !== 'null') {
@@ -2644,22 +2644,39 @@ function showExitedStudentDetail(exitedDataStr) {
     }
 
     const statusClass = getStatusClass(status);
+
     const itemHtml = (list) => list.map(d => `
-        <div class="triple-item">
-            <div class="triple-label">${d.label}</div>
+        <div class="info-item">
+            <div class="info-label">${d.label}</div>
             <div>${d.text}</div>
         </div>`).join('');
 
-    const showTriple = counselData.length > 0 || healthData.length > 0 || finalMemo || special;
+    // 4개 칸 정의 (weight = 폭 비율, 발생 많은 순)
+    const sections = [
+        { cls: 'counsel', title: '상담내역',       color: '#2563eb', data: counselData, weight: 5 },
+        { cls: 'rule',    title: '기숙사 규칙 위반', color: '#dc2626', data: ruleData,    weight: 3 },
+        { cls: 'move',    title: '호실이동내역',     color: '#b45309', data: moveData,    weight: 2 },
+        { cls: 'health',  title: '건강관련',         color: '#059669', data: healthData,  weight: 2 }
+    ].filter(s => s.data.length > 0);   // ★ 내용 있는 칸만
 
-           return `
+    const gridCols = sections.map(s => `minmax(0, ${s.weight}fr)`).join(' ');
+
+    const sectionsHtml = sections.length > 0 ? `
+        <div class="info-row" style="grid-template-columns: ${gridCols};">
+            ${sections.map(s => `
+                <div class="info-box ${s.cls}">
+                    <div class="info-title" style="color:${s.color};">◆ ${s.title} (${s.data.length}건)</div>
+                    ${itemHtml(s.data)}
+                </div>`).join('')}
+        </div>` : '';
+
+    return `
         <div class="student-info-card">
             <div class="student-info-header">
                 <div class="student-room">${room}</div>
                 <div class="student-status ${statusClass}">${status}</div>
             </div>
 
-            <!-- ① 위쪽: 기존 항목 배열 + 반, 휴대폰, 비고(F열) -->
             <div class="student-details">
                 <div class="detail-item"><div class="detail-label">이름</div><div class="detail-value">${name}</div></div>
                 <div class="detail-item"><div class="detail-label">성별</div><div class="detail-value">${gender}</div></div>
@@ -2682,24 +2699,10 @@ function showExitedStudentDetail(exitedDataStr) {
                 </div>` : ''}
             </div>
 
-            <!-- ② 하단: 상담내역 7 : 건강관련 2 : 특이사항 1 -->
-            <div class="triple-row">
-                <div class="triple-box counsel">
-                    <div class="triple-title" style="color:#2563eb;">◆ 상담내역 (${counselData.length}건)</div>
-                    ${itemHtml(counselData) || '<div class="triple-item">내용 없음</div>'}
-                </div>
-                <div class="triple-box health">
-                    <div class="triple-title" style="color:#059669;">◆ 건강관련 (${healthData.length}건)</div>
-                    ${itemHtml(healthData) || '<div class="triple-item">내용 없음</div>'}
-                </div>
-                <div class="triple-box memo">
-                    <div class="triple-title" style="color:#b45309;">◆ 특이사항</div>
-                    ${special ? `<div class="triple-item">${special}</div>` : '<div class="triple-item">내용 없음</div>'}
-                </div>
-            </div>
+            ${sectionsHtml}
         </div>
     `;
-       }
+}
         // 상태 CSS 클래스 반환
         function getStatusClass(status) {
             switch (status) {
