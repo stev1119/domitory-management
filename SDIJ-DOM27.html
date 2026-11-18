@@ -690,8 +690,8 @@
         @media (max-width: 768px) {
             .dashboard-container {
                 padding: 15px;
-                .triple-row { grid-template-columns: 1fr; }
-            }
+                            }
+            .triple-row { grid-template-columns: 1fr; }
 
             .header h1 {
                 font-size: 2.2rem;
@@ -2595,7 +2595,7 @@ function showExitedStudentDetail(exitedDataStr) {
     document.getElementById('modalTitle').textContent = title;
     const modalStudentsGrid = document.getElementById('modalStudentsGrid');
     
-    modalStudentsGrid.innerHTML = students.map(row => (row, additionalNote)).join('');
+    modalStudentsGrid.innerHTML = students.map(row => createStudentCard(row, additionalNote)).join('');
     document.getElementById('studentModal').style.display = 'block';
 }
 
@@ -2699,6 +2699,7 @@ function showExitedStudentDetail(exitedDataStr) {
             </div>
         </div>
     `;
+       }
         // 상태 CSS 클래스 반환
         function getStatusClass(status) {
             switch (status) {
