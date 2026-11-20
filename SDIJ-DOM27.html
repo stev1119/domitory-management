@@ -1338,14 +1338,14 @@ await loadExitedStudentsData();
                         
                         // 헤더 (B3:P3)
                         if (allData.length > 2 && allData[2].length > 1) {
-                            const header = allData[2].slice(1, 78); // B3:P3 (B열=1번 인덱스부터 P열=15번 인덱스까지)
+                            const header = allData[2].slice(1, 88); // B3:P3 (B열=1번 인덱스부터 P열=15번 인덱스까지)
                             sheetsData.push(['인덱스'].concat(header)); // 인덱스 열 추가
                         }
                         
                         // 데이터 (B4부터)
                         for (let i = 3; i < allData.length; i++) {
                             if (allData[i].length > 1) {
-                                const row = allData[i].slice(1, 78); // B열:P열
+                                const row = allData[i].slice(1, 88); // B열:P열
                                 if (row.some(cell => cell && cell.trim() !== '')) { // 빈 행이 아닌 경우만
                                     sheetsData.push([i].concat(row)); // 행 번호와 함께 추가
                                 }
@@ -1360,7 +1360,7 @@ await loadExitedStudentsData();
                 }
                 
                 // 방법 2: Google Sheets API 방식 (올바른 범위)
-                const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc/values/yulee!B3:BZ1000?key=AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY`;
+                const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/1RqPfs1VbguAP85a9uswfLeUdYVAGye6GIKr0tvg4oYc/values/yulee!B3:CJ1000?key=AIzaSyAAaDiNQC3o779j_4pzVC4ouuZr48Y-PbY`;
                 
                 console.log('API 방식으로 시도 중... (범위: B3:P1000)');
                 const response = await fetch(apiUrl);
@@ -2619,7 +2619,7 @@ function showExitedStudentDetail(exitedDataStr) {
 
     const className = row[17] || '';   // R열 반
     const mobile = row[18] || '';      // S열 휴대폰소지여부
-    const roomMove = row[19] || '';    // T열 호실이동내역
+       // T열 호실이동내역
 
     // 열 범위에서 값이 있는 것만 모으는 함수
     const collect = (start, end, labelName) => {
@@ -2632,11 +2632,10 @@ function showExitedStudentDetail(exitedDataStr) {
         return list;
     };
 
-    const counselData = collect(20, 37, '상담내역');   // U~AL
-    const healthData  = collect(38, 51, '건강관련');   // AM~AZ
-    const ruleData    = collect(52, 77, '기숙사 규칙 위반'); // BA~BZ
-    const moveData    = (roomMove && roomMove.toString().trim() !== '')
-        ? [{ label: '호실이동내역', text: roomMove }] : [];
+    const moveData    = collect(19, 22, '호실이동');       // T~W (4칸)
+    const counselData = collect(23, 42, '상담내역');       // X~AQ (20칸)
+    const healthData  = collect(43, 57, '건강관련');       // AR~BF (15칸)
+    const ruleData    = collect(58, 87, '기숙사 규칙 위반'); // BG~CJ (30칸)
 
     let finalMemo = memo;
     if (additionalNote && additionalNote !== 'null') {
